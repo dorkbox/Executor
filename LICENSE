@@ -1,7 +1,7 @@
-    - Dorkbox ShellExecutor - Apache 2.0 License
+    - Dorkbox Shell Executor - Apache 2.0 License
       https://github.com/dorkbox
-      Copyright 2017, dorkbox, llc
-        Execute shell commands and launch the JVM for Java 6+
+      Copyright 2010, dorkbox, llc
+        Shell and JVM command execution on Linux, MacOS, or Windows for Java 6+
 
 
     - Dorkbox Console - Apache 2.0 License
