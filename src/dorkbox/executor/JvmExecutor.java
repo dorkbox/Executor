@@ -104,11 +104,11 @@ class JvmExecutor extends ShellExecutor {
     private List<String> jvmOptions = new ArrayList<String>();
     private List<String> classpathEntries = new ArrayList<String>();
 
-    // what version of java??
-    // so, this starts a NEW java, from an ALREADY existing java.
     private List<String> mainClassArguments = new ArrayList<String>();
     private String jarFile;
 
+    // what version of java??
+    // so, this starts a NEW JVM, from an ALREADY existing JVM.
     public
     JvmExecutor() {
         super(null, null, null);
@@ -140,7 +140,7 @@ class JvmExecutor extends ShellExecutor {
     }
 
     public final
-    void addJvmClasspaths(List<String> paths) {
+    void addJvmClasspath(List<String> paths) {
         this.classpathEntries.addAll(paths);
     }
 

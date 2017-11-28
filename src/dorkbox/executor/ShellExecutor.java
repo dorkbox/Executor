@@ -40,7 +40,8 @@ import java.util.Map;
 public
 class ShellExecutor {
 
-    // TODO: Add the ability to get the process PID via java for mac/windows/linux. Linux is avail from jvm, windows needs JNA
+    // TODO: Add the ability to get the process PID via java for mac/windows/linux. Linux is avail from jvm, windows needs JNA, mac ???
+    // of important note, the pid needs to be gotten "on demand", as linux can change the pid if it wants to
 
     static final String LINE_SEPARATOR = System.getProperty("line.separator");
     static final boolean isWindows;
@@ -68,9 +69,9 @@ class ShellExecutor {
 
     private Process process = null;
 
-    private ProcessProxy writeToProcess_input = null;
-    private ProcessProxy readFromProcess_output = null;
-    private ProcessProxy readFromProcess_error = null;
+    private ProcessStreamProxy writeToProcess_input = null;
+    private ProcessStreamProxy readFromProcess_output = null;
+    private ProcessStreamProxy readFromProcess_error = null;
 
     private boolean createReadWriterThreads = false;
 
@@ -261,7 +262,7 @@ class ShellExecutor {
     }
 
     /**
-     * @return the executable command issued to the shell
+     * @return the executable command issued
      */
     public
     String getCommand() {
@@ -462,9 +463,9 @@ class ShellExecutor {
 
                     // readers (read process -> write console)
                     // have to keep the output buffers from filling in the target process.
-                    readFromProcess_output = new ProcessProxy("Process Reader: " + this.executableName,
-                                                              this.process.getInputStream(),
-                                                              nullOutputStream);
+                    readFromProcess_output = new ProcessStreamProxy("Process Reader: " + this.executableName,
+                                                                    this.process.getInputStream(),
+                                                                    nullOutputStream);
                 }
             }
             // we want to pipe our input/output from process to ourselves
@@ -474,14 +475,14 @@ class ShellExecutor {
                  * to the user's window. This is important or the spawned process could block.
                  */
                 // readers (read process -> write console)
-                readFromProcess_output = new ProcessProxy("Process Reader: " + this.executableName,
-                                                          this.process.getInputStream(),
-                                                          this.outputStream);
+                readFromProcess_output = new ProcessStreamProxy("Process Reader: " + this.executableName,
+                                                                this.process.getInputStream(),
+                                                                this.outputStream);
 
                 if (this.outputErrorStream != this.outputStream) {
-                    readFromProcess_error = new ProcessProxy("Process Reader: " + this.executableName,
-                                                             this.process.getErrorStream(),
-                                                             this.outputErrorStream);
+                    readFromProcess_error = new ProcessStreamProxy("Process Reader: " + this.executableName,
+                                                                   this.process.getErrorStream(),
+                                                                   this.outputErrorStream);
                 }
             }
 
@@ -490,9 +491,9 @@ class ShellExecutor {
                  * Proxy System.in from the user's window to the spawned process
                  */
                 // writer (read console -> write process)
-                writeToProcess_input = new ProcessProxy("Process Writer: " + this.executableName,
-                                                        this.inputStream,
-                                                        this.process.getOutputStream());
+                writeToProcess_input = new ProcessStreamProxy("Process Writer: " + this.executableName,
+                                                              this.inputStream,
+                                                              this.process.getOutputStream());
             }
 
 
