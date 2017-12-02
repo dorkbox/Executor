@@ -86,7 +86,7 @@ class ShellExecutor {
      */
     public static
     String getVersion() {
-        return "1.0";
+        return "1.1";
     }
 
     /**
