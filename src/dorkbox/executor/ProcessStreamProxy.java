@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import dorkbox.console.Console;
 
 public
 class ProcessStreamProxy extends Thread {
@@ -41,9 +40,16 @@ class ProcessStreamProxy extends Thread {
     ProcessStreamProxy(String processName, InputStream inputStreamFromConsole, OutputStream outputStreamToProcess) {
         // basic check to see if we are System.in
         if (inputStreamFromConsole.equals(System.in)) {
+            // optionally use "dorkbox.console.Console" to read from System.in as an optional dependency.
+            // The "dorkbox.console.Console" allows us to have interruptable blocking reads from System.in -- which NORMALLY is not possible.
+            //   additionally, it allows us to read individual characters one-at-a-time, instead of the normal behavior of line input.
 
-            // more exact check: basically unwrap everything and see if it's a FileInputStream (which it should be)
             try {
+                Class<?> console = Class.forName("dorkbox.console.Console");
+                Method inputStream = console.getDeclaredMethod("inputStream");
+                InputStream invoked = (InputStream) inputStream.invoke(console);
+
+                // more exact check: basically unwrap everything and see if it's a FileInputStream (which it should be)
                 Field in = FilterInputStream.class.getDeclaredField("in");
                 in.setAccessible(true);
 
@@ -54,8 +60,7 @@ class ProcessStreamProxy extends Thread {
                 }
 
                 if (unwrapped instanceof FileInputStream && ((FileInputStream) unwrapped).getFD().equals(FileDescriptor.in)) {
-                    // if we are actually System.in, we want to use the Console.in INSTEAD, because it will let us do things we could otherwise not do.
-                    inputStreamFromConsole = Console.inputStream();
+                    inputStreamFromConsole = invoked;
                 }
             } catch (Exception ignored) {
             }
