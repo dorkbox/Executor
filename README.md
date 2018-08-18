@@ -32,8 +32,17 @@ Maven Info
 </dependencies>
 ```
 
+Gradle Info
+---------
+````
+dependencies {
+    ...
+    compile 'com.dorkbox:ShellExecutor:1.1'
+}
+````
+
 Or if you don't want to use Maven, you can access the files directly here:  
-https://oss.sonatype.org/content/repositories/releases/com/dorkbox/ShellExecutor/  
+https://repo1.maven.org/maven2/com/dorkbox/ShellExecutor/  
 
 
 https://repo1.maven.org/maven2/net/java/dev/jna/jna/  
