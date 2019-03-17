@@ -40,7 +40,7 @@ Gradle Info
 ````
 dependencies {
     ...
-    compile 'com.dorkbox:ShellExecutor:1.1'
+    compile "com.dorkbox:ShellExecutor:1.1"
 }
 ````
 

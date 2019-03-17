@@ -106,13 +106,6 @@ licensing {
         url(Extras.url)
         note(Extras.description)
     }
-
-
-    license("jOOU - Unsigned Numbers for Java", License.APACHE_2) {
-        copyright(2013)
-        author("Lukas Eder, lukas.eder@gmail.com")
-        url("https://github.com/jOOQ/jOOU")
-    }
 }
 
 sourceSets {
