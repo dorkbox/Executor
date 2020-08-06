@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 dorkbox, llc
+ * Copyright 2020 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,94 +15,68 @@
  */
 
 
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import dorkbox.gradle.kotlin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
-import java.util.*
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.declaredMemberProperties
 
 ///////////////////////////////
 //////    PUBLISH TO SONATYPE / MAVEN CENTRAL
-//////
-////// TESTING : local maven repo <PUBLISHING - publishToMavenLocal>
-//////
-////// RELEASE : sonatype / maven central, <PUBLISHING - publish> then <RELEASE - closeAndReleaseRepository>
+////// TESTING : (to local maven repo) <'publish and release' - 'publishToMavenLocal'>
+////// RELEASE : (to sonatype/maven central), <'publish and release' - 'publishToSonatypeAndRelease'>
 ///////////////////////////////
-
-println("\tGradle ${project.gradle.gradleVersion} on Java ${JavaVersion.current()}")
 
 plugins {
     java
-    signing
-    `maven-publish`
 
-    // close and release on sonatype
-    id("io.codearte.nexus-staging") version "0.20.0"
+    id("com.dorkbox.GradleUtils") version "1.8"
+    id("com.dorkbox.Licensing") version "2.0"
+    id("com.dorkbox.VersionUpdate") version "1.7"
+    id("com.dorkbox.GradlePublish") version "1.3"
+    id("com.dorkbox.GradleModuleInfo") version "1.0"
 
-    id("com.dorkbox.CrossCompile") version "1.0.1"
-    id("com.dorkbox.Licensing") version "1.4"
-    id("com.dorkbox.VersionUpdate") version "1.4.1"
-    id("com.dorkbox.GradleUtils") version "1.0"
-
-    kotlin("jvm") version "1.3.21"
+    kotlin("jvm") version "1.3.72"
 }
 
 object Extras {
-    // set for the project
-    const val description = "Shell and JVM command execution on Linux, MacOS, or Windows for Java 6+"
+    const val name = "Executor"
+    const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+"
     const val group = "com.dorkbox"
-    const val version = "1.1"
+    const val id = "Executor"
+    const val version = "1.0"
 
-    // set as project.ext
-    const val name = "ShellExecutor"
-    const val id = "ShellExecutor"
     const val vendor = "Dorkbox LLC"
-    const val url = "https://git.dorkbox.com/dorkbox/ShellExecutor"
+    const val vendorUrl = "https://dorkbox.com"
+    const val url = "https://git.dorkbox.com/dorkbox/Executor"
     val buildDate = Instant.now().toString()
 
-    val JAVA_VERSION = JavaVersion.VERSION_1_6.toString()
+    val JAVA_VERSION = JavaVersion.VERSION_11.toString()
+    const val KOTLIN_API_VERSION = "1.3"
+    const val KOTLIN_LANG_VERSION = "1.3"
 
-    var sonatypeUserName = ""
-    var sonatypePassword = ""
+    const val coroutineVer = "1.3.8"
 }
 
 ///////////////////////////////
 /////  assign 'Extras'
 ///////////////////////////////
-description = Extras.description
-group = Extras.group
-version = Extras.version
-
-val propsFile = File("$projectDir/../../gradle.properties").normalize()
-if (propsFile.canRead()) {
-    println("\tLoading custom property data from: [$propsFile]")
-
-    val props = Properties()
-    propsFile.inputStream().use {
-        props.load(it)
-    }
-
-    val extraProperties = Extras::class.declaredMemberProperties.filterIsInstance<KMutableProperty<String>>()
-    props.forEach { (k, v) -> run {
-        val key = k as String
-        val value = v as String
-
-        val member = extraProperties.find { it.name == key }
-        if (member != null) {
-            member.setter.call(Extras::class.objectInstance, value)
-        }
-        else {
-            project.extra.set(k, v)
-        }
-    }}
-}
-
+GradleUtils.load("$projectDir/../../gradle.properties", Extras)
+GradleUtils.fixIntellijPaths()
 
 licensing {
     license(License.APACHE_2) {
-        author(Extras.vendor)
+        description(Extras.description)
         url(Extras.url)
-        note(Extras.description)
+        author(Extras.vendor)
+        extra("ZT Process Executor", License.APACHE_2) {
+            it.url("https://github.com/zeroturnaround/zt-exec")
+            it.copyright(2014)
+            it.author("ZeroTurnaround LLC")
+        }
+        extra("Apache Commons Exec", License.APACHE_2) {
+            it.url("https://commons.apache.org/proper/commons-exec/")
+            it.copyright(2014)
+            it.author("The Apache Software Foundation")
+        }
     }
 }
 
@@ -114,6 +88,29 @@ sourceSets {
             // want to include java files for the source. 'setSrcDirs' resets includes...
             include("**/*.java")
         }
+
+        kotlin {
+            setSrcDirs(listOf("src"))
+
+            // want to include kotlin files for the source. 'setSrcDirs' resets includes...
+            include("**/*.kt")
+        }
+    }
+
+    test {
+        java {
+            setSrcDirs(listOf("test"))
+
+            // want to include java files for the source. 'setSrcDirs' resets includes...
+            include("**/*.java")
+        }
+
+        kotlin {
+            setSrcDirs(listOf("test"))
+
+            // want to include java files for the source. 'setSrcDirs' resets includes...
+            include("**/*.kt")
+        }
     }
 }
 
@@ -121,15 +118,41 @@ repositories {
     mavenLocal() // this must be first!
     jcenter()
 }
-
 ///////////////////////////////
 //////    Task defaults
 ///////////////////////////////
 tasks.withType<JavaCompile> {
+    doFirst {
+        println("\tCompiling classes to Java $sourceCompatibility")
+    }
+
     options.encoding = "UTF-8"
 
     sourceCompatibility = Extras.JAVA_VERSION
     targetCompatibility = Extras.JAVA_VERSION
+}
+
+tasks.withType<KotlinCompile> {
+    doFirst {
+        println("\tCompiling classes to Kotlin, Java ${kotlinOptions.jvmTarget}")
+    }
+
+    sourceCompatibility = Extras.JAVA_VERSION
+    targetCompatibility = Extras.JAVA_VERSION
+
+    // see: https://kotlinlang.org/docs/reference/using-gradle.html
+    kotlinOptions {
+        jvmTarget = Extras.JAVA_VERSION
+        apiVersion = Extras.KOTLIN_API_VERSION
+        languageVersion = Extras.KOTLIN_LANG_VERSION
+
+        freeCompilerArgs = listOf(
+                // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
+                "-Xinline-classes",
+                // enable the use of experimental methods
+                "-Xopt-in=kotlin.RequiresOptIn"
+            )
+    }
 }
 
 tasks.withType<Jar> {
@@ -153,116 +176,72 @@ tasks.jar.get().apply {
     }
 }
 
-tasks.compileJava.get().apply {
-    println("\tCompiling classes to Java $sourceCompatibility")
-}
-
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Extras.coroutineVer}")
+
+    // https://github.com/MicroUtils/kotlin-logging
+    implementation("io.github.microutils:kotlin-logging:1.8.3")  // kotlin wrapper for slf4j
+    implementation("org.slf4j:slf4j-api:1.7.30")
+
+    // MAYBE we use the ANSI console library, which lets us have single character input in the console.
+    // NOTE: THIS IS NOT a hard dependency.
+    compileOnly("com.dorkbox:Console:3.6")
+
+
+    // NOTE: JSCH is no longer maintained.
+    //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
+    // api("com.jcraft:jsch:0.1.55")
+    // NOTE: This SSH implementation works (and is well documented)
+    // https://github.com/hierynomus/sshj
+    implementation("com.hierynomus:sshj:0.29.0")
+
+
+    testImplementation("junit:junit:4.13")
+    testImplementation("ch.qos.logback:logback-classic:1.2.3")
 }
 
-///////////////////////////////
-//////    PUBLISH TO SONATYPE / MAVEN CENTRAL
-//////
-////// TESTING : local maven repo <PUBLISHING - publishToMavenLocal>
-//////
-////// RELEASE : sonatype / maven central, <PUBLISHING - publish> then <RELEASE - closeAndReleaseRepository>
-///////////////////////////////
-val sourceJar = task<Jar>("sourceJar") {
-    description = "Creates a JAR that contains the source code."
 
-    from(sourceSets["main"].java)
+configurations.all {
+    resolutionStrategy {
+        // fail eagerly on version conflict (includes transitive dependencies)
+        // e.g. multiple different versions of the same dependency (group and name are equal)
+        failOnVersionConflict()
 
-    archiveClassifier.set("sources")
-}
+        // if there is a version we specified, USE THAT VERSION (over transitive versions)
+        preferProjectModules()
 
-val javaDocJar = task<Jar>("javaDocJar") {
-    description = "Creates a JAR that contains the javadocs."
+        // cache dynamic versions for 10 minutes
+        cacheDynamicVersionsFor(10 * 60, "seconds")
 
-    archiveClassifier.set("javadoc")
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = Extras.group
-            artifactId = Extras.id
-            version = Extras.version
-
-            from(components["java"])
-
-            artifact(sourceJar)
-            artifact(javaDocJar)
-
-            pom {
-                name.set(Extras.name)
-                description.set(Extras.description)
-                url.set(Extras.url)
-
-                issueManagement {
-                    url.set("${Extras.url}/issues")
-                    system.set("Gitea Issues")
-                }
-                organization {
-                    name.set(Extras.vendor)
-                    url.set("https://dorkbox.com")
-                }
-                developers {
-                    developer {
-                        id.set("dorkbox")
-                        name.set(Extras.vendor)
-                        email.set("email@dorkbox.com")
-                    }
-                }
-                scm {
-                    url.set(Extras.url)
-                    connection.set("scm:${Extras.url}.git")
-                }
-            }
-
-        }
-    }
-
-
-    repositories {
-        maven {
-            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-            credentials {
-                username = Extras.sonatypeUserName
-                password = Extras.sonatypePassword
-            }
-        }
-    }
-
-
-    tasks.withType<PublishToMavenRepository> {
-        onlyIf {
-            publication == publishing.publications["maven"] && repository == publishing.repositories["maven"]
-        }
-    }
-
-    tasks.withType<PublishToMavenLocal> {
-        onlyIf {
-            publication == publishing.publications["maven"]
-        }
-    }
-
-    // output the release URL in the console
-    tasks["releaseRepository"].doLast {
-        val url = "https://oss.sonatype.org/content/repositories/releases/"
-        val projectName = Extras.group.replace('.', '/')
-        val name = Extras.name
-        val version = Extras.version
-
-        println("Maven URL: $url$projectName/$name/$version/")
+        // don't cache changing modules at all
+        cacheChangingModulesFor(0, "seconds")
     }
 }
 
-nexusStaging {
-    username = Extras.sonatypeUserName
-    password = Extras.sonatypePassword
-}
+publishToSonatype {
+    groupId = Extras.group
+    artifactId = Extras.id
+    version = Extras.version
 
-signing {
-    sign(publishing.publications["maven"])
+    name = Extras.name
+    description = Extras.description
+    url = Extras.url
+
+    vendor = Extras.vendor
+    vendorUrl = Extras.vendorUrl
+
+    issueManagement {
+        url = "${Extras.url}/issues"
+        nickname = "Gitea Issues"
+    }
+
+    developer {
+        id = "dorkbox"
+        name = Extras.vendor
+        email = "email@dorkbox.com"
+    }
 }
