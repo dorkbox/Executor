@@ -1,5 +1,70 @@
- - ShellExecutor - 
-   https://git.dorkbox.com/dorkbox/ShellExecutor
-   Copyright 2019 - The Apache Software License, Version 2.0
-     dorkbox, llc
-   Shell and JVM command execution on Linux, MacOS, or Windows for Java 6+
+ - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+
+   https://git.dorkbox.com/dorkbox/Executor
+   Copyright 2020 - The Apache Software License, Version 2.0
+     Dorkbox LLC
+
+   Extra license information
+     - ZT Process Executor - 
+       https://github.com/zeroturnaround/zt-exec
+       Copyright 2014 - The Apache Software License, Version 2.0
+         ZeroTurnaround LLC
+
+     - Apache Commons Exec - 
+       https://commons.apache.org/proper/commons-exec/
+       Copyright 2014 - The Apache Software License, Version 2.0
+         The Apache Software Foundation
+
+     - Kotlin - 
+       https://github.com/JetBrains/kotlin
+       Copyright 2000-2020 - The Apache Software License, Version 2.0
+         JetBrains s.r.o. and Kotlin Programming Language contributors
+       Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
+       See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
+
+     - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
+       https://github.com/Kotlin/kotlinx.coroutines
+       Copyright 2000-2020 - The Apache Software License, Version 2.0
+         JetBrains s.r.o.
+
+     - kotlin-logging - Lightweight logging framework for Kotlin
+       https://github.com/MicroUtils/kotlin-logging
+       Copyright 2016-2020 - The Apache Software License, Version 2.0
+         Ohad Shai
+
+     - SLF4J - Simple facade or abstraction for various logging frameworks
+       http://www.slf4j.org
+       Copyright 2004-2019 - MIT License
+         QOS.ch
+
+     - SSHJ - SSHv2 library for Java
+       https://github.com/hierynomus/sshj
+       Copyright 2009-2020 - The Apache Software License, Version 2.0
+         Jeroen van Erp
+         SSHJ Contributors
+
+       Extra license information
+         - Apache MINA - 
+           https://mina.apache.org/sshd-project/
+           Copyright 2003-2017 - The Apache Software License, Version 2.0
+             The Apache Software Foundation
+
+         - Apache Commons-Net - 
+           https://commons.apache.org/proper/commons-net/
+           Copyright 2001-2017 - The Apache Software License, Version 2.0
+             The Apache Software Foundation
+
+         - JZlib - 
+           http://www.jcraft.com/jzlib
+           Copyright 2002-2008 - The Apache Software License, Version 2.0
+             Atsuhiko Yamanaka
+             JCraft, Inc.
+
+         - Bouncy Castle Crypto - 
+           http://www.bouncycastle.org
+           Copyright 2000-2006 - The Apache Software License, Version 2.0
+             The Legion of the Bouncy Castle Inc
+
+         - ed25519-java - 
+           https://github.com/str4d/ed25519-java
+           Copyright 2020 - Public Domain, per Creative Commons CC0
+             https://github.com/str4d
