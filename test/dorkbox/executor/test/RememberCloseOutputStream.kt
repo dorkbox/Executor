@@ -1,6 +1,7 @@
 /*
- * Copyright 2010 dorkbox, llc
- *
+ * Copyright 2020 dorkbox, llc
+ * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
+
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,34 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dorkbox.executor;
 
-import java.io.IOException;
-import java.io.OutputStream;
+package dorkbox.executor.test
 
-public
-class NullOutputStream extends OutputStream {
-    @Override
-    public
-    void write(int i) throws IOException {
-        //do nothing
-    }
+import java.io.FilterOutputStream
+import java.io.IOException
+import java.io.OutputStream
 
-    @Override
-    public
-    void write(byte[] b) throws IOException {
-        //do nothing
-    }
+open class RememberCloseOutputStream(out: OutputStream?) : FilterOutputStream(out) {
+    @Volatile
+    var isClosed = false
+        private set
 
-    @Override
-    public
-    void write(byte[] b, int off, int len) throws IOException {
-        //do nothing
-    }
-
-    @Override
-    public
-    void flush() throws IOException {
-        //do nothing
+    @Throws(IOException::class)
+    override fun close() {
+        isClosed = true
+        super.close()
     }
 }
