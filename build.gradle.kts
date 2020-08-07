@@ -16,7 +16,6 @@
 
 
 import dorkbox.gradle.kotlin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
 ///////////////////////////////
@@ -25,13 +24,16 @@ import java.time.Instant
 ////// RELEASE : (to sonatype/maven central), <'publish and release' - 'publishToSonatypeAndRelease'>
 ///////////////////////////////
 
+gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
+gradle.startParameter.warningMode = WarningMode.All
+
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.8"
-    id("com.dorkbox.Licensing") version "2.0"
-    id("com.dorkbox.VersionUpdate") version "1.7"
-    id("com.dorkbox.GradlePublish") version "1.3"
+    id("com.dorkbox.GradleUtils") version "1.9"
+    id("com.dorkbox.Licensing") version "2.2"
+    id("com.dorkbox.VersionUpdate") version "2.0"
+    id("com.dorkbox.GradlePublish") version "1.4"
     id("com.dorkbox.GradleModuleInfo") version "1.0"
 
     kotlin("jvm") version "1.3.72"
@@ -47,11 +49,8 @@ object Extras {
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
     const val url = "https://git.dorkbox.com/dorkbox/Executor"
-    val buildDate = Instant.now().toString()
 
-    val JAVA_VERSION = JavaVersion.VERSION_11.toString()
-    const val KOTLIN_API_VERSION = "1.3"
-    const val KOTLIN_LANG_VERSION = "1.3"
+    val buildDate = Instant.now().toString()
 
     const val coroutineVer = "1.3.8"
 }
@@ -61,12 +60,29 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.fixIntellijPaths()
+GradleUtils.defaultResolutionStrategy()
+GradleUtils.compileConfiguration(JavaVersion.VERSION_11) {
+    it.apply {
+        // see: https://kotlinlang.org/docs/reference/using-gradle.html
+        apiVersion = "1.3"
+        languageVersion = "1.3"
+
+        freeCompilerArgs = listOf(
+                // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
+                "-Xinline-classes",
+                // enable the use of experimental methods
+                "-Xopt-in=kotlin.RequiresOptIn"
+        )
+    }
+}
+
 
 licensing {
     license(License.APACHE_2) {
         description(Extras.description)
         url(Extras.url)
         author(Extras.vendor)
+
         extra("ZT Process Executor", License.APACHE_2) {
             it.url("https://github.com/zeroturnaround/zt-exec")
             it.copyright(2014)
@@ -82,13 +98,6 @@ licensing {
 
 sourceSets {
     main {
-        java {
-            setSrcDirs(listOf("src"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java")
-        }
-
         kotlin {
             setSrcDirs(listOf("src"))
 
@@ -109,7 +118,7 @@ sourceSets {
             setSrcDirs(listOf("test"))
 
             // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.kt")
+            include("**/*.java", "**/*.kt")
         }
     }
 }
@@ -117,46 +126,6 @@ sourceSets {
 repositories {
     mavenLocal() // this must be first!
     jcenter()
-}
-///////////////////////////////
-//////    Task defaults
-///////////////////////////////
-tasks.withType<JavaCompile> {
-    doFirst {
-        println("\tCompiling classes to Java $sourceCompatibility")
-    }
-
-    options.encoding = "UTF-8"
-
-    sourceCompatibility = Extras.JAVA_VERSION
-    targetCompatibility = Extras.JAVA_VERSION
-}
-
-tasks.withType<KotlinCompile> {
-    doFirst {
-        println("\tCompiling classes to Kotlin, Java ${kotlinOptions.jvmTarget}")
-    }
-
-    sourceCompatibility = Extras.JAVA_VERSION
-    targetCompatibility = Extras.JAVA_VERSION
-
-    // see: https://kotlinlang.org/docs/reference/using-gradle.html
-    kotlinOptions {
-        jvmTarget = Extras.JAVA_VERSION
-        apiVersion = Extras.KOTLIN_API_VERSION
-        languageVersion = Extras.KOTLIN_LANG_VERSION
-
-        freeCompilerArgs = listOf(
-                // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
-                "-Xinline-classes",
-                // enable the use of experimental methods
-                "-Xopt-in=kotlin.RequiresOptIn"
-            )
-    }
-}
-
-tasks.withType<Jar> {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
 tasks.jar.get().apply {
@@ -197,24 +166,6 @@ dependencies {
 
     testImplementation("junit:junit:4.13")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
-}
-
-
-configurations.all {
-    resolutionStrategy {
-        // fail eagerly on version conflict (includes transitive dependencies)
-        // e.g. multiple different versions of the same dependency (group and name are equal)
-        failOnVersionConflict()
-
-        // if there is a version we specified, USE THAT VERSION (over transitive versions)
-        preferProjectModules()
-
-        // cache dynamic versions for 10 minutes
-        cacheDynamicVersionsFor(10 * 60, "seconds")
-
-        // don't cache changing modules at all
-        cacheChangingModulesFor(0, "seconds")
-    }
 }
 
 publishToSonatype {
