@@ -187,11 +187,6 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:1.8.3")  // kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
 
-    // MAYBE we use the ANSI console library, which lets us have single character input in the console.
-    // NOTE: THIS IS NOT a hard dependency.
-    compileOnly("com.dorkbox:Console:3.6")
-
-
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
     // api("com.jcraft:jsch:0.1.55")

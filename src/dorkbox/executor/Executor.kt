@@ -30,7 +30,6 @@ import dorkbox.executor.processResults.SyncProcessResult
 import dorkbox.executor.stop.DestroyProcessStopper
 import dorkbox.executor.stop.NopProcessStopper
 import dorkbox.executor.stop.ProcessStopper
-import dorkbox.executor.stream.AnsiConsoleLibrary
 import dorkbox.executor.stream.CallerLoggerUtil
 import dorkbox.executor.stream.IOStreamHandler
 import dorkbox.executor.stream.NopPumpStreamHandler
@@ -625,33 +624,17 @@ open class Executor {
      * @return This process executor.
      */
     fun redirectInput(input: InputStream?): Executor {
-        var inputStream: InputStream? = null
-
-        when {
-            input === System.`in` -> {
-                // optionally use "dorkbox.console.Console" to read from System.in as an optional dependency.
-                // The "dorkbox.console.Console" allows us to have interruptable blocking reads from System.in
-                //   -- this is NORMALLY is not possible.
-                //   additionally, it allows us to read individual characters one-at-a-time, instead of the normal behavior of line input.
-                try {
-                    val console: Class<*>? = Class.forName("dorkbox.console.Console")
-                    if (console != null) {
-                        // reassign it
-                        inputStream = AnsiConsoleLibrary.getInputStream()
-                    }
-                } catch (ignored: Exception) {
-                }
-            }
-            input == null -> {
-                inputStream = NopInputStream.INPUT_STREAM
+        val inputStream = when (input) {
+            null -> {
+                NopInputStream.INPUT_STREAM
             }
             else -> {
-                inputStream = input
+                input
             }
         }
 
         // Only set the input stream handler, preserve the same output and error stream handler
-        streams = streams.setInputStream(inputStream!!)
+        streams = streams.setInputStream(inputStream)
         return this
     }
 
