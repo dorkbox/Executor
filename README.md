@@ -51,7 +51,7 @@ Executor().command("java", "-version").start()
 * Output is pumped to NullOutputStream
 
 ```java
-val exit = new Executor().command("java", "-version").startBlocking().getExitValue()
+val exit = Executor().command("java", "-version").startBlocking().getExitValue()
 ```
 
 <hr/>
@@ -59,7 +59,7 @@ val exit = new Executor().command("java", "-version").startBlocking().getExitVal
 * Return output as UTF8 String
 
 ```java
-val output = new Executor().command("java", "-version").readOutput(true).startBlocking().output.utf8()    
+val output = Executor().command("java", "-version").readOutput(true).startBlocking().output.utf8()    
 ```
 
 <hr/>
