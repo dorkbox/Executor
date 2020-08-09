@@ -31,13 +31,13 @@ Release Notes
  
 ## Examples (these are written in kotlin)
 
-* Easiest, and simplest way to get UTF8 output from running an application. This is VERY simple, and designed for quickly running, small
--output applications. For anything just a hint that it might be MORE complex, use the builder pattern with the appropriate configuration. 
+* Easiest, and simplest way to get UTF8 output from running an application. This is VERY simple, and designed for quickly running, small-output applications. For anything just a hint that it might be MORE complex, use the builder pattern with the appropriate configuration. 
 
 ```java
 val output = Executor.run("java", "-version")
 ```
 
+<hr/>
 
 * Output is pumped to NullOutputStream
 
