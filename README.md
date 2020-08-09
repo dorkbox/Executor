@@ -20,8 +20,7 @@ Ironically, there are a considerable number of issues when launching shell/JVM p
 
 
 This project is powerful but still simple to use. By using a single class **Executor**
-the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons
--exec/), along with the ability to fork the currently running JVM process and remotely execute commands via SSH. 
+the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/), along with the ability to fork the currently running JVM process and remotely execute commands via SSH. 
 
 
 &nbsp; 
