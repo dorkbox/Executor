@@ -40,7 +40,7 @@ class ProcessExecutorHelloWorldTest {
     @Throws(Exception::class)
     fun testReadOutputAndError() {
         val output: String = runBlocking {
-            helloWorld().readOutput()
+            helloWorld().enableRead()
                 .start().output.utf8()
         }
 
@@ -51,7 +51,7 @@ class ProcessExecutorHelloWorldTest {
     @Throws(Exception::class)
     fun testReadOutputOnly() {
         val output: String = runBlocking {
-            helloWorld().readOutput()
+            helloWorld().enableRead()
                 .redirectErrorStream(false)
                 .start().output.utf8()
         }
@@ -94,7 +94,7 @@ class ProcessExecutorHelloWorldTest {
 
         val output: String = runBlocking {
             helloWorld().redirectOutput(out)
-                .readOutput()
+                .enableRead()
                 .start().output.utf8()
         }
 
@@ -124,7 +124,7 @@ class ProcessExecutorHelloWorldTest {
         val output: String = runBlocking {
             helloWorld().redirectOutput(out)
                 .redirectErrorStream(false)
-                .readOutput()
+                .enableRead()
                 .start().output.utf8()
         }
 
@@ -154,7 +154,7 @@ class ProcessExecutorHelloWorldTest {
         val output: String = runBlocking {
             helloWorld().redirectError(err)
                 .redirectErrorStream(false)
-                .readOutput()
+                .enableRead()
                 .start().output.utf8()
         }
 
@@ -189,7 +189,7 @@ class ProcessExecutorHelloWorldTest {
             helloWorld().redirectOutput(out)
                 .redirectError(err)
                 .redirectErrorStream(false)
-                .readOutput()
+                .enableRead()
                 .start().output.utf8()
         }
 

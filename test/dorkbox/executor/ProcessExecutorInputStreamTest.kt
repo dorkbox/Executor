@@ -32,6 +32,25 @@ import java.util.concurrent.TimeUnit
 class ProcessExecutorInputStreamTest {
     @Test
     @Throws(Exception::class)
+    fun testWritingToProcess() {
+        val str = "Tere Minu Uus vihik"
+        val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
+        exec.enableRead()
+
+        val output = runBlocking {
+            val async = exec.startAsShellAsync()
+
+            async.writeLine(str)
+            async.write("\n\n\n")
+            async.await()
+            async.output.utf8()
+        }
+
+        Assert.assertEquals(str, output)
+    }
+
+    @Test
+    @Throws(Exception::class)
     fun testWithInputAndRedirectOutput() {
         val str = "Tere Minu Uus vihik"
         val bais = ByteArrayInputStream(str.toByteArray() + "\n\n\n".toByteArray()) // PrintInputToOutput processes at most 3 lines. triggers the java side to exit

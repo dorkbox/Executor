@@ -57,7 +57,7 @@ class ProcessOutput(private val bytes_: ByteArray) {
      * @return output of the finished process converted to UTF-8 String.
      */
     fun utf8(): String {
-            return getString(Charsets.UTF_8)
+            return string(Charsets.UTF_8)
         }
 
     /**
@@ -67,7 +67,7 @@ class ProcessOutput(private val bytes_: ByteArray) {
      *
      * @throws IllegalStateException if the char set was not supported.
      */
-    fun getString(charset: Charset): String {
+    fun string(charset: Charset): String {
         return try {
             String(bytes_, charset)
         } catch (e: UnsupportedEncodingException) {
@@ -95,6 +95,6 @@ class ProcessOutput(private val bytes_: ByteArray) {
      * @return output lines of the finished process converted using a given char set.
      */
     fun getLines(charset: Charset): List<String> {
-        return getLinesFrom(getString(charset))
+        return getLinesFrom(string(charset))
     }
 }

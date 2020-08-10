@@ -39,7 +39,7 @@ class ProcessExecutorCancelJavaTest {
     fun testStart() {
         runBlocking {
             val asyncProcess = Executor()
-                .readOutput()
+                .enableRead()
                 .asJvmProcess()
                 .setMainClass(javaCommand)
                 .start().output.utf8()

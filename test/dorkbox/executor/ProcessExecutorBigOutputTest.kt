@@ -75,7 +75,7 @@ class ProcessExecutorBigOutputTest {
     @Throws(Exception::class)
     fun testReadOutputAndError() {
         val output: String = bigOutput()
-                                .readOutput()
+                                .enableRead()
                                 .highPerformanceIO()
                                 .startBlocking()
                                 .output.utf8()
@@ -87,7 +87,7 @@ class ProcessExecutorBigOutputTest {
     @Throws(Exception::class)
     fun testReadOutputOnly() {
         val output: String = bigOutput()
-                                .readOutput()
+                                .enableRead()
                                 .redirectErrorStream(false)
                                 .startBlocking()
                                 .output.utf8()

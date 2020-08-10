@@ -41,7 +41,7 @@ class InputStreamPumperTest {
         val handler = PumpStreamHandler(baos, System.err, bais)
 
         val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
-            .readOutput()
+            .enableRead()
         exec.streams(handler)
 
         val result: String = runBlocking {
@@ -58,7 +58,7 @@ class InputStreamPumperTest {
         val bais = ByteArrayInputStream((str + "\n\n\n").toByteArray()) // 3\n necessary to tell the java side to stop
 
         val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
-            .readOutput()
+            .enableRead()
             .redirectInput(bais)
 
         val result: String = runBlocking {

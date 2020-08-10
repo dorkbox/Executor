@@ -87,6 +87,6 @@ class ProcessExecutorCommandLineTest {
         command.addAll(listOf("java", TestSetup.getFile(PrintArguments::class.java)))
         command.addAll(listOf(*args))
         return Executor(command)
-            .readOutput()
+            .enableRead()
     }
 }

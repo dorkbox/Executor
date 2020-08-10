@@ -21,6 +21,6 @@ import org.junit.Test
 class TestShell {
     @Test
     fun testPing() {
-        println(Executor().command("ping 1.1.1.1").readOutput().startAsShellBlocking().output.utf8())
+        println(Executor().command("ping 1.1.1.1").enableRead().startAsShellBlocking().output.utf8())
     }
 }

@@ -59,7 +59,7 @@ val exit = Executor().command("java", "-version").startBlocking().getExitValue()
 * Return output as UTF8 String
 
 ```java
-val output = Executor().command("java", "-version").readOutput(true).startBlocking().output.utf8()    
+val output = Executor().command("java", "-version").enableRead().startBlocking().output.utf8()    
 ```
 
 <hr/>
@@ -103,7 +103,7 @@ Executor()
 val output = Executor()
                 .command("java", "-version")
                 .redirectOutput(Slf4jStream.asInfo())
-                .readOutput()
+                .enableRead()
                 .start()
                 .output.utf8()
 ```
@@ -117,7 +117,7 @@ val output = Executor()
 val output = Executor()
                 .command("java", "-version")
                 .redirectError(Slf4jStream.asInfo())
-                .readOutput()
+                .enableRead()
                 .start()
                 .output.utf8()
 ```
@@ -175,7 +175,7 @@ Executor()
 ```java
 val result = Executor()
     .command("java", "-version")
-    .readOutput()
+    .enableRead()
     .startAsync()
 
 runBlocking {
@@ -251,7 +251,7 @@ try {
     output = runBlocking {
         Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
             .exitValues(3)
             .start()
             .output.utf8()
@@ -285,7 +285,7 @@ deferredProcess.awaitBlocking(60, TimeUnit.SECONDS)
 ```java
 val deferredProcess = Executor()
     .command("java", "-version")
-    .readOutput()
+    .enableRead()
     .startAsync()
 
 //do some stuff

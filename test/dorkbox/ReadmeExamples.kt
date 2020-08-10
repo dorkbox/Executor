@@ -65,7 +65,7 @@ internal class ReadmeExamples {
         return runBlocking {
             Executor()
                 .command("java", "-version")
-                .readOutput()
+                .enableRead()
                 .start()
                 .output.utf8()
         }
@@ -75,7 +75,7 @@ internal class ReadmeExamples {
         runBlocking {
             println(Executor()
                         .command("java", "-version")
-                        .readOutput()
+                        .enableRead()
                         .startAsShell()
                         .output.utf8())
         }
@@ -107,7 +107,7 @@ internal class ReadmeExamples {
             Executor()
                 .command("java", "-version")
                 .redirectOutput(Slf4jStream.asInfo())
-                .readOutput()
+                .enableRead()
                 .start()
                 .output.utf8()
         }
@@ -119,7 +119,7 @@ internal class ReadmeExamples {
             Executor()
                 .command("java", "-version")
                 .redirectError(Slf4jStream.asInfo())
-                .readOutput()
+                .enableRead()
                 .start()
                 .output.utf8()
         }
@@ -167,7 +167,7 @@ internal class ReadmeExamples {
     fun pumpOutputToLogStreamV2() {
         val result = Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
             .startAsync()
 
         runBlocking {
@@ -234,7 +234,7 @@ internal class ReadmeExamples {
             output = runBlocking {
                 Executor()
                     .command("java", "-version")
-                    .readOutput()
+                    .enableRead()
                     .exitValues(3)
                     .start()
                     .output.utf8()
@@ -260,7 +260,7 @@ internal class ReadmeExamples {
     fun startInBackgroundAndGetOutput(): String {
         val deferredProcess = Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
             .startAsync()
 
         //do some stuff

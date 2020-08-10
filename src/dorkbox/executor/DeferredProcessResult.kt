@@ -34,6 +34,7 @@ import java.io.IOException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.text.Charsets.UTF_8
 
 internal data class Params(
         /**
@@ -76,6 +77,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                                                  private val createProcessResults: (Long, Int) -> SyncProcessResult) {
 
     companion object {
+        private val EOL = "\n".toByteArray(UTF_8)
         private val log = KotlinLogging.logger {}
 
         /**
@@ -443,8 +445,38 @@ class DeferredProcessResult internal constructor(private val process: Process,
 
     /**
      * Gets the PID for the currently running process. This doesn't make sense for remotely executed processes (which return 0)
+     *
+     *  SOMETIMES, this PID is invalid because it can be recycled by linux!
+     * see: http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6469606
+     *
+     * @return 0 if there is no PID (failure to start the process)
      */
     val pid = process.pid()
+
+    /**
+     * Writes the string to the process and send EOL in a safe way
+     */
+    fun writeLine(command: String) {
+        val outputStream = process.outputStream
+        outputStream.write(command.toByteArray(UTF_8))
+        outputStream.write(EOL)
+        outputStream.flush()
+    }
+
+    /**
+     * Writes the string to the process in a safe way
+     */
+    fun write(command: String) {
+        write(command.toByteArray(UTF_8))
+    }
+
+    /**
+     * Writes the bytes to the process in a safe way
+     */
+    fun write(bytes: ByteArray) {
+        process.outputStream.write(bytes)
+        process.outputStream.flush()
+    }
 
     /**
      * Cancel waiting for this process to complete

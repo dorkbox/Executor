@@ -25,7 +25,7 @@ class ProcessSshTest {
     fun testConnect() {
         val process = runBlocking {
             Executor()
-                .readOutput()
+                .enableRead()
                 .asSshProcess()
                 .disableStrictHostChecking()
                 .host("1.2.3.4")

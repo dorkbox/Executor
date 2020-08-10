@@ -135,7 +135,7 @@ class ProcessExecutorMainTest {
         val result = runBlocking {
             Executor()
                 .command("java", "-version")
-                .readOutput()
+                .enableRead()
                 .start()
         }
 
@@ -147,7 +147,7 @@ class ProcessExecutorMainTest {
     fun testJavaVersionOutputTwice() {
         val executor: Executor = Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
 
         val result = runBlocking {
             executor.start()
@@ -167,7 +167,7 @@ class ProcessExecutorMainTest {
     fun testJavaVersionOutputFuture() {
         val result = Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
             .startAsync()
             .awaitBlocking()
 
@@ -194,7 +194,7 @@ class ProcessExecutorMainTest {
             Executor()
                 .command("java", "-version")
                 .redirectOutput(Slf4jStream.asInfo())
-                .readOutput()
+                .enableRead()
                 .start()
         }
 
@@ -208,7 +208,7 @@ class ProcessExecutorMainTest {
         val result = Executor()
             .command("java", "-version")
             .redirectOutput(Slf4jStream.asInfo())
-            .readOutput()
+            .enableRead()
             .startAsync()
             .awaitBlocking()
 
@@ -221,7 +221,7 @@ class ProcessExecutorMainTest {
         // Just expect no errors
         val result = Executor()
             .command("java", "-version")
-            .readOutput()
+            .enableRead()
             .startAsync()
 
         runBlocking {
@@ -296,7 +296,7 @@ class ProcessExecutorMainTest {
 
         val exec = Executor(args)
         val result = runBlocking {
-            exec.readOutput()
+            exec.enableRead()
                 .start()
         }
 
@@ -314,7 +314,7 @@ class ProcessExecutorMainTest {
         exec.command(args)
 
         val result = runBlocking {
-            exec.readOutput()
+            exec.enableRead()
                 .start()
         }
         Assert.assertEquals("Hello world!", result.output.utf8())
@@ -331,7 +331,7 @@ class ProcessExecutorMainTest {
         exec.command(args)
 
         val result = runBlocking {
-            exec.readOutput()
+            exec.enableRead()
                 .start()
         }
 

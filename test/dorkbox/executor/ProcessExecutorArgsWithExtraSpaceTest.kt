@@ -37,7 +37,7 @@ class ProcessExecutorArgsWithExtraSpaceTest {
     @Throws(Exception::class)
     fun testReadOutputAndError() {
         val output: String = runBlocking {
-            argumentsAsList("arg1 arg2  arg3").readOutput()
+            argumentsAsList("arg1 arg2  arg3").enableRead()
                 .start().output.utf8()
         }
         Assert.assertEquals("[arg1, arg2, arg3]", output)

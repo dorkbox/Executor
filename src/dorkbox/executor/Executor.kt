@@ -142,7 +142,7 @@ open class Executor {
         fun run(command: Iterable<String>): String {
             return Executor()
                 .command(command)
-                .readOutput()
+                .enableRead()
                 .startBlocking()
                 .output.utf8()
         }
@@ -153,7 +153,7 @@ open class Executor {
         fun run(vararg command: String): String {
             return Executor()
                 .command(listOf(*command))
-                .readOutput()
+                .enableRead()
                 .startBlocking()
                 .output.utf8()
         }
@@ -612,18 +612,21 @@ open class Executor {
     }
 
     /**
-     * Permits explicitly reading the output from this process. If the process is started via [Executor.startAsync], then reading the
-     * process output will be **BLOCKING**. If the process is started via [Executor.start], the reading the process output
-     * will occur once the process as exited (and it doesn't matter if reading the output is blocking or not).
+     * Explicitly permit reading the output from this process.
      *
-     * If you set and output stream manually - you can read the output as you choose. This method exists to make it easier to read the
+     * If the process is started via [Executor.startAsync], then reading the process output will be **BLOCKING**.
+     *
+     * If the process is started via [Executor.start], the reading the process output will occur once the process has
+     * exited (and it doesn't matter if reading the output is blocking or not).
+     *
+     * If you set the output stream manually - you can read the output as you choose. This method exists to make it easier to read the
      * output.
      *
      * By default, the process output is discarded
      *
      * @return This process executor.
      */
-    fun readOutput(): Executor {
+    fun enableRead(): Executor {
         this.readOutput = true
         return this
     }

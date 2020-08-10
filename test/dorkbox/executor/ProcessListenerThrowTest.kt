@@ -32,7 +32,7 @@ class ProcessListenerThrowTest {
     fun testJavaVersion() {
         runBlocking {
             Executor("java", "-version")
-                .readOutput()
+                .enableRead()
                 .addListener(ProcessListenerThrowImpl())
                 .start()
         }
@@ -43,7 +43,7 @@ class ProcessListenerThrowTest {
     fun testJavaVersionWithTimeout() {
         runBlocking {
             Executor("java", "-version")
-                .readOutput()
+                .enableRead()
                 .addListener(ProcessListenerThrowImpl())
                 .timeout(1, TimeUnit.MINUTES)
                 .start()

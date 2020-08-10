@@ -61,7 +61,7 @@ class InputRedirectTest {
         // Test that we don't get IOException: Stream closed
         val exit: Int = runBlocking {
             exec.redirectInput(bais)
-                .readOutput()
+                .enableRead()
                 .start()
                 .getExitValue()
         }
@@ -70,7 +70,7 @@ class InputRedirectTest {
     }
 }
 
-// 00:22:59.583 [main @coroutine#1] DEBUG orgWIP.zeroturnaround.exec.ProcessExecutor - Executing [D:\Code\dorkbox\public_projects_libraries\ShellExecutor\test\orgWIP\zeroturnaround\exec\test\samples\true.exe].
+// 00:22:59.583 [main @coroutine#1] DEBUG orgWIP.zeroturnaround.exec.ProcessExecutor - Executing [D:\Code\dorkbox\public_projects_libraries\Executor\test\orgWIP\zeroturnaround\exec\test\samples\true.exe].
 //00:22:59.594 [main @coroutine#1] DEBUG orgWIP.zeroturnaround.exec.ProcessExecutor - Started Process[pid=6312, exitValue="not exited"]
 //00:22:59.611 [main @coroutine#1] DEBUG orgWIP.zeroturnaround.exec.ProcessHandler - Process[pid=6312, exitValue=0] stopped with exit code 0
 //00:22:59.617 [DefaultDispatcher-worker-4 @coroutine#2] ERROR orgWIP.zeroturnaround.exec.stream.InputStreamPumper - Got exception while reading/writing the stream
