@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 class ProcessExecutorInputStreamTest {
     @Test
     @Throws(Exception::class)
-    fun testWritingToProcess() {
+    fun testWritingToProcessAndReadingAfterProcessQuit() {
         val str = "Tere Minu Uus vihik"
         val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
         exec.enableRead()
