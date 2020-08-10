@@ -327,7 +327,7 @@ class ProcessExecutorMainTest {
         val args = listOf("java", TestSetup.getFile(HelloWorld::class.java))
 
         val exec: Executor = Executor()
-            .directory(TestSetup.getParentDir(HelloWorld::class.java))
+            .workingDirectory(TestSetup.getParentDir(HelloWorld::class.java))
         exec.command(args)
 
         val result = runBlocking {

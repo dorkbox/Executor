@@ -244,11 +244,11 @@ open class Executor {
 
             return if (allowedExit != null) {
                 ProcessAttributes(getCommand(),
-                                                                  getDirectory(),
-                                                                  LinkedHashMap(environment),
-                                                                  allowedExit.toSet())
+                                  getWorkingDirectory(),
+                                  LinkedHashMap(environment),
+                                  allowedExit.toSet())
             } else {
-                ProcessAttributes(getCommand(), getDirectory(), LinkedHashMap(environment))
+                ProcessAttributes(getCommand(), getWorkingDirectory(), LinkedHashMap(environment))
             }
         }
 
@@ -391,14 +391,13 @@ open class Executor {
      *
      *
      * Subprocesses subsequently started by this object will use this as their working directory.
-     * The returned value may be `null` -- this means to use
-     * the working directory of the current Java process, usually the
-     * directory named by the system property `user.dir`,
-     * as the working directory of the child process.
+     *
+     * The returned value may be `null` -- this means to use the working directory of the current Java process, usually the
+     * directory named by the system property `user.dir` as the working directory of the child process.
      *
      * @return this process executor's working directory
      */
-    fun getDirectory(): File? {
+    fun getWorkingDirectory(): File? {
         return builder.directory()
     }
 
@@ -414,7 +413,7 @@ open class Executor {
      *
      * @return This process executor.
      */
-    fun directory(directory: File?): Executor {
+    fun workingDirectory(directory: File?): Executor {
         builder.directory(directory)
         return this
     }
@@ -430,7 +429,7 @@ open class Executor {
      *
      * @return This process executor.
      */
-    fun directory(directory: String?): Executor {
+    fun workingDirectory(directory: String?): Executor {
         if (directory != null) {
             builder.directory(File(directory))
         } else {
