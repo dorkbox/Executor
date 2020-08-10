@@ -119,9 +119,9 @@ open class Executor {
          * http://bugs.java.com/view_bug.do?bug_id=7028124
          * https://bugs.openjdk.java.net/browse/JDK-6518827
          */
-        internal fun fixArguments(command: List<String>): List<String> {
+        internal fun fixArguments(command: Iterable<String>): List<String> {
             if (!IS_OS_WINDOWS) {
-                return command
+                return command.toList()
             }
 
             val result = mutableListOf<String>().apply{ addAll(command) }
@@ -357,16 +357,31 @@ open class Executor {
     }
 
     /**
-     * Add a program (or it's arguments) which are being executed.
+     * Add arguments to an existing command, which will be executed.
      *
      * This does not replace commands, it adds to them
      *
-     * @param command A string array containing the program and/or its arguments.
+     * @param arguments A string array containing the program and/or its arguments.
      *
      * @return This process executor.
      */
-    fun addCommand(vararg command: String): Executor {
-        val fixed = fixArguments(listOf(*command))
+    fun addArg(vararg arguments: String): Executor {
+        val fixed = fixArguments(listOf(*arguments))
+        builder.command().addAll(fixed)
+        return this
+    }
+
+    /**
+     * Add arguments to an existing command, which will be executed.
+     *
+     * This does not replace commands, it adds to them
+     *
+     * @param arguments A string array containing the program and/or its arguments.
+     *
+     * @return This process executor.
+     */
+    fun addArg(arguments: Iterable<String>): Executor {
+        val fixed = fixArguments(arguments)
         builder.command().addAll(fixed)
         return this
     }

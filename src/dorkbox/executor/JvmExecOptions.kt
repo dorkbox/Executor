@@ -252,6 +252,34 @@ class JvmExecOptions(private val executor: Executor) {
     }
 
     /**
+     * Add arguments to an existing command, which will be executed.
+     *
+     * This does not replace commands, it adds to them
+     *
+     * @param arguments A string array containing the program and/or its arguments.
+     *
+     * @return This process executor.
+     */
+    fun addArg(vararg arguments: String): JvmExecOptions {
+        executor.addArg(*arguments)
+        return this
+    }
+
+    /**
+     * Add arguments to an existing command, which will be executed.
+     *
+     * This does not replace commands, it adds to them
+     *
+     * @param arguments A string array containing the program and/or its arguments.
+     *
+     * @return This process executor.
+     */
+    fun addArg(arguments: Iterable<String>): JvmExecOptions {
+        executor.addArg(arguments)
+        return this
+    }
+
+    /**
      * Executes the JAVA sub process.
      *
      * This method waits until the process exits, a timeout occurs or the caller thread gets interrupted.
