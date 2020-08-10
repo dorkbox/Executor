@@ -30,8 +30,8 @@ open class SyncProcessResult(
          * Gets the PID for the currently running process. This doesn't make sense for remotely executed processes (which return 0)
          */
         val pid: Long,
-        private val exitValue: Int, private val out: ByteArray) :
-        ProcessResult {
+        private val exitValue: Int,
+        private val out: ByteArray) : ProcessResult {
 
     /**
      * @return the exit value of the finished process.

@@ -21,6 +21,7 @@ package dorkbox.executor.processResults
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.yield
 import java.io.ByteArrayOutputStream
 import java.io.UnsupportedEncodingException
@@ -31,7 +32,7 @@ import java.nio.charset.Charset
  *
  * @param channel Channel containing the async process output.
  */
-open class AsyncProcessOutput(private val channel: Channel<Byte>) {
+open class AsyncProcessOutput(private val channel: Channel<Byte>, private val processResult: SyncProcessResult?) {
     companion object {
         private val NEW_LINE_WIN = "\r".toCharArray().first().toInt()
         private val NEW_LINE_NIX = "\n".toCharArray().first().toInt()
@@ -47,6 +48,7 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>) {
     var previousValue: Int? = null
 
     private suspend fun getBuffered(): ByteArray {
+        // if the process has FINISHED running, then we have to get the output a different way
         val out = ByteArrayOutputStream()
 
         if (previousValue != null) {
@@ -55,24 +57,38 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>) {
         }
 
         var toInt: Int
-        while (true) {
-            toInt = channel.receive().toInt()
-
-            if (toInt == NEW_LINE_WIN) {
-                // do we have a *nix line also?
+        try {
+            while (true) {
                 toInt = channel.receive().toInt()
 
-                if (toInt != NEW_LINE_NIX) {
-                    // whoops, save this
-                    previousValue = toInt
-                }
+                if (toInt == NEW_LINE_WIN) {
+                    // do we have a *nix line also?
+                    toInt = channel.receive().toInt()
 
-                // now return the output.
-                break
-            } else {
-                // save this!
-                out.write(toInt)
-                yield()
+                    if (toInt != NEW_LINE_NIX) {
+                        // whoops, save this
+                        previousValue = toInt
+                    }
+
+                    // now return the output.
+                    break
+                } else {
+                    // save this!
+                    out.write(toInt)
+                    yield()
+                }
+            }
+        } catch (ignored: ClosedReceiveChannelException) {
+            // the process closed. Read the output from the processResult (if it was defined)
+            // The processResult is defined when the process exits.
+            val internalBytes = processResult?.output?.bytes_
+            if (internalBytes != null) {
+                if (out.size() == 0) {
+                    return internalBytes
+                }
+                else {
+                    out.writeBytes(internalBytes)
+                }
             }
         }
 

@@ -437,7 +437,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
     val output: AsyncProcessOutput by lazy {
         if (params.asyncProcessStart) {
             val channel = (params.streams as PumpStreamHandler).channel
-            AsyncProcessOutput(channel)
+            AsyncProcessOutput(channel, processResult)
         } else {
             throw IllegalArgumentException("Cannot get synchronous output, the process must be started asynchronously (something is wrong!)")
         }

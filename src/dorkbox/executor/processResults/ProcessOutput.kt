@@ -28,7 +28,7 @@ import java.util.*
  *
  * @param bytes_ Process output as bytes
  */
-class ProcessOutput(private val bytes_: ByteArray) {
+class ProcessOutput(internal val bytes_: ByteArray) {
     companion object {
         fun getLinesFrom(output: String): List<String> {
             // NOTE: this DOES NOT work if there are double-empty-lines in the middle.
