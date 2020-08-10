@@ -417,7 +417,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                     }
                 }
 
-                channel.close(IOException("Channel closed"))
+                channel.close()
 
                 // we have a new output, since we had to read it from the async channel
                 SyncProcessResult(process.pid(), exitCode, out.toByteArray())
