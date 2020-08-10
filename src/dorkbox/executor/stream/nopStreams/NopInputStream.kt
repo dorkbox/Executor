@@ -27,6 +27,10 @@ class NopInputStream : InputStream() {
         val INPUT_STREAM = NopInputStream()
     }
 
+    override fun available(): Int {
+        return 0
+    }
+
     override fun read(): Int {
         return -1
     }
