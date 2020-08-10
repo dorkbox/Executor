@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("UNUSED_PARAMETER", "unused", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+
 package dorkbox
 
 import dorkbox.executor.Executor
@@ -22,6 +24,7 @@ import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.processResults.SyncProcessResult
 import dorkbox.executor.stream.LogOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jStream
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.slf4j.LoggerFactory
@@ -163,6 +166,7 @@ internal class ReadmeExamples {
         }
     }
 
+    @ExperimentalCoroutinesApi
     @Throws(Exception::class)
     fun pumpOutputToLogStreamV2() {
         val result = Executor()
@@ -230,19 +234,19 @@ internal class ReadmeExamples {
     @Throws(Exception::class)
     fun checkExitCodeAndGetOutput() {
         var output: String
-        try {
-            output = runBlocking {
-                Executor()
-                    .command("java", "-version")
+        output = try {
+            runBlocking {
+                Executor().command("java", "-version")
                     .enableRead()
                     .exitValues(3)
-                    .start()
-                    .output.utf8()
+                    .start().output.utf8()
             }
         } catch (e: InvalidExitValueException) {
             println("Process exited with " + e.exitValue)
-            output = (e.result as SyncProcessResult).output.utf8()
+            (e.result as SyncProcessResult).output.utf8()
         }
+
+        println(output)
     }
 
     @Throws(Exception::class)
