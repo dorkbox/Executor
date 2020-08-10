@@ -23,7 +23,6 @@ package dorkbox.executor
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.exceptions.ProcessInitException
 import dorkbox.executor.listener.*
-import dorkbox.executor.processResults.AsyncProcessResult
 import dorkbox.executor.processResults.NopProcessResult
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult
@@ -214,7 +213,7 @@ open class Executor {
     private var closeTimeoutUnit: TimeUnit = TimeUnit.SECONDS
 
     /**
-     * `true` if the process output should be read to a buffer and returned by [SyncProcessResult] or [AsyncProcessResult]
+     * `true` if the process output should be read to a buffer and returned by [SyncProcessResult] or [DeferredProcessResult]
      */
     private var readOutput = false
 
@@ -1487,4 +1486,3 @@ open class Executor {
         return deferred
     }
 }
-
