@@ -82,11 +82,9 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>) {
     /**
      * @return output of the finished process converted to a String using platform's default encoding.
      */
-    val string: String
-        get() {
-//            return String(getBuffered())
-            return ""
-        }
+    suspend fun string(): String {
+        return String(getBuffered())
+    }
 
     /**
      * @return output of the finished process converted to UTF-8 String.
@@ -108,5 +106,28 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>) {
         } catch (e: UnsupportedEncodingException) {
             throw IllegalStateException(e.message)
         }
+    }
+
+    /**
+     * @return output lines of the finished process converted using platform's default encoding.
+     */
+    suspend fun lines(): List<String> {
+        return ProcessOutput.getLinesFrom(string())
+    }
+
+    /**
+     * @return output lines of the finished process converted using UTF-8.
+     */
+    suspend fun linesAsUtf8(): List<String> {
+        return ProcessOutput.getLinesFrom(utf8())
+    }
+
+    /**
+     * @param charset The name of a supported char set.
+     *
+     * @return output lines of the finished process converted using a given char set.
+     */
+    suspend fun getLines(charset: Charset): List<String> {
+        return ProcessOutput.getLinesFrom(getString(charset))
     }
 }
