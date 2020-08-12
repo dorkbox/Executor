@@ -298,9 +298,6 @@ class PumpStreamHandler(out: OutputStream = System.out,
             }
         } catch (closingException: CancellationException) {
             // ignored, since we are explicitly closing the coroutine
-            log.error("pow")
-        } catch (e: Exception) {
-            log.error("pow!!")
         }
     }
 
@@ -370,9 +367,6 @@ class PumpStreamHandler(out: OutputStream = System.out,
             }
         } catch (closingException: CancellationException) {
             // ignored, since we are explicitly closing the coroutine
-            log.error("powaaaaa")
-        } catch (e: Exception) {
-            log.error("pow!!aaaaaaaa")
         }
     }
 
@@ -437,8 +431,6 @@ class PumpStreamHandler(out: OutputStream = System.out,
         } catch (closingException: CancellationException) {
             // ignored, since we are explicitly closing the coroutine
             log.error("pow")
-        } catch (e: Exception) {
-            log.error("pow!!")
         }
     }
 
@@ -501,9 +493,6 @@ class PumpStreamHandler(out: OutputStream = System.out,
             }
         } catch (closingException: CancellationException) {
             // ignored, since we are explicitly closing the coroutine
-            log.error("powbbbbbb")
-        } catch (e: Exception) {
-            log.error("pow!!cccccc")
         }
     }
 
