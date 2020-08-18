@@ -30,13 +30,13 @@ gradle.startParameter.warningMode = WarningMode.All
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.9"
+    id("com.dorkbox.GradleUtils") version "1.10"
     id("com.dorkbox.Licensing") version "2.2"
     id("com.dorkbox.VersionUpdate") version "2.0"
-    id("com.dorkbox.GradlePublish") version "1.4"
+    id("com.dorkbox.GradlePublish") version "1.5"
     id("com.dorkbox.GradleModuleInfo") version "1.0"
 
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
 }
 
 object Extras {
@@ -147,10 +147,7 @@ tasks.jar.get().apply {
 
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Extras.coroutineVer}")
 
     // https://github.com/MicroUtils/kotlin-logging
     implementation("io.github.microutils:kotlin-logging:1.8.3")  // kotlin wrapper for slf4j
@@ -161,7 +158,7 @@ dependencies {
     // api("com.jcraft:jsch:0.1.55")
     // NOTE: This SSH implementation works (and is well documented)
     // https://github.com/hierynomus/sshj
-    implementation("com.hierynomus:sshj:0.29.0")
+    implementation("com.hierynomus:sshj:0.30.0")
 
 
     testImplementation("junit:junit:4.13")
