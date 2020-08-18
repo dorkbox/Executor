@@ -52,7 +52,7 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.3.8"
+    const val coroutineVer = "1.3.9"
 }
 
 ///////////////////////////////
