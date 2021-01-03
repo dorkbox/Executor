@@ -24,12 +24,12 @@ import org.junit.Assert
 import org.junit.Test
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
 /**
  * Tests passing command line arguments to a Java process.
  */
-class ProcessExecutorCommandLineTest {
+class CommandLineTest {
     @Test
     @Throws(Exception::class)
     fun testOneArg() {

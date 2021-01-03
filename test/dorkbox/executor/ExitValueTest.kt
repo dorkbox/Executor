@@ -24,9 +24,9 @@ import dorkbox.executor.samples.ExitLikeABoss
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
-class ProcessExecutorExitValueTest {
+class ExitValueTest {
     companion object {
         private fun exitLikeABoss(exitValue: Int): List<String> {
             return listOf("java", TestSetup.getFile(ExitLikeABoss::class.java), exitValue.toString())

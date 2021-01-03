@@ -27,7 +27,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.OutputStream
 
-class ProcessExecutorLoggerTest {
+class LoggerTest {
     @Test
     @Throws(Exception::class)
     fun testFullName() {

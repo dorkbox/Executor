@@ -31,7 +31,7 @@ import org.junit.Assert
 import org.junit.Test
 import java.util.*
 
-class ProcessExecutorCancelTest {
+class CancelTest {
     private val writerLoopCommand: List<String> by lazy {
         listOf("java", TestSetup.getFile(Loop::class.java))
     }

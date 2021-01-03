@@ -35,7 +35,7 @@ import java.io.ByteArrayOutputStream
  *
  * @see HelloWorld
  */
-class ProcessExecutorHelloWorldTest {
+class HelloWorldTest {
     @Test
     @Throws(Exception::class)
     fun testReadOutputAndError() {

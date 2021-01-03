@@ -17,7 +17,7 @@
 
 package dorkbox.executor
 
-import dorkbox.executor.ProcessListenerSuccessTest.ProcessListenerImpl
+import dorkbox.executor.SuccessTest.ProcessListenerImpl
 import dorkbox.executor.exceptions.InvalidOutputException
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult

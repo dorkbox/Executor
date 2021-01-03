@@ -27,10 +27,9 @@ import org.hamcrest.MatcherAssert
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
-class ProcessExecutorTimeoutTest {
+class TimeoutTest {
     private val writerLoopCommand: List<String> by lazy {
         listOf("java", TestSetup.getFile(Loop::class.java))
     }

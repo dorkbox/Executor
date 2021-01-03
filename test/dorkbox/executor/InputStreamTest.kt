@@ -29,7 +29,7 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.concurrent.TimeUnit
 
-class ProcessExecutorInputStreamTest {
+class InputStreamTest {
     @Test
     @Throws(Exception::class)
     fun testWritingToProcessAndReadingAfterProcessQuit() {

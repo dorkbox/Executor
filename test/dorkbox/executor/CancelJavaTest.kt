@@ -30,7 +30,7 @@ import org.hamcrest.MatcherAssert
 import org.junit.Assert
 import org.junit.Test
 
-class ProcessExecutorCancelJavaTest {
+class CancelJavaTest {
     private val javaCommand: String by lazy {
         TestSetup.getFile(HelloWorld::class.java)
     }

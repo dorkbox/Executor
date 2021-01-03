@@ -32,7 +32,7 @@ import org.junit.Test
  *
  * @see ArgumentsAsList
  */
-class ProcessExecutorArgsWithExtraSpaceTest {
+class ArgsWithExtraSpaceTest {
     @Test
     @Throws(Exception::class)
     fun testReadOutputAndError() {

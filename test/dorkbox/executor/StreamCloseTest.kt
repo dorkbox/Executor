@@ -35,7 +35,7 @@ import java.io.ByteArrayOutputStream
  *
  * @see HelloWorld
  */
-class ProcessExecutorStreamCloseTest {
+class StreamCloseTest {
     @Test
     @Throws(Exception::class)
     fun testRedirectOutputNotClosed() {

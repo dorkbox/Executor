@@ -25,7 +25,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import java.io.ByteArrayOutputStream
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 /**
  * Tests reading large output that doesn't fit into a buffer between this process and sub process.
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit
  *
  * @see BigOutput
  */
-class ProcessExecutorBigOutputTest {
+class BigOutputTest {
     companion object {
         private fun repeat(s: String): String {
             val sb = StringBuffer(BigOutput.LENGTH)

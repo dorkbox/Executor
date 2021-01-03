@@ -23,7 +23,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 
-class ProcessListenerSuccessTest {
+class SuccessTest {
     @Test
     @Throws(Exception::class)
     fun testJavaVersion() {
