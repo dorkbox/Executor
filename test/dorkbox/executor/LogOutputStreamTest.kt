@@ -34,8 +34,8 @@ class LogOutputStreamTest {
             }
         }
 
-        logOutputStream.use { logOutputStream ->
-            logOutputStream.write(multiLineString.toByteArray(charset("UTF-8")))
+        logOutputStream.use { stream ->
+            stream.write(multiLineString.toByteArray(charset("UTF-8")))
         }
 
         Assert.assertEquals(listOf(*expectedLines), processedLines)
