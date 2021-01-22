@@ -24,6 +24,7 @@ class ProcessSshTest {
     @Test
     fun testConnect() {
         val process = runBlocking {
+            // NOTE: DO NOT SAVE LEGIT CREDENTIALS IN THIS FILE!
             Executor()
                 .enableRead()
                 .asSshProcess()
@@ -31,7 +32,7 @@ class ProcessSshTest {
                 .host("1.2.3.4")
                 .userName("user")
                 .password("12345!")
-                .port(43)
+                .port(123)
                 .command("ls")
                 .start()
         }
