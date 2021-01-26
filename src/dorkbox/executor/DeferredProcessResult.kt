@@ -25,15 +25,24 @@ import dorkbox.executor.processResults.SyncProcessResult
 import dorkbox.executor.stop.ProcessStopper
 import dorkbox.executor.stream.IOStreamHandler
 import dorkbox.executor.stream.PumpStreamHandler
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import mu.KotlinLogging
 import org.slf4j.MDC
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 import kotlin.text.Charsets.UTF_8
 
 internal data class Params(
@@ -305,13 +314,10 @@ class DeferredProcessResult internal constructor(private val process: Process,
                                             timeout = timeout, timeoutUnit = timeoutUnit)
         }
 
-        val instance = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk { s ->
-            s.map(StackWalker.StackFrame::getDeclaringClass).skip(1).findFirst()
-        }.get().name
-
         // clean the stack trace. This is kind-of dumb to have to do this...
         // NOTE: we CANNOT get the location within the calling class suspend function, but we can get the START of the suspend function
         val stackTrace = Thread.currentThread().stackTrace
+        val caller = stackTrace[2].className
         val newTrace = mutableListOf<StackTraceElement>()
         var foundCaller = false
         var doneWithCoroutineStack = false
@@ -328,7 +334,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                         newTrace.add(it)
                     }
                 }
-            } else if (it.className == instance) {
+            } else if (it.className == caller) {
                 // cleanup the stack elements which create the stacktrace
                 foundCaller = true
             }
@@ -420,9 +426,9 @@ class DeferredProcessResult internal constructor(private val process: Process,
                 channel.close()
 
                 // we have a new output, since we had to read it from the async channel
-                SyncProcessResult(process.pid(), exitCode, out.toByteArray())
+                SyncProcessResult(PidHelper.get(process), exitCode, out.toByteArray())
             } else {
-                createProcessResults(process.pid(), exitCode)
+                createProcessResults(PidHelper.get(process), exitCode)
             }
 
             checkExit(params.processAttributes, result)
@@ -451,7 +457,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
      *
      * @return 0 if there is no PID (failure to start the process)
      */
-    val pid = process.pid()
+    val pid = PidHelper.get(process)
 
     /**
      * Writes the string to the process and send EOL in a safe way
@@ -491,7 +497,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
         val sb = StringBuilder()
 
         if (message.isEmpty()) {
-            sb.append("Process [pid=${process.pid()}] has been cancelled")
+            sb.append("Process [pid=${PidHelper.get(process)}] has been cancelled")
         } else {
             sb.append(message)
         }

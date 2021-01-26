@@ -30,13 +30,12 @@ gradle.startParameter.warningMode = WarningMode.All
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.10"
-    id("com.dorkbox.Licensing") version "2.2"
-    id("com.dorkbox.VersionUpdate") version "2.0"
-    id("com.dorkbox.GradlePublish") version "1.5"
-    id("com.dorkbox.GradleModuleInfo") version "1.0"
+    id("com.dorkbox.GradleUtils") version "1.12"
+    id("com.dorkbox.Licensing") version "2.5.3"
+    id("com.dorkbox.VersionUpdate") version "2.1"
+    id("com.dorkbox.GradlePublish") version "1.9.1"
 
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.21-2"
 }
 
 object Extras {
@@ -44,7 +43,7 @@ object Extras {
     const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+"
     const val group = "com.dorkbox"
     const val id = "Executor"
-    const val version = "1.1"
+    const val version = "2.0"
 
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
@@ -52,7 +51,7 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.3.9"
+    const val coroutineVer = "1.4.2"
 }
 
 ///////////////////////////////
@@ -61,11 +60,11 @@ object Extras {
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.fixIntellijPaths()
 GradleUtils.defaultResolutionStrategy()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_11) {
+GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
     it.apply {
         // see: https://kotlinlang.org/docs/reference/using-gradle.html
-        apiVersion = "1.3"
-        languageVersion = "1.3"
+        apiVersion = "1.4"
+        languageVersion = "1.4"
 
         freeCompilerArgs = listOf(
                 // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
@@ -96,10 +95,23 @@ licensing {
     }
 }
 
+val main_Java9Config : Configuration by configurations.creating { extendsFrom(configurations.implementation.get()) }
+val SourceSetContainer.main_Java9: SourceSet get() = maybeCreate("main_Java9")
+fun SourceSetContainer.main_Java9(block: SourceSet.() -> Unit) = main_Java9.apply(block)
+
 sourceSets {
     main {
         kotlin {
             setSrcDirs(listOf("src"))
+
+            // want to include kotlin files for the source. 'setSrcDirs' resets includes...
+            include("**/*.kt")
+        }
+    }
+
+    main_Java9 {
+        kotlin {
+            setSrcDirs(listOf("src9"))
 
             // want to include kotlin files for the source. 'setSrcDirs' resets includes...
             include("**/*.kt")
@@ -128,7 +140,29 @@ repositories {
     jcenter()
 }
 
+tasks.named<JavaCompile>("compileMain_Java9Java") {
+    dependsOn("compileJava")
+
+    sourceCompatibility = "9"
+    targetCompatibility = "9"
+}
+
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileMain_Java9Kotlin") {
+    dependsOn("compileJava")
+
+    sourceCompatibility = "9"
+    targetCompatibility = "9"
+
+    kotlinOptions.jvmTarget = "9"
+}
+
 tasks.jar.get().apply {
+    // this is required for making the java 9+ version possible
+    from(sourceSets.main_Java9.output.classesDirs) {
+        exclude("META-INF")
+        into("META-INF/versions/9")
+    }
+
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
         attributes["Name"] = Extras.name
@@ -142,15 +176,16 @@ tasks.jar.get().apply {
         attributes["Implementation-Vendor"] = Extras.vendor
 
         attributes["Automatic-Module-Name"] = Extras.id
+
+        attributes["Multi-Release"] = "true"
     }
 }
-
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
 
     // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:1.8.3")  // kotlin wrapper for slf4j
+    implementation("io.github.microutils:kotlin-logging:2.0.4")  // kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
 
     // NOTE: JSCH is no longer maintained.
@@ -161,8 +196,12 @@ dependencies {
     implementation("com.hierynomus:sshj:0.30.0")
 
 
-    testImplementation("junit:junit:4.13")
+    testImplementation("junit:junit:4.13.1")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
+}
+
+kotlin.sourceSets["main_Java9"].dependencies {
+    implementation("com.hierynomus:sshj:0.30.0")
 }
 
 publishToSonatype {

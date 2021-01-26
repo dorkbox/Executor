@@ -38,7 +38,7 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>, private val pr
         private val NEW_LINE_NIX = "\n".toCharArray().first().toInt()
     }
 
-    @ExperimentalCoroutinesApi
+    @OptIn(ExperimentalCoroutinesApi::class)
     val isOpen: Boolean
     get() {
         return !channel.isClosedForReceive
@@ -87,7 +87,7 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>, private val pr
                     return internalBytes
                 }
                 else {
-                    out.writeBytes(internalBytes)
+                    out.write(internalBytes, 0, internalBytes.size)
                 }
             }
         }

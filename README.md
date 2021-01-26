@@ -4,7 +4,8 @@ Executor
 ###### [![Dorkbox](https://badge.dorkbox.com/dorkbox.svg "Dorkbox")](https://git.dorkbox.com/dorkbox/Executor) [![Github](https://badge.dorkbox.com/github.svg "Github")](https://github.com/dorkbox/Executor) [![Gitlab](https://badge.dorkbox.com/gitlab.svg "Gitlab")](https://gitlab.com/dorkbox/Executor)
 
 
-Shell, JVM, and remote SSH command execution on Linux, MacOS, or Windows for Java 11+
+Shell, JVM, and remote SSH command execution on Linux, MacOS, or Windows for Java 8 (no process PID information) and Java 9+ (with PID 
+information)
 
  
 Ironically, there are a considerable number of issues when launching shell/JVM processes via Java. This library solves problems
@@ -15,8 +16,9 @@ Ironically, there are a considerable number of issues when launching shell/JVM p
 1. Executing a JVM process using the same JVM as is currently running
 1. Executing remote processes via SSH
 1. Using and supporting kotlin co-routines for thread suspension
+1. Getting process PID information (Java 9+ only)
 
-- This is for cross-platform use, specifically - linux 32/64, mac 32/64, and windows 32/64. Java 11+ and kotlin.
+- This is for cross-platform use, specifically - linux 32/64, mac 32/64, and windows 32/64. Java 8+, kotlin.
 
 
 This project is powerful but still simple to use. By using a single class **Executor**
@@ -307,7 +309,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>Executor</artifactId>
-      <version>1.0</version>
+      <version>2.0</version>
     </dependency>
 </dependencies>
 ````
@@ -317,7 +319,7 @@ Gradle Info
 ````
 dependencies {
     ...
-    implementation("com.dorkbox:Executor:1.0")
+    implementation("com.dorkbox:Executor:2.0")
 }
 ````
 

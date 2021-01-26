@@ -49,23 +49,17 @@ object CallerLoggerUtil {
     fun getName(name: String?, level: Int): String {
         return when {
             name == null -> {
-                val stackTrace = Thread.currentThread().stackTrace
-                if (stackTrace.size < level) {
-                    "Undefined"
-                } else {
-                    stackTrace[level+1].className
-                }
+                StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk { s ->
+                    s.map(StackWalker.StackFrame::getDeclaringClass).skip(level.toLong()).findFirst()
+                }.get().name
             }
             name.contains(".") -> {
                 name
             }
             else -> {
-                val stackTrace = Thread.currentThread().stackTrace
-                if (stackTrace.size < level) {
-                    "Undefined"
-                } else {
-                    stackTrace[level+1].className + "." + name
-                }
+                StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk { s ->
+                    s.map(StackWalker.StackFrame::getDeclaringClass).skip(level.toLong()).findFirst()
+                }.get().name + "." + name
             }
         }
     }

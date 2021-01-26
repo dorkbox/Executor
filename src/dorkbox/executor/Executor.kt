@@ -44,9 +44,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
 
 /**
@@ -109,7 +107,7 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "1.0"
+        const val version = "2.0"
 
         /**
          * Fixes the command line arguments on Windows by replacing empty arguments with `""`. Otherwise these arguments would be just skipped.
@@ -1406,7 +1404,12 @@ open class Executor {
             throw e
         }
 
-        messageLogger.message(log, "Started process [pid={}]", nativeProcess.pid())
+        val processPid = PidHelper.get(nativeProcess)
+        if (processPid == PidHelper.INVALID) {
+            messageLogger.message(log, "Started process")
+        } else {
+            messageLogger.message(log, "Started process [pid={}]", processPid)
+        }
 
 
         // we might reassign the streams if they are to be read

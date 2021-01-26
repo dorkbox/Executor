@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2021 dorkbox, llc
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,14 @@ class SshProcess(private val ssh: SSHClient,
         command.join()
         destroy()
         return exitValue()
+    }
+
+    /**
+     * It doesn't make sense to have a pid, which is associated with a REMOTE ssh command execution, since there is nothing really that
+     *  can be done about it
+     */
+    override fun pid(): Long {
+        return PidHelper.INVALID
     }
 
     override fun exitValue(): Int {

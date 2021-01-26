@@ -1,7 +1,7 @@
  - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+
    [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/Executor
-   Copyright 2020
+   Copyright 2021
      Dorkbox LLC
 
    Extra license information
@@ -20,7 +20,7 @@
      - Kotlin - 
        [The Apache Software License, Version 2.0]
        https://github.com/JetBrains/kotlin
-       Copyright 1980
+       Copyright 2020
          JetBrains s.r.o. and Kotlin Programming Language contributors
        Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
        See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
@@ -28,25 +28,25 @@
      - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
        [The Apache Software License, Version 2.0]
        https://github.com/Kotlin/kotlinx.coroutines
-       Copyright 2020
+       Copyright 2021
          JetBrains s.r.o.
 
      - kotlin-logging - Lightweight logging framework for Kotlin
        [The Apache Software License, Version 2.0]
        https://github.com/MicroUtils/kotlin-logging
-       Copyright 2020
+       Copyright 2021
          Ohad Shai
 
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
        http://www.slf4j.org
-       Copyright 2019
+       Copyright 2021
          QOS.ch
 
      - SSHJ - SSHv2 library for Java
        [The Apache Software License, Version 2.0]
        https://github.com/hierynomus/sshj
-       Copyright 2020
+       Copyright 2021
          Jeroen van Erp
          SSHJ Contributors
 
