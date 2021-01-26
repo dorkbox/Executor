@@ -24,8 +24,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
 /**
  * see https://github.com/hierynomus/sshj
@@ -48,7 +47,7 @@ class SshExecOptions(val executor: Executor) {
 
     private val ssh = SSHClient()
 
-    internal fun startProcess(timeout: Long, timeoutUnit: TimeUnit): Process {
+    internal fun startProcess(timeout: Long, timeoutUnit: TimeUnit): SshProcess {
         if (strictHostCheck) {
             if (knownHostsFile != null) {
                 ssh.loadKnownHosts(File(knownHostsFile!!))
