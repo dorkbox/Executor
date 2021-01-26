@@ -322,6 +322,23 @@ class ProcessExecutorMainTest {
 
     @Test
     @Throws(Exception::class)
+    fun testProcessExecutorPID() {
+        // Use timeout in case we get stuck
+        val args = listOf("java", TestSetup.getFile(HelloWorld::class.java))
+
+        val exec = Executor()
+        exec.command(args)
+
+        val result = runBlocking {
+            exec.enableRead()
+                .start()
+        }
+        println("PID: ${result.pid}")
+        Assert.assertEquals("Hello world!", result.output.utf8())
+    }
+
+    @Test
+    @Throws(Exception::class)
     fun testProcessExecutorSetDirectory() {
         // Use timeout in case we get stuck
         val args = listOf("java", TestSetup.getFile(HelloWorld::class.java))
@@ -336,5 +353,16 @@ class ProcessExecutorMainTest {
         }
 
         Assert.assertEquals("Hello world!", result.output.utf8())
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testJavaVersionPid() {
+        runBlocking {
+            println("PID: " +
+                            Executor()
+                                .command("java", "-version")
+                                .start().pid)
+        }
     }
 }
