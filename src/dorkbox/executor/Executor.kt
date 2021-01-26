@@ -1144,7 +1144,7 @@ open class Executor {
     /**
      * The calling thread will immediately execute the sub process as a shell command (bash/cmd/etc).
      *
-     * When trying to close the input streams, the colling thread may suspend.
+     * When trying to close the input streams, the calling thread may suspend.
      *
      * Waits until:
      *  - the process stops
@@ -1170,7 +1170,7 @@ open class Executor {
     /**
      * The calling thread will immediately execute the sub process as a shell command (bash/cmd/etc).
      *
-     * When trying to close the input streams, the colling thread may block.
+     * When trying to close the input streams, the calling thread may block.
      *
      * Waits until:
      *  - the process stops
@@ -1194,7 +1194,7 @@ open class Executor {
 
 
     /**
-     * The calling thread will immediately execute the sub process. When trying to close the input streams, the colling thread may suspend.
+     * The calling thread will immediately execute the sub process. When trying to close the input streams, the calling thread may suspend.
      *
      * Waits until:
      *  - the process stops
@@ -1220,7 +1220,7 @@ open class Executor {
     }
 
     /**
-     * The calling thread will immediately execute the sub process. When trying to close the input streams, the colling thread may block.
+     * The calling thread will immediately execute the sub process. When trying to close the input streams, the calling thread may block.
      *
      * Waits until:
      *  - the process stops
