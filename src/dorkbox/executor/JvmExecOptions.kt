@@ -303,7 +303,7 @@ class JvmExecOptions(private val executor: Executor) {
      *
      * Calling [SyncProcessResult.output] will result in a blocking read of process output.
      *
-     * The value passed to [.timeout] is ignored. Use [DeferredProcessResult.get] to wait for the process to finish.
+     * The value passed to [.timeout] is ignored. Use [DeferredProcessResult.await] to wait for the process to finish.
      *
      * Invoke [DeferredProcessResult.cancel] to destroy the process.
      *

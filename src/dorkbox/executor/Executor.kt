@@ -338,11 +338,10 @@ open class Executor {
     }
 
     /**
-     * Splits string by spaces and passes it to [Executor.command]<br></br>
+     * Splits string by spaces and passes it to [Executor.command]
      *
-     * NB: this method does not handle whitespace escaping,
-     * `"mkdir new\ folder"` would be interpreted as
-     * `{"mkdir", "new\", "folder"}` command.
+     * Note: this method does not handle whitespace escaping,
+     *   `"mkdir new\ folder"` would be interpreted as `{"mkdir", "new\", "folder"}` command.
      *
      * @param commandWithArgs A string array containing the program and its arguments.
      *
@@ -1067,7 +1066,6 @@ open class Executor {
     fun checkExitValue(result: ProcessResult) {
         DeferredProcessResult.checkExit(attributes, result)
     }
-
 
     /**
      * If there is high-performance I/O necessary (lots of I/O with the subprocess), then multiple threads

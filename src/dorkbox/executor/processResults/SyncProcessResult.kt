@@ -48,7 +48,7 @@ open class SyncProcessResult(
     /**
      * @return output of the finished process.
      *
-     * You must invoke [ProcessExecutor.readOutput] to allow the process output to be read.
+     * You must invoke [dorkbox.executor.Executor.readOutput] to allow the process output to be read.
      *
      * @throws IllegalStateException if reading the output was not enabled.
      */

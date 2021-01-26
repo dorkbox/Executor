@@ -455,7 +455,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
      *  SOMETIMES, this PID is invalid because it can be recycled by linux!
      * see: http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6469606
      *
-     * @return 0 if there is no PID (failure to start the process)
+     * @return 0 if there is no PID (failure to start the process), or -1 if getting the pid is not possible
      */
     val pid = PidHelper.get(process)
 
