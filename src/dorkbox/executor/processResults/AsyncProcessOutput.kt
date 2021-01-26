@@ -116,6 +116,7 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>, private val pr
      *
      * @throws IllegalStateException if the char set was not supported.
      */
+    @Throws(IllegalStateException::class)
     suspend fun string(charset: Charset): String {
         return try {
             String(getBuffered(), charset)

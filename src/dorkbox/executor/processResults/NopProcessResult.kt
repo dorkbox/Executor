@@ -37,6 +37,7 @@ class NopProcessResult(pid: Long, exitValue: Int) : SyncProcessResult(pid, exitV
      *
      * @throws IllegalStateException if reading the output was not enabled.
      */
+    @get:Throws(IllegalStateException::class)
     override val output: ProcessOutput
         get() {
             throw IllegalStateException("Process output was not read. " +

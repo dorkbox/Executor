@@ -67,6 +67,7 @@ class ProcessOutput(internal val bytes_: ByteArray) {
      *
      * @throws IllegalStateException if the char set was not supported.
      */
+    @Throws(IllegalStateException::class)
     fun string(charset: Charset): String {
         return try {
             String(bytes_, charset)

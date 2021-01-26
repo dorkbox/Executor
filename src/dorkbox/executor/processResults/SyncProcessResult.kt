@@ -52,6 +52,7 @@ open class SyncProcessResult(
      *
      * @throws IllegalStateException if reading the output was not enabled.
      */
+    @get:Throws(IllegalStateException::class)
     open val output: ProcessOutput by lazy {
         ProcessOutput(out)
     }

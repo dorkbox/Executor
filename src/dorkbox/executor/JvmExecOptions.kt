@@ -293,6 +293,7 @@ class JvmExecOptions(private val executor: Executor) {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
     suspend fun start(): SyncProcessResult {
         return executor.start()
     }

@@ -43,4 +43,5 @@ internal class ProcessAttributes(
         /**
          * Set of accepted exit codes or `null` if all exit codes are allowed.
          */
-        val allowedExitValues: Set<Int> = setOf())
+        val allowedExitValues: Set<Int> = setOf()
+)
