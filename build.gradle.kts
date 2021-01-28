@@ -40,7 +40,7 @@ plugins {
 
 object Extras {
     const val name = "Executor"
-    const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+"
+    const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
     const val group = "com.dorkbox"
     const val id = "Executor"
     const val version = "2.1"
