@@ -1,4 +1,4 @@
- - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+
+ - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+
    [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/Executor
    Copyright 2021

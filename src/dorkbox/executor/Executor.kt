@@ -107,7 +107,7 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "2.1"
+        const val version = "2.2"
 
         /**
          * Fixes the command line arguments on Windows by replacing empty arguments with `""`. Otherwise these arguments would be just skipped.

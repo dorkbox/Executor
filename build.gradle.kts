@@ -31,7 +31,7 @@ plugins {
     java
 
     id("com.dorkbox.GradleUtils") version "1.12"
-    id("com.dorkbox.Licensing") version "2.5.3"
+    id("com.dorkbox.Licensing") version "2.5.4"
     id("com.dorkbox.VersionUpdate") version "2.1"
     id("com.dorkbox.GradlePublish") version "1.10"
 
@@ -43,7 +43,7 @@ object Extras {
     const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
     const val group = "com.dorkbox"
     const val id = "Executor"
-    const val version = "2.1"
+    const val version = "2.2"
 
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
