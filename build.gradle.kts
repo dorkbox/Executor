@@ -16,6 +16,7 @@
 
 
 import dorkbox.gradle.kotlin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
 ///////////////////////////////
@@ -30,12 +31,12 @@ gradle.startParameter.warningMode = WarningMode.All
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.12"
-    id("com.dorkbox.Licensing") version "2.5.4"
+    id("com.dorkbox.GradleUtils") version "1.16"
+    id("com.dorkbox.Licensing") version "2.5.5"
     id("com.dorkbox.VersionUpdate") version "2.1"
     id("com.dorkbox.GradlePublish") version "1.10"
 
-    kotlin("jvm") version "1.4.21-2"
+    kotlin("jvm") version "1.4.31"
 }
 
 object Extras {
@@ -43,7 +44,7 @@ object Extras {
     const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
     const val group = "com.dorkbox"
     const val id = "Executor"
-    const val version = "2.2"
+    const val version = "3.0"
 
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
@@ -52,6 +53,7 @@ object Extras {
     val buildDate = Instant.now().toString()
 
     const val coroutineVer = "1.4.2"
+    const val sshjVer = "0.30.0"
 }
 
 ///////////////////////////////
@@ -185,23 +187,25 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
 
     // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:2.0.4")  // kotlin wrapper for slf4j
+    implementation("io.github.microutils:kotlin-logging:2.0.6")  // kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
+    compileOnly("ch.qos.logback:logback-classic:1.2.3") // ONLY used to fixup the SSHJ logger
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
     // api("com.jcraft:jsch:0.1.55")
     // NOTE: This SSH implementation works (and is well documented)
     // https://github.com/hierynomus/sshj
-    implementation("com.hierynomus:sshj:0.30.0")
+    implementation("com.hierynomus:sshj:${Extras.sshjVer}")
 
 
-    testImplementation("junit:junit:4.13.1")
+    testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 kotlin.sourceSets["main_Java9"].dependencies {
-    implementation("com.hierynomus:sshj:0.30.0")
+    implementation("com.hierynomus:sshj:${Extras.sshjVer}")
 }
 
 publishToSonatype {
@@ -226,4 +230,12 @@ publishToSonatype {
         name = Extras.vendor
         email = "email@dorkbox.com"
     }
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }
