@@ -131,6 +131,16 @@ class ProcessExecutorMainTest {
     }
 
     @Test
+    fun testJavaVersionFutureMs() {
+        val exit: Int = Executor()
+            .command("java", "-version")
+            .startAsync()
+            .awaitBlocking(1000)
+            .getExitValue()
+        Assert.assertEquals(0, exit.toLong())
+    }
+
+    @Test
     fun testJavaVersionOutput() {
         val result = runBlocking {
             Executor()
