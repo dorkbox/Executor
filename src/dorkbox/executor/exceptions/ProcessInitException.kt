@@ -24,13 +24,10 @@ import java.io.IOException
 /**
  * Creating a process failed providing an error code.
  *
+ * Outputs an [IOException] like:
  *
- * >
- * aps an [IOException] like:
- *
- *  * `java.io.IOException: Cannot run program "ls": java.io.IOException: error=12, Cannot allocate memory`
- *  * `java.io.IOException: Cannot run program "ls": error=316, Unknown error: 316`
- *
+ *  `java.io.IOException: Cannot run program "ls": java.io.IOException: error=12, Cannot allocate memory`
+ *  `java.io.IOException: Cannot run program "ls": error=316, Unknown error: 316`
  */
 class ProcessInitException(message: String?, cause: Throwable?, val errorCode: Int) : IOException(message, cause) {
     /**
@@ -42,7 +39,7 @@ class ProcessInitException(message: String?, cause: Throwable?, val errorCode: I
         private const val NEW_INFIX = " Error="
 
         /**
-         * Try to wrap a given [IOException] into a [ProcessInitException].
+         * Try to wrap a given [Exception] into a [ProcessInitException].
          *
          * @param prefix prefix to be added in the message.
          * @param e existing exception possibly containing an error code in its message.
@@ -50,7 +47,7 @@ class ProcessInitException(message: String?, cause: Throwable?, val errorCode: I
          * @return new exception containing the prefix, error code and its description in the message plus the error code value as a field,
          * `null` if we were unable to find an error code from the original message.
          */
-        fun newInstance(prefix: String? = "", e: IOException): ProcessInitException? {
+        fun newInstance(prefix: String? = "", e: Exception): ProcessInitException? {
             val m = e.message ?: return null
             val i = m.lastIndexOf(BEFORE_CODE)
             if (i == -1) {
@@ -68,8 +65,7 @@ class ProcessInitException(message: String?, cause: Throwable?, val errorCode: I
                 return null
             }
 
-            return ProcessInitException(prefix + NEW_INFIX + m.substring(
-                    i + BEFORE_CODE.length), e, code)
+            return ProcessInitException(prefix + NEW_INFIX + m.substring(i + BEFORE_CODE.length), e, code)
         }
     }
 }
