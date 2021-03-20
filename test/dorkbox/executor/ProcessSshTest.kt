@@ -19,6 +19,7 @@ package dorkbox.executor
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import org.slf4j.LoggerFactory
 
 class ProcessSshTest {
     @Test
@@ -26,6 +27,26 @@ class ProcessSshTest {
         val process = runBlocking {
             // NOTE: DO NOT SAVE LEGIT CREDENTIALS IN THIS FILE!
             Executor()
+                .enableRead()
+                .asSshProcess()
+                .disableStrictHostChecking()
+                .host("1.2.3.4")
+                .userName("user")
+                .password("12345!")
+                .port(123)
+                .command("ls")
+                .start()
+        }
+
+        println(process.output.utf8())
+    }
+
+    @Test
+    fun testConnectWithLog() {
+        val process = runBlocking {
+            // NOTE: DO NOT SAVE LEGIT CREDENTIALS IN THIS FILE!
+            Executor()
+                .setLogger(LoggerFactory.getLogger(ProcessSshTest::class.java))
                 .enableRead()
                 .asSshProcess()
                 .disableStrictHostChecking()
