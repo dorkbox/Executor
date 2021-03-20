@@ -19,12 +19,16 @@ package dorkbox.executor
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.processResults.SyncProcessResult
 import kotlinx.coroutines.runBlocking
+import net.schmizz.sshj.DefaultConfig
 import net.schmizz.sshj.SSHClient
+import net.schmizz.sshj.common.LoggerFactory
 import net.schmizz.sshj.transport.verification.HostKeyVerifier
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier
+import org.slf4j.Logger
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * see https://github.com/hierynomus/sshj
@@ -45,9 +49,27 @@ class SshExecOptions(val executor: Executor) {
     private var knownHostsFile: String? = null
 
 
-    private val ssh = SSHClient()
+    private lateinit var ssh: SSHClient
 
-    internal fun startProcess(timeout: Long, timeoutUnit: TimeUnit): SshProcess {
+    internal fun startProcess(timeout: Long, timeoutUnit: TimeUnit, logger: Logger?): SshProcess {
+        // have to fixup several loggers!
+        LogHelper.fixSshLogger(logger)
+
+        // have to setup the SSH client loggers BEFORE creating it!
+        val factory = LogHelper.getLogFactory(logger)
+        val config = object : DefaultConfig() {
+            override fun setLoggerFactory(loggerFactory: LoggerFactory) {
+                super.setLoggerFactory(factory)
+            }
+            override fun getLoggerFactory(): LoggerFactory {
+                return factory
+            }
+        }
+        config.loggerFactory = factory
+
+        ssh = SSHClient(config)
+
+
         if (strictHostCheck) {
             if (knownHostsFile != null) {
                 ssh.loadKnownHosts(File(knownHostsFile!!))
@@ -89,7 +111,6 @@ class SshExecOptions(val executor: Executor) {
     fun ssh(): SSHClient {
         return ssh
     }
-
 
     fun userName(userName: String): SshExecOptions {
         this.userName = userName
@@ -199,6 +220,12 @@ class SshExecOptions(val executor: Executor) {
         return this
     }
 
+    /**
+     * @return information regarding the username + host + port this connect is with
+     */
+    fun info(): String {
+        return "$userName@$host:$port"
+    }
 
     /**
      * Executes the JAVA sub process.

@@ -25,24 +25,16 @@ import dorkbox.executor.processResults.SyncProcessResult
 import dorkbox.executor.stop.ProcessStopper
 import dorkbox.executor.stream.IOStreamHandler
 import dorkbox.executor.stream.PumpStreamHandler
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.coroutines.yield
 import mu.KotlinLogging
+import org.slf4j.Logger
 import org.slf4j.MDC
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.concurrent.*
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import kotlin.text.Charsets.UTF_8
 
 internal data class Params(
@@ -67,18 +59,18 @@ internal data class Params(
         val streams: IOStreamHandler,
 
         /**
-         * Helper for logging messages about starting and waiting for the processes.
+         * Logger for logging messages about starting and waiting for the processes.
          */
-        val messageLogger: MessageLogger,
+        val logger: Logger?,
 
         /**
          * ONLY called if there is an exception while waiting for the process to complete.
          */
         val errorMessageHandler: (StringBuilder) -> Unit,
 
-        val closeTimeout: Long, val closeTimeoutUnit: TimeUnit,
+    val closeTimeout: Long, val closeTimeoutUnit: TimeUnit,
 
-        val asyncProcessStart: Boolean)
+    val asyncProcessStart: Boolean)
 
 
 class DeferredProcessResult internal constructor(private val process: Process,
@@ -367,10 +359,11 @@ class DeferredProcessResult internal constructor(private val process: Process,
             exit = process.waitFor()
 
             finished = true
-            params.messageLogger.message(log, "{} stopped with exit code {}", this, exit)
+
+            LogHelper.logAtLowestLevel(params.logger, "{} stopped with exit code {}", this, exit)
         } finally {
             if (!finished) {
-                params.messageLogger.message(log, "Stopping {}...", this)
+                LogHelper.logAtLowestLevel(params.logger, "Stopping {}...", this)
                 params.stopper.stop(process)
             }
 

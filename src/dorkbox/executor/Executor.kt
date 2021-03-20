@@ -228,8 +228,11 @@ open class Executor {
 
     /**
      * Helper for logging messages about starting and waiting for the processes.
+     *
+     * see http://logback.qos.ch/manual/architecture.html for more info
+     *  logger order goes (from lowest to highest) TRACE->DEBUG->INFO->WARN->ERROR->OFF
      */
-    private var messageLogger = MessageLoggers.DEBUG
+    private var logger: Logger? = null
 
     /**
      * Capture a snapshot of this process executor's main state.
@@ -1042,16 +1045,17 @@ open class Executor {
 
     /**
      * Changes how most common messages about starting and waiting for processes are actually logged.
-     * By default [MessageLoggers.DEBUG] is used.
+     * By default **NO OUTPUT** is used.
      *
-     * However if someone is executing a process every second [MessageLoggers.TRACE] may be used e.g.
+     * see http://logback.qos.ch/manual/architecture.html for more info
+     *  logger order goes (from lowest to highest) TRACE->DEBUG->INFO->WARN->ERROR->OFF
      *
-     * @param messageLogger message logger for certain level.
+     * @param logger logger instance to use. Will log at whatever the highest level possible for that logger
      *
      * @return This process executor.
      */
-    fun setMessageLogger(messageLogger: MessageLogger): Executor {
-        this.messageLogger = messageLogger
+    fun setLogger(logger: Logger?): Executor {
+        this.logger = logger
         return this
     }
 
@@ -1270,7 +1274,7 @@ open class Executor {
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
             if (IS_OS_WINDOWS) {
-                // add our commands to the internal command list
+                // add our commands to the internal command list BEFORE all other commands
                 builder.command().addAll(0, listOf("cmd", "/c"))
             } else {
                 if (DEFAULT_SHELL == null) {
@@ -1303,31 +1307,9 @@ open class Executor {
                 }
 
                 // *nix
-                ///  // when a shell AND on *nix, we have to place ALL the args into a single "arg" that is passed in
-                //            final StringBuilder stringBuilder = new StringBuilder(1024);
-                //
-                //            stringBuilder.append(this.executableName).append(" ");
-                //
-                //            for (String arg : this.arguments) {
-                //                stringBuilder.append(arg).append(" ");
-                //            }
-                //
-                //            if (!arguments.isEmpty()) {
-                //                if (pipeToNull) {
-                //                    stringBuilder.append(pipeToNullString);
-                //                }
-                //                else {
-                //                    // delete last " "
-                //                    stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
-                //                }
-                //            }
-                //
-                //            fullCommand.add(stringBuilder.toString());
-// add our commands to the internal command list
+                // add our commands to the internal command list BEFORE all other commands
                 builder.command().addAll(0, listOf(DEFAULT_SHELL!!, "-c"))
             }
-
-
 
             if (IS_OS_MAC && !environment.containsKey("SOFTWARE")) {
                 // Enable LANG overrides
@@ -1363,7 +1345,6 @@ open class Executor {
         // we can read the output IN ADDITION TO having our own output stream for the process.
         if (!readOutput && executeAsShell && streams.out is NopOutputStream) {
             // NOTE: this ONLY works if we are running as a shell!
-
             val command = builder.command()
 
             // should we redirect our output to null? we are not interested in the program output
@@ -1380,35 +1361,24 @@ open class Executor {
         }
 
 
-        messageLogger.message(log, "Executing $executingMessageParams")
 
         val nativeProcess = try {
             if (sshExecOptions != null) {
-                sshExecOptions!!.startProcess(timeout, timeoutUnit)
+                LogHelper.logAtLowestLevel(logger, "Executing on ${sshExecOptions!!.info()} $executingMessageParams")
+                sshExecOptions!!.startProcess(timeout, timeoutUnit, logger)
             } else {
+                LogHelper.logAtLowestLevel(logger, "Executing $executingMessageParams")
                 builder.start()
             }
-        } catch (e: IOException) {
-            if (e.javaClass === IOException::class.java) {
-                val errorMessage = "Could not execute $executingMessageParams"
-                throw ProcessInitException.newInstance(errorMessage, e) ?: IOException(errorMessage, e)
+        } catch (e: Exception) {
+            val errorMessage = if (sshExecOptions != null) {
+                "Could not execute on ${sshExecOptions!!.info()} $executingMessageParams"
+            } else {
+                "Could not execute $executingMessageParams"
             }
-            throw e
-        } catch (e: RuntimeException) {
-            if (e.javaClass === IllegalArgumentException::class.java) {
-                val errorMessage = "Could not execute $executingMessageParams"
-                throw IllegalArgumentException(errorMessage, e)
-            }
-            throw e
-        }
 
-        val processPid = PidHelper.get(nativeProcess)
-        if (processPid == PidHelper.INVALID) {
-            messageLogger.message(log, "Started process")
-        } else {
-            messageLogger.message(log, "Started process [pid={}]", processPid)
+            throw ProcessInitException.newInstance(errorMessage, e) ?: IOException(errorMessage, e)
         }
-
 
         // we might reassign the streams if they are to be read
         var streams: IOStreamHandler
@@ -1471,17 +1441,25 @@ open class Executor {
         // Invoke listeners - changing this executor does not affect the started process any more
         newListeners.afterStart(nativeProcess, this)
 
+        val logger = logger
         val params = Params(processAttributes = attributes,
                             stopper = stopper,
                             listener = newListeners,
                             streams = streams,
-                            messageLogger = messageLogger,
+                            logger = logger,
                             errorMessageHandler = errorMessageHandler,
                             closeTimeout = closeTimeout,
                             closeTimeoutUnit = closeTimeoutUnit,
                             asyncProcessStart = asyncProcessStart)
 
         val deferred = DeferredProcessResult(nativeProcess, params, createProcessResults)
+        val processPid = deferred.pid
+        if (processPid == PidHelper.INVALID) {
+            LogHelper.logAtLowestLevel(logger, "Started process")
+        } else {
+            LogHelper.logAtLowestLevel(logger, "Started process [pid={}]", processPid)
+        }
+
         deferred.start()
 
         return deferred
