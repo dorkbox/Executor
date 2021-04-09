@@ -84,7 +84,7 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "3.0"
+        const val version = "3.1"
 
         val log = KotlinLogging.logger { }
         val IS_OS_WINDOWS: Boolean
