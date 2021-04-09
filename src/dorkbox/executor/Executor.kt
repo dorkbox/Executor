@@ -43,8 +43,9 @@ import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 
 /**
@@ -80,6 +81,11 @@ import java.util.concurrent.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class Executor {
     companion object {
+        /**
+         * Gets the version number.
+         */
+        const val version = "3.0"
+
         val log = KotlinLogging.logger { }
         val IS_OS_WINDOWS: Boolean
         val IS_OS_MAC: Boolean
@@ -102,12 +108,10 @@ open class Executor {
             val osName = System.getProperty("os.name").toLowerCase()
             IS_OS_WINDOWS = osName.startsWith("win")
             IS_OS_MAC = osName.startsWith("mac") || osName.startsWith("darwin")
-        }
 
-        /**
-         * Gets the version number.
-         */
-        const val version = "3.0"
+            // Add this project to the updates system, which verifies this class + UUID + version information
+            dorkbox.updates.Updates.add(Executor::class.java, "03fcf3762a2b4f68b5e968aaf79f3a72", version)
+        }
 
         /**
          * Fixes the command line arguments on Windows by replacing empty arguments with `""`. Otherwise these arguments would be just skipped.

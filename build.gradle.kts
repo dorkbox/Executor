@@ -16,7 +16,6 @@
 
 
 import dorkbox.gradle.kotlin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
 ///////////////////////////////
@@ -185,6 +184,8 @@ tasks.jar.get().apply {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
+
+    implementation("com.dorkbox:Updates:1.0")
 
     // https://github.com/MicroUtils/kotlin-logging
     implementation("io.github.microutils:kotlin-logging:2.0.6")  // kotlin wrapper for slf4j
