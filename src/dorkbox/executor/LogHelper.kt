@@ -28,14 +28,14 @@ object LogHelper {
     fun fixSshLogger(log: Logger?) {
         try {
             // exception is thrown if logback is not available.
-            val logger = org.slf4j.LoggerFactory.getLogger(JCERandom::class.java) as ch.qos.logback.classic.Logger
             if (log == null) {
+                val logger = org.slf4j.LoggerFactory.getLogger(JCERandom::class.java) as ch.qos.logback.classic.Logger
                 logger.level = ch.qos.logback.classic.Level.ERROR
-                return
+            } else {
+                val logger = org.slf4j.LoggerFactory.getLogger(JCERandom::class.java) as ch.qos.logback.classic.Logger
+                val orig = log as ch.qos.logback.classic.Logger
+                logger.level = orig.level
             }
-
-            val orig = log as ch.qos.logback.classic.Logger
-            logger.level = orig.level
         } catch (e: Exception) {
         }
     }
