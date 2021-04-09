@@ -326,7 +326,7 @@ dependencies {
 
 License
 ---------
-This project is © 2020 dorkbox llc, with modifications from software copyright 2014 ZeroTurnaround, and 2014 The Apache Software
+This project is © 2021 dorkbox llc, with modifications from software copyright 2014 ZeroTurnaround, and 2014 The Apache Software
  Foundation. 
 
 This project is distributed under the terms of the Apache v2.0 License. See file "LICENSE" for further references.
