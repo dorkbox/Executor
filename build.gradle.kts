@@ -35,7 +35,7 @@ plugins {
     id("com.dorkbox.VersionUpdate") version "2.1"
     id("com.dorkbox.GradlePublish") version "1.10"
 
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
 }
 
 object Extras {
@@ -64,8 +64,6 @@ GradleUtils.defaultResolutionStrategy()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
     it.apply {
         // see: https://kotlinlang.org/docs/reference/using-gradle.html
-        apiVersion = "1.4"
-        languageVersion = "1.4"
 
         freeCompilerArgs = listOf(
                 // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
@@ -190,7 +188,8 @@ dependencies {
     // https://github.com/MicroUtils/kotlin-logging
     implementation("io.github.microutils:kotlin-logging:2.0.6")  // kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
-    compileOnly("ch.qos.logback:logback-classic:1.2.3") // ONLY used to fixup the SSHJ logger
+
+    compileOnly("ch.qos.logback:logback-classic:1.2.3") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
@@ -202,7 +201,6 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 kotlin.sourceSets["main_Java9"].dependencies {
@@ -231,12 +229,4 @@ publishToSonatype {
         name = Extras.vendor
         email = "email@dorkbox.com"
     }
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
 }
