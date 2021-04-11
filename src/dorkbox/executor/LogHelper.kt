@@ -18,9 +18,6 @@
 
 package dorkbox.executor
 
-import net.schmizz.sshj.SSHClient
-import net.schmizz.sshj.common.LoggerFactory
-import net.schmizz.sshj.transport.random.JCERandom
 import org.slf4j.Logger
 import org.slf4j.helpers.MarkerIgnoringBase
 
@@ -28,13 +25,20 @@ object LogHelper {
     fun fixSshLogger(log: Logger?) {
         try {
             // exception is thrown if logback is not available.
-            if (log == null) {
-                val logger = org.slf4j.LoggerFactory.getLogger(JCERandom::class.java) as ch.qos.logback.classic.Logger
-                logger.level = ch.qos.logback.classic.Level.ERROR
+            val logLevel = if (log != null) {
+                (log as ch.qos.logback.classic.Logger).level
             } else {
-                val logger = org.slf4j.LoggerFactory.getLogger(JCERandom::class.java) as ch.qos.logback.classic.Logger
-                val orig = log as ch.qos.logback.classic.Logger
-                logger.level = orig.level
+                ch.qos.logback.classic.Level.ERROR
+            }
+
+            mutableListOf<Class<*>>(
+                net.schmizz.sshj.transport.random.JCERandom::class.java,
+                net.schmizz.sshj.transport.kex.Curve25519SHA256::class.java,
+                net.schmizz.sshj.common.KeyType::class.java
+            ).map {
+                org.slf4j.LoggerFactory.getLogger(it) as ch.qos.logback.classic.Logger
+            }.forEach {
+                it.level = logLevel
             }
         } catch (e: Exception) {
         }
@@ -68,9 +72,9 @@ object LogHelper {
         }
     }
 
-    fun getLogFactory(logger: Logger?): LoggerFactory {
+    fun getLogFactory(logger: Logger?): net.schmizz.sshj.common.LoggerFactory {
         if (logger == null) {
-            return object : LoggerFactory {
+            return object : net.schmizz.sshj.common.LoggerFactory {
                 override fun getLogger(name: String): Logger {
                     return org.slf4j.helpers.NOPLogger.NOP_LOGGER
                 }
@@ -81,7 +85,7 @@ object LogHelper {
             }
         }
 
-        return object : LoggerFactory {
+        return object : net.schmizz.sshj.common.LoggerFactory {
             override fun getLogger(name: String): Logger {
                 return LogHelperLogger(name)
             }
@@ -89,7 +93,7 @@ object LogHelper {
             override fun getLogger(clazz: Class<*>): Logger {
                 var name = clazz.name
                 if (name.startsWith(SshExecOptions::class.java.name)) {
-                    name = SSHClient::class.java.name
+                    name = net.schmizz.sshj.SSHClient::class.java.name
                 }
                 return LogHelperLogger(name)
             }
