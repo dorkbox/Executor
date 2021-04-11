@@ -19,11 +19,6 @@ package dorkbox.executor
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.processResults.SyncProcessResult
 import kotlinx.coroutines.runBlocking
-import net.schmizz.sshj.DefaultConfig
-import net.schmizz.sshj.SSHClient
-import net.schmizz.sshj.common.LoggerFactory
-import net.schmizz.sshj.transport.verification.HostKeyVerifier
-import net.schmizz.sshj.transport.verification.PromiscuousVerifier
 import org.slf4j.Logger
 import java.io.File
 import java.io.IOException
@@ -35,8 +30,29 @@ import java.util.concurrent.TimeoutException
  *
  * NOTE: JSCH is no longer maintained.
  *  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL does not connect to an ubuntu 18.04 instance
+ *
+ * The SSHJ implementation works and is well documented. It is also used by Intellij 2019.2+, so it is also well tested and used
  */
 class SshExecOptions(val executor: Executor) {
+    companion object {
+        init {
+            /*
+             * see https://github.com/hierynomus/sshj
+             *
+             * NOTE: JSCH is no longer maintained.
+             *  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL does not connect to an ubuntu 18.04 instance
+             *
+             * The SSHJ implementation works and is well documented. It is also used by Intellij 2019.2+, so it is also well tested and used
+             */
+            try {
+                Class.forName("net.schmizz.sshj.SSHClient")
+            } catch (e: Exception) {
+                throw RuntimeException("Unable to execute SSH commands. The SSHJ library is not available. \n\n" +
+                        "For example, implementation(\"com.hierynomus:sshj:0.31.0\") as a dependency will add this library. \n" +
+                        "You might need to use a more recent version, as 0.31.0 might not be the latest available.", e)
+            }
+        }
+    }
     private var host: String? = null
     private var port: Int = 22
     private var userName: String? = null
@@ -44,30 +60,30 @@ class SshExecOptions(val executor: Executor) {
 
     private var privateKeyFile: String? = null
 
-    private var verifier: HostKeyVerifier? = null
+    private var verifier: net.schmizz.sshj.transport.verification.HostKeyVerifier? = null
     private var strictHostCheck = true
     private var knownHostsFile: String? = null
 
 
-    private lateinit var ssh: SSHClient
+    private lateinit var ssh: net.schmizz.sshj.SSHClient
 
     internal fun startProcess(timeout: Long, timeoutUnit: TimeUnit, logger: Logger?): SshProcess {
-        // have to fixup several loggers!
+        // have to fixup several SSHJ loggers!
         LogHelper.fixSshLogger(logger)
 
         // have to setup the SSH client loggers BEFORE creating it!
         val factory = LogHelper.getLogFactory(logger)
-        val config = object : DefaultConfig() {
-            override fun setLoggerFactory(loggerFactory: LoggerFactory) {
+        val config = object : net.schmizz.sshj.DefaultConfig() {
+            override fun setLoggerFactory(loggerFactory: net.schmizz.sshj.common.LoggerFactory) {
                 super.setLoggerFactory(factory)
             }
-            override fun getLoggerFactory(): LoggerFactory {
+            override fun getLoggerFactory(): net.schmizz.sshj.common.LoggerFactory {
                 return factory
             }
         }
         config.loggerFactory = factory
 
-        ssh = SSHClient(config)
+        ssh = net.schmizz.sshj.SSHClient(config)
 
 
         if (strictHostCheck) {
@@ -77,7 +93,7 @@ class SshExecOptions(val executor: Executor) {
                 ssh.addHostKeyVerifier(verifier)
             }
         } else {
-            ssh.addHostKeyVerifier(PromiscuousVerifier())
+            ssh.addHostKeyVerifier(net.schmizz.sshj.transport.verification.PromiscuousVerifier())
         }
 
 
@@ -108,7 +124,7 @@ class SshExecOptions(val executor: Executor) {
     /**
      * @return the underlying SSH Client in case more specific configurations are necessary
      */
-    fun ssh(): SSHClient {
+    fun ssh(): net.schmizz.sshj.SSHClient {
         return ssh
     }
 
@@ -142,7 +158,7 @@ class SshExecOptions(val executor: Executor) {
         return this
     }
 
-    fun setHostVerifier(verifier: HostKeyVerifier): SshExecOptions {
+    fun setHostVerifier(verifier: net.schmizz.sshj.transport.verification.HostKeyVerifier): SshExecOptions {
         this.verifier = verifier
         return this
     }
