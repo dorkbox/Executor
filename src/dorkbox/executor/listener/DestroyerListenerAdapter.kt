@@ -27,19 +27,12 @@ import dorkbox.executor.Executor
  * @author Rein Raudjärv
  * @see ProcessDestroyer
  */
-class DestroyerListenerAdapter(destroyer: ProcessDestroyer?) : ProcessListener() {
-    private val destroyer: ProcessDestroyer
-
+class DestroyerListenerAdapter(private val destroyer: ProcessDestroyer) : ProcessListener() {
     override fun afterStart(process: Process, executor: Executor) {
         destroyer.add(process)
     }
 
     override fun afterStop(process: Process) {
         destroyer.remove(process)
-    }
-
-    init {
-        requireNotNull(destroyer) { "Process destroyer must be provided." }
-        this.destroyer = destroyer
     }
 }
