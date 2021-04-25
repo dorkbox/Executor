@@ -44,7 +44,7 @@ import dorkbox.executor.Executor
 import dorkbox.executor.stream.nopStreams.NopInputStream
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import mu.KotlinLogging
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import java.io.IOException
 import java.io.InputStream
@@ -114,7 +114,7 @@ class PumpStreamHandler(out: OutputStream = System.out,
                         asyncSupport: Boolean = false) : IOStreamHandler(out, err, input, asyncSupport) {
 
     companion object {
-        private val log = KotlinLogging.logger {}
+        private val log = LoggerFactory.getLogger(PumpStreamHandler::class.java)
 
         /**
          * the default size of the internal buffer for copying the streams
@@ -545,9 +545,7 @@ class PumpStreamHandler(out: OutputStream = System.out,
                  * So since Java 8 after UNIXProcess detects the exit and there's something in the output buffer closing this stream throws IOException
                  * with message "Stream closed" from NullOutputStream.
                  */
-                log.trace(e) {
-                    "Failed to close process output stream:"
-                }
+                log.trace("Failed to close process output stream", e)
             }
             else {
                 caught = add(caught, e)

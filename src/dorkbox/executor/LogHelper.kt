@@ -19,7 +19,6 @@
 package dorkbox.executor
 
 import org.slf4j.Logger
-import org.slf4j.helpers.MarkerIgnoringBase
 
 object LogHelper {
     fun fixSshLogger(log: Logger?) {
@@ -106,7 +105,7 @@ object LogHelper {
      *
      * This is NOT to be used for performant critical logs!
      */
-    open class LogHelperLogger(name: String) : MarkerIgnoringBase() {
+    open class LogHelperLogger(name: String) : org.slf4j.helpers.MarkerIgnoringBase() {
         val logger = org.slf4j.LoggerFactory.getLogger(name)!!
 
         /**

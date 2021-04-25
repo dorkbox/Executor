@@ -39,7 +39,7 @@
 
 package dorkbox.executor.listener
 
-import mu.KotlinLogging
+import org.slf4j.LoggerFactory
 
 /**
  * Destroys all registered Processes when the VM exits.
@@ -57,7 +57,7 @@ import mu.KotlinLogging
  */
 class ShutdownHookProcessDestroyer : ProcessDestroyer, Runnable {
     companion object {
-        private val log = KotlinLogging.logger{}
+        private val log = LoggerFactory.getLogger(ShutdownHookProcessDestroyer::class.java)
 
         /**
          * Singleton instance of the [ShutdownHookProcessDestroyer].

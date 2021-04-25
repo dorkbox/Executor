@@ -27,8 +27,8 @@ import dorkbox.executor.stream.IOStreamHandler
 import dorkbox.executor.stream.PumpStreamHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import mu.KotlinLogging
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -79,7 +79,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
 
     companion object {
         private val EOL = "\n".toByteArray(UTF_8)
-        private val log = KotlinLogging.logger {}
+        private val log = LoggerFactory.getLogger(DeferredProcessResult::class.java)
 
         /**
          * In case [InvalidExitValueException] is thrown and we have read the process output we include the output up to this length
@@ -386,9 +386,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                 } catch (e: ExecutionException) {
                     throw IllegalStateException("Could not close streams of $process", e.cause)
                 } catch (e: TimeoutCancellationException) {
-                    log.warn {
-                        "Could not close streams of $process in ${params.closeTimeout} ${getUnitsAsString(params.closeTimeout, params.closeTimeoutUnit)}"
-                    }
+                    log.warn("Could not close streams of $process in ${params.closeTimeout} ${getUnitsAsString(params.closeTimeout, params.closeTimeoutUnit)}")
                 }
             }
         }

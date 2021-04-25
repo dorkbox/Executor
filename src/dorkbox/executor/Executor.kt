@@ -39,7 +39,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -84,9 +83,9 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "3.1"
+        const val version = "3.2"
 
-        val log = KotlinLogging.logger { }
+        val log = LoggerFactory.getLogger(Executor::class.java)
         val IS_OS_WINDOWS: Boolean
         val IS_OS_MAC: Boolean
 

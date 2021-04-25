@@ -19,7 +19,7 @@ package dorkbox.executor
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.processResults.SyncProcessResult
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeoutException
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException
 class JvmExecOptions(private val executor: Executor) {
 
     companion object {
-        private val log = KotlinLogging.logger { }
+        private val log = LoggerFactory.getLogger(JvmExecOptions::class.java)
 
         private val SPACE_REGEX = " ".toRegex()
 
@@ -105,7 +105,7 @@ class JvmExecOptions(private val executor: Executor) {
                     File("java")
                 }
 
-                log.error { "Unable to find JVM executable [java.home=" + System.getProperty("java.home") + "]! Using '$jvmExecutable' as the default" }
+                log.error("Unable to find JVM executable [java.home=" + System.getProperty("java.home") + "]! Using '$jvmExecutable' as the default")
             }
 
             return jvmExecutable!!
@@ -150,7 +150,7 @@ class JvmExecOptions(private val executor: Executor) {
 
                 count++
             } catch (e: Exception) {
-                log.error(e) { "Error processing classpath!!" }
+                log.error("Error processing classpath!!", e)
             }
 
             if (count < totalSize) {
