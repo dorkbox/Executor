@@ -110,7 +110,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:1.8.0-beta4")
 
-    compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha5") // ONLY used to fixup the SSHJ logger (in LogHelper)
+    compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha4") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
@@ -122,7 +122,7 @@ dependencies {
     compileOnly("com.hierynomus:sshj:${Extras.sshjVer}")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
+    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
 
     // we want to test SSH functions. Comment this out to view the exception when sshj is not available
     testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
