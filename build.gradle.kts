@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2021 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 
-import dorkbox.gradle.kotlin
 import java.time.Instant
 
 ///////////////////////////////
@@ -25,15 +24,12 @@ import java.time.Instant
 ///////////////////////////////
 
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
-gradle.startParameter.warningMode = WarningMode.All
 
 plugins {
-    java
-
-    id("com.dorkbox.GradleUtils") version "1.17"
-    id("com.dorkbox.Licensing") version "2.5.5"
+    id("com.dorkbox.GradleUtils") version "2.6"
+    id("com.dorkbox.Licensing") version "2.6.1"
     id("com.dorkbox.VersionUpdate") version "2.3"
-    id("com.dorkbox.GradlePublish") version "1.10"
+    id("com.dorkbox.GradlePublish") version "1.11"
 
     kotlin("jvm") version "1.4.32"
 }
@@ -43,7 +39,7 @@ object Extras {
     const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
     const val group = "com.dorkbox"
     const val id = "Executor"
-    const val version = "3.1"
+    const val version = "3.2"
 
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
@@ -51,29 +47,25 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.4.2"
-    const val sshjVer = "0.30.0"
+    const val coroutineVer = "1.4.3"
+    const val sshjVer = "0.31.0"
 }
 
 ///////////////////////////////
 /////  assign 'Extras'
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
-GradleUtils.fixIntellijPaths()
-GradleUtils.defaultResolutionStrategy()
+GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
-    it.apply {
-        // see: https://kotlinlang.org/docs/reference/using-gradle.html
-
-        freeCompilerArgs = listOf(
-                // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
-                "-Xinline-classes",
-                // enable the use of experimental methods
-                "-Xopt-in=kotlin.RequiresOptIn"
-        )
-    }
+    // see: https://kotlinlang.org/docs/reference/using-gradle.html
+    freeCompilerArgs = listOf(
+            // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
+            "-Xinline-classes",
+            // enable the use of experimental methods
+            "-Xopt-in=kotlin.RequiresOptIn"
+    )
 }
-
+GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
     license(License.APACHE_2) {
@@ -94,74 +86,9 @@ licensing {
     }
 }
 
-val main_Java9Config : Configuration by configurations.creating { extendsFrom(configurations.implementation.get()) }
-val SourceSetContainer.main_Java9: SourceSet get() = maybeCreate("main_Java9")
-fun SourceSetContainer.main_Java9(block: SourceSet.() -> Unit) = main_Java9.apply(block)
-
-sourceSets {
-    main {
-        kotlin {
-            setSrcDirs(listOf("src"))
-
-            // want to include kotlin files for the source. 'setSrcDirs' resets includes...
-            include("**/*.kt")
-        }
-    }
-
-    main_Java9 {
-        kotlin {
-            setSrcDirs(listOf("src9"))
-
-            // want to include kotlin files for the source. 'setSrcDirs' resets includes...
-            include("**/*.kt")
-        }
-    }
-
-    test {
-        java {
-            setSrcDirs(listOf("test"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java")
-        }
-
-        kotlin {
-            setSrcDirs(listOf("test"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java", "**/*.kt")
-        }
-    }
-}
-
-repositories {
-    mavenLocal() // this must be first!
-    jcenter()
-}
-
-tasks.named<JavaCompile>("compileMain_Java9Java") {
-    dependsOn("compileJava")
-
-    sourceCompatibility = "9"
-    targetCompatibility = "9"
-}
-
-tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileMain_Java9Kotlin") {
-    dependsOn("compileJava")
-
-    sourceCompatibility = "9"
-    targetCompatibility = "9"
-
-    kotlinOptions.jvmTarget = "9"
-}
+// TODO::::: how to mark this package as "sealed" in the manifest?
 
 tasks.jar.get().apply {
-    // this is required for making the java 9+ version possible
-    from(sourceSets.main_Java9.output.classesDirs) {
-        exclude("META-INF")
-        into("META-INF/versions/9")
-    }
-
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
         attributes["Name"] = Extras.name
@@ -173,38 +100,32 @@ tasks.jar.get().apply {
         attributes["Implementation-Title"] = "${Extras.group}.${Extras.id}"
         attributes["Implementation-Version"] = Extras.buildDate
         attributes["Implementation-Vendor"] = Extras.vendor
-
-        attributes["Automatic-Module-Name"] = Extras.id
-
-        attributes["Multi-Release"] = "true"
     }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
 
-    implementation("com.dorkbox:Updates:1.0")
+    implementation("com.dorkbox:Updates:1.1")
 
-    // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:2.0.6")  // kotlin wrapper for slf4j
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-api:1.8.0-beta4")
 
-    compileOnly("ch.qos.logback:logback-classic:1.2.3") // ONLY used to fixup the SSHJ logger (in LogHelper)
+    compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha5") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
-    // api("com.jcraft:jsch:0.1.55")
-    // NOTE: This SSH implementation works (and is well documented)
+    // implementation("com.jcraft:jsch:0.1.55")
+    // NOTE: The SSHJ implementation works and is well documented. It is also used by Intellij 2019.2+, so it is also well tested and used
     // https://github.com/hierynomus/sshj
-    implementation("com.hierynomus:sshj:${Extras.sshjVer}")
-
+    // This is *compileOnly* because SSH command execution is not common, and the developer that needs it can just add the appropriate
+    // library to enable SSH support
+    compileOnly("com.hierynomus:sshj:${Extras.sshjVer}")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("ch.qos.logback:logback-classic:1.2.3")
-}
+    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
 
-kotlin.sourceSets["main_Java9"].dependencies {
-    implementation("com.hierynomus:sshj:${Extras.sshjVer}")
+    // we want to test SSH functions. Comment this out to view the exception when sshj is not available
+    testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
 }
 
 publishToSonatype {
