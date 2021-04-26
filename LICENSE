@@ -31,24 +31,6 @@
        Copyright 2021
          QOS.ch
 
-     - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
-       [The Apache Software License, Version 2.0]
-       https://github.com/Kotlin/kotlinx.coroutines
-       Copyright 2021
-         JetBrains s.r.o.
-
-     - kotlin-logging - Lightweight logging framework for Kotlin
-       [The Apache Software License, Version 2.0]
-       https://github.com/MicroUtils/kotlin-logging
-       Copyright 2021
-         Ohad Shai
-
-     - SLF4J - Simple facade or abstraction for various logging frameworks
-       [MIT License]
-       http://www.slf4j.org
-       Copyright 2021
-         QOS.ch
-
      - SSHJ - SSHv2 library for Java
        [The Apache Software License, Version 2.0]
        https://github.com/hierynomus/sshj
@@ -83,6 +65,18 @@
            https://github.com/str4d/ed25519-java
              https://github.com/str4d
 
+     - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
+       [The Apache Software License, Version 2.0]
+       https://github.com/Kotlin/kotlinx.coroutines
+       Copyright 2021
+         JetBrains s.r.o.
+
+     - SLF4J - Simple facade or abstraction for various logging frameworks
+       [MIT License]
+       http://www.slf4j.org
+       Copyright 2021
+         QOS.ch
+
      - Updates - Software Update Management
        [The Apache Software License, Version 2.0]
        https://git.dorkbox.com/dorkbox/Updates
@@ -97,9 +91,3 @@
              JetBrains s.r.o. and Kotlin Programming Language contributors
            Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
            See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
-
-         - PropertyLoader - Property annotation and loader for fields
-           [The Apache Software License, Version 2.0]
-           https://git.dorkbox.com/dorkbox/PropertyLoader
-           Copyright 2021
-             Dorkbox LLC
