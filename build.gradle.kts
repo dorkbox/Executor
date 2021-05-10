@@ -91,8 +91,6 @@ sourceSets.test {
     kotlin.include("**/*.java", "**/*.kt") // we have some java we depend on for unit tests
 }
 
-// TODO::::: how to mark this package as "sealed" in the manifest?
-
 tasks.jar.get().apply {
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
