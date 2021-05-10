@@ -34,8 +34,8 @@ import java.nio.charset.Charset
  */
 open class AsyncProcessOutput(private val channel: Channel<Byte>, private val processResult: SyncProcessResult?) {
     companion object {
-        private val NEW_LINE_WIN = "\r".toCharArray().first().toInt()
-        private val NEW_LINE_NIX = "\n".toCharArray().first().toInt()
+        private val NEW_LINE_WIN = "\r".toCharArray().first().code
+        private val NEW_LINE_NIX = "\n".toCharArray().first().code
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

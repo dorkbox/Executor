@@ -23,7 +23,8 @@ import kotlinx.coroutines.channels.Channel
 // This IS NOT bi-directional waiting. The method names to not reflect this, however there is no possibility of race conditions w.r.t. waiting
 // https://stackoverflow.com/questions/55421710/how-to-suspend-kotlin-coroutine-until-notified
 // https://kotlinlang.org/docs/reference/coroutines/channels.html
-inline class SuspendNotifier(private val channel: Channel<Unit> = Channel(2)) {
+@JvmInline
+value class SuspendNotifier(private val channel: Channel<Unit> = Channel(2)) {
     // "receive' suspends until another coroutine invokes "send"
     // and
     // "send" WILL NOT suspend. If there nothing waiting, then nothing happens

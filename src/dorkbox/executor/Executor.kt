@@ -104,7 +104,7 @@ open class Executor {
 
         init {
             // cannot use any dependencies!
-            val osName = System.getProperty("os.name").toLowerCase()
+            val osName = System.getProperty("os.name").lowercase()
             IS_OS_WINDOWS = osName.startsWith("win")
             IS_OS_MAC = osName.startsWith("mac") || osName.startsWith("darwin")
 

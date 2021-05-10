@@ -73,7 +73,8 @@ interface IOStream {
 
 
 
-inline class PumpedOutputStream(private val out: OutputStream) : IOStream {
+@JvmInline
+value class PumpedOutputStream(private val out: OutputStream) : IOStream {
     override suspend fun pump(length: Int, inputStream: InputStream) {
         (0 until length.coerceAtMost(PumpStreamHandler.DEFAULT_SIZE)).forEach { _ ->
             out.write(inputStream.read())

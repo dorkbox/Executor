@@ -15,6 +15,7 @@
  */
 
 
+import dorkbox.gradle.kotlin
 import java.time.Instant
 
 ///////////////////////////////
@@ -26,12 +27,12 @@ import java.time.Instant
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.6"
-    id("com.dorkbox.Licensing") version "2.6.1"
+    id("com.dorkbox.GradleUtils") version "2.8"
+    id("com.dorkbox.Licensing") version "2.7"
     id("com.dorkbox.VersionUpdate") version "2.3"
     id("com.dorkbox.GradlePublish") version "1.11"
 
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
 }
 
 object Extras {
@@ -74,16 +75,20 @@ licensing {
         author(Extras.vendor)
 
         extra("ZT Process Executor", License.APACHE_2) {
-            it.url("https://github.com/zeroturnaround/zt-exec")
-            it.copyright(2014)
-            it.author("ZeroTurnaround LLC")
+            url("https://github.com/zeroturnaround/zt-exec")
+            copyright(2014)
+            author("ZeroTurnaround LLC")
         }
         extra("Apache Commons Exec", License.APACHE_2) {
-            it.url("https://commons.apache.org/proper/commons-exec/")
-            it.copyright(2014)
-            it.author("The Apache Software Foundation")
+            url("https://commons.apache.org/proper/commons-exec/")
+            copyright(2014)
+            author("The Apache Software Foundation")
         }
     }
+}
+
+sourceSets.test {
+    kotlin.include("**/*.java", "**/*.kt") // we have some java we depend on for unit tests
 }
 
 // TODO::::: how to mark this package as "sealed" in the manifest?
@@ -113,7 +118,7 @@ dependencies {
     compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha4") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
-    //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubutnu 18.04 instance
+    //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubuntu 18.04 instance
     // implementation("com.jcraft:jsch:0.1.55")
     // NOTE: The SSHJ implementation works and is well documented. It is also used by Intellij 2019.2+, so it is also well tested and used
     // https://github.com/hierynomus/sshj

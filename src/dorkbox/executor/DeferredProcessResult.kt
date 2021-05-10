@@ -542,7 +542,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
     }
 
     private fun getUnitsAsString(timeout: Long, timeUnit: TimeUnit): String {
-        var result = timeUnit.toString().toLowerCase()
+        var result = timeUnit.toString().lowercase()
 
         if (timeout == 1L) {
             // fix plurality
