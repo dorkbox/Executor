@@ -27,12 +27,12 @@ import java.time.Instant
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.8"
-    id("com.dorkbox.Licensing") version "2.7"
+    id("com.dorkbox.GradleUtils") version "2.8.1"
+    id("com.dorkbox.Licensing") version "2.8"
     id("com.dorkbox.VersionUpdate") version "2.3"
     id("com.dorkbox.GradlePublish") version "1.11"
 
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.20"
 }
 
 object Extras {
