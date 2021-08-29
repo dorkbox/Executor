@@ -27,9 +27,9 @@ import java.time.Instant
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.8.1"
-    id("com.dorkbox.Licensing") version "2.8"
-    id("com.dorkbox.VersionUpdate") version "2.3"
+    id("com.dorkbox.GradleUtils") version "2.9"
+    id("com.dorkbox.Licensing") version "2.9.2"
+    id("com.dorkbox.VersionUpdate") version "2.4"
     id("com.dorkbox.GradlePublish") version "1.11"
 
     kotlin("jvm") version "1.5.20"
@@ -40,7 +40,7 @@ object Extras {
     const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
     const val group = "com.dorkbox"
     const val id = "Executor"
-    const val version = "3.3"
+    const val version = "3.3.1"
 
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com"
