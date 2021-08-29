@@ -36,11 +36,12 @@ internal object PidHelper {
                 f.isAccessible = true
                 return f.getInt(process).toLong()
             }
+
+            // if (type == "java.lang.Win32Process" || type == "java.lang.ProcessImpl") {
+            // windows is not supported UNLESS we use JNA, which I do not want to do, as we want minimal dependencies.
         } catch (ignored: Exception) {
         }
 
-        // if (type == "java.lang.Win32Process" || type == "java.lang.ProcessImpl") {
-        // windows is not supported UNLESS we use JNA, which I do not want to do, as we want minimal dependencies.
         return INVALID
     }
 }
