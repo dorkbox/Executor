@@ -34,9 +34,7 @@ class SuccessTest {
                 .start()
         }
 
-        val exit: Int = result.getExitValue()
-
-        Assert.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, result.exitValue)
         Assert.assertNotNull(listener.executor)
         Assert.assertNotNull(listener.process)
         Assert.assertNotNull(listener.result)

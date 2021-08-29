@@ -27,18 +27,16 @@ package dorkbox.executor.processResults
  */
 open class SyncProcessResult(
         /**
-         * Gets the PID for the currently running process. This doesn't make sense for remotely executed processes (which return 0)
+         * @return the PID for the currently running process. This doesn't make sense for remotely executed processes (which return 0)
          */
         val pid: Long,
-        private val exitValue: Int,
+
+        /**
+         * @return the exit value of the finished process.
+         */
+        override val exitValue: Int,
         private val out: ByteArray) : ProcessResult {
 
-    /**
-     * @return the exit value of the finished process.
-     */
-    override fun getExitValue(): Int {
-        return exitValue
-    }
 
     /**
      * @return true if this result has output

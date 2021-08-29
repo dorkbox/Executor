@@ -34,5 +34,5 @@ open class InvalidResultException(message: String, val result: ProcessResult) : 
      * @return the exit value of the finished process.
      */
     val exitValue: Int
-        get() = result.getExitValue()
+        get() = result.exitValue
 }

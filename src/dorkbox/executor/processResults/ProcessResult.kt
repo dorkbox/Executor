@@ -26,7 +26,7 @@ interface ProcessResult {
     /**
      * @return the exit value of the finished process.
      */
-    fun getExitValue(): Int
+    val exitValue: Int
 
     /**
      * @return true if this result has output

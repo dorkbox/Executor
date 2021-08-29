@@ -77,7 +77,7 @@ class ProcessExecutorMainTest {
             Executor()
                 .command("java", "-version")
                 .startAsShell()
-                .getExitValue()
+                .exitValue
         }
 
         Assert.assertEquals(0, exit.toLong())
@@ -89,7 +89,7 @@ class ProcessExecutorMainTest {
             Executor()
                 .command("java", "-version")
                 .start()
-                .getExitValue()
+                .exitValue
         }
 
         Assert.assertEquals(0, exit.toLong())
@@ -101,7 +101,7 @@ class ProcessExecutorMainTest {
             Executor()
                 .commandSplit("java -version")
                 .start()
-                .getExitValue()
+                .exitValue
         }
 
         Assert.assertEquals(0, exit.toLong())
@@ -114,7 +114,7 @@ class ProcessExecutorMainTest {
             Executor()
                 .command(iterable)
                 .start()
-                .getExitValue()
+                .exitValue
         }
 
         Assert.assertEquals(0, exit.toLong())
@@ -126,7 +126,7 @@ class ProcessExecutorMainTest {
             .command("java", "-version")
             .startAsync()
             .awaitBlocking()
-            .getExitValue()
+            .exitValue
         Assert.assertEquals(0, exit.toLong())
     }
 
@@ -136,7 +136,7 @@ class ProcessExecutorMainTest {
             .command("java", "-version")
             .startAsync()
             .awaitBlocking(1000)
-            .getExitValue()
+            .exitValue
         Assert.assertEquals(0, exit.toLong())
     }
 

@@ -94,7 +94,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
          */
         internal fun checkExit(attributes: ProcessAttributes, result: ProcessResult) {
             val allowedExitValues = attributes.allowedExitValues
-            val exitValue = result.getExitValue()
+            val exitValue = result.exitValue
 
             if (allowedExitValues.isNotEmpty() && !allowedExitValues.contains(exitValue)) {
                 val sb = StringBuilder()

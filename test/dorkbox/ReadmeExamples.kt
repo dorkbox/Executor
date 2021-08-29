@@ -58,7 +58,7 @@ internal class ReadmeExamples {
             Executor()
                 .command("java", "-version")
                 .start()
-                .getExitValue()
+                .exitValue
         }
     }
 

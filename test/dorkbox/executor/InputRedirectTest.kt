@@ -63,7 +63,7 @@ class InputRedirectTest {
             exec.redirectInput(bais)
                 .enableRead()
                 .start()
-                .getExitValue()
+                .exitValue
         }
 
         log.debug("Exit: {}", exit)
