@@ -1216,8 +1216,6 @@ open class Executor {
         return prepareProcess(true)
     }
 
-
-
     /**
      * The calling thread will immediately execute the sub process as a shell command (bash/cmd/etc).
      *
@@ -1268,6 +1266,8 @@ open class Executor {
             startAsShell()
         }
     }
+
+
 
 
     /**
@@ -1557,7 +1557,7 @@ open class Executor {
         val separateErrorStream = !builder.redirectErrorStream()
         streams.start(nativeProcess, separateErrorStream, highPerformanceIO)
 
-        // Invoke listeners - changing this executor does not affect the started process any more
+        // Invoke listeners - changing this executor does not affect the started process
         newListeners.afterStart(nativeProcess, this)
 
         val logger = logger
