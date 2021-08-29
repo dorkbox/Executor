@@ -373,7 +373,7 @@ open class Executor {
      *
      * @return This process executor.
      */
-    fun exectuable(exe: String): Executor  {
+    fun executable(exe: String): Executor  {
         builder.command().add(0, exe)
         return this
     }
@@ -383,7 +383,7 @@ open class Executor {
      *
      * @return This process executor.
      */
-    fun exectuable(exe: File): Executor {
+    fun executable(exe: File): Executor {
         builder.command().add(0, exe.absolutePath)
         return this
     }
@@ -505,6 +505,33 @@ open class Executor {
     fun environment(name: String, value: String?): Executor {
         environment[name] = value
         return this
+    }
+
+    /**
+     * Copies the current system environment into the executable's environment.
+     *
+     * Normally the system environment is not used for execution
+     *
+     * @return This process executor.
+     */
+    fun useSystemEnvironment(): Executor {
+        environment.putAll(System.getenv())
+        return this
+    }
+
+    /**
+     * It is possible, however unlikely (and never casually noticed), that the
+     * PATH environment variable can be "PATH", "Path", or "path" -- all depending
+     * on what is set.
+     *
+     * This will search for all three cases in the following precedence: PATH -> Path -> path
+     *
+     * @return the system path environment variable
+     */
+    fun getSystemPath(): String {
+        val systemEnv = System.getenv()
+
+        return systemEnv["PATH"] ?: systemEnv["Path"] ?: systemEnv["path"] ?: ""
     }
 
     /**
@@ -1366,6 +1393,50 @@ open class Executor {
 
         // configure the environment
         if (environment.isNotEmpty()) {
+            // Take care of Windows environments that may contain "Path" OR "PATH" or "path" - both possibly existing, but not necessarily
+            val systemEnv = System.getenv()
+            val systemUsesAllCapsPath = systemEnv["PATH"] != null
+            val systemUsesMixCasePath = systemEnv["Path"] != null
+            val systemUsesLowCasePath = systemEnv["path"] != null
+
+            if (systemUsesAllCapsPath || systemUsesMixCasePath || systemUsesLowCasePath) {
+                // we have to make sure we use the same for our locally set env vars!
+                val localEnvUsesAllCapsPath = environment.remove("PATH") ?: ""
+                val localEnvUsesMixCasePath = environment.remove("Path") ?: ""
+                val localEnvUsesLowCasePath = environment.remove("path") ?: ""
+
+                if (localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesLowCasePath.isNotEmpty()) {
+                    // we jam these all together, if possible
+                    var path = ""
+                    if (localEnvUsesAllCapsPath.isNotEmpty()) {
+                        path += localEnvUsesAllCapsPath
+                    }
+
+                    if (localEnvUsesMixCasePath.isNotEmpty()) {
+                        if (path.isNotEmpty()) {
+                            path += File.pathSeparator
+                        }
+                        path += localEnvUsesAllCapsPath
+                    }
+
+                    if (localEnvUsesLowCasePath.isNotEmpty()) {
+                        if (path.isNotEmpty()) {
+                            path += File.pathSeparator
+                        }
+                        path += localEnvUsesLowCasePath
+                    }
+
+                    val correctedPath = when {
+                        systemUsesAllCapsPath -> "PATH"
+                        systemUsesMixCasePath -> "Path"
+                        systemUsesLowCasePath -> "path"
+                        else -> "PATH"
+                    }
+
+                    environment[correctedPath] = path
+                }
+            }
+
             val env = builder.environment()
             environment.forEach { (key, value) ->
                 if (value == null) {
