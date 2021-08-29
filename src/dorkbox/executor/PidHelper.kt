@@ -19,7 +19,7 @@ package dorkbox.executor
 import java.lang.reflect.Field
 
 /**
- * In Java <9, this will return 0, since there is no consistent method to get the PID from the specified process
+ * In Java <9, this will return -1, since there is no consistent method to get the PID from the specified process
  */
 internal object PidHelper {
     const val INVALID = -1L
