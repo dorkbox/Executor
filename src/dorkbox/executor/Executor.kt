@@ -149,9 +149,33 @@ open class Executor {
         /**
          * Quickly run, then read the output of a process. This is very simple. For advanced usage, use the full API.
          */
+        fun run(executable: File, args: Iterable<String>): String {
+            return Executor()
+                .executable(executable)
+                .command(args)
+                .enableRead()
+                .startBlocking()
+                .output.utf8()
+        }
+
+        /**
+         * Quickly run, then read the output of a process. This is very simple. For advanced usage, use the full API.
+         */
         fun run(vararg command: String): String {
             return Executor()
                 .command(listOf(*command))
+                .enableRead()
+                .startBlocking()
+                .output.utf8()
+        }
+
+        /**
+         * Quickly run, then read the output of a process. This is very simple. For advanced usage, use the full API.
+         */
+        fun run(executable: File, vararg args: String): String {
+            return Executor()
+                .executable(executable)
+                .command(listOf(*args))
                 .enableRead()
                 .startBlocking()
                 .output.utf8()
