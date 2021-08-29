@@ -431,6 +431,19 @@ open class Executor {
     }
 
     /**
+     * @return the list of arguments assigned to the executable
+     */
+    fun getArgs(): List<String> {
+        val command = builder.command()
+
+        return if (command.size <= 1) {
+            listOf()
+        } else {
+            command.subList(1, command.size)
+        }
+    }
+
+    /**
      * Returns this process executor's working directory.
      *
      *
