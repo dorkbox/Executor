@@ -63,7 +63,6 @@ import java.util.concurrent.TimeoutException
  *
  *
  *
- *
  * The default configuration for executing a process is following:
  *
  *
@@ -167,7 +166,7 @@ open class Executor {
     /**
      * Environment variables which are added (removed in case of `null` values) to the process being started.
      */
-    private val environment: MutableMap<String, String?> = LinkedHashMap()
+    val environment: MutableMap<String, String?> = LinkedHashMap()
 
 
     /**
@@ -438,16 +437,6 @@ open class Executor {
             builder.directory(directory)
         }
         return this
-    }
-
-    /**
-     * Returns this process executor's additional environment variables.
-     * The returned value is not a copy.
-     *
-     * @return this process executor's environment variables (not `null`).
-     */
-    fun getEnvironment(): Map<String, String?> {
-        return environment
     }
 
     /**
