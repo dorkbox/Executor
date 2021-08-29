@@ -82,7 +82,7 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "3.3.1"
+        const val version = "3.3.2"
 
         val log = LoggerFactory.getLogger(Executor::class.java)
         val IS_OS_WINDOWS: Boolean
@@ -118,9 +118,9 @@ open class Executor {
          * http://bugs.java.com/view_bug.do?bug_id=7028124
          * https://bugs.openjdk.java.net/browse/JDK-6518827
          */
-        internal fun fixArguments(command: Iterable<String>): List<String> {
+        internal fun fixArguments(command: Iterable<String>): MutableList<String> {
             if (!IS_OS_WINDOWS) {
-                return command.toList()
+                return command.toMutableList()
             }
 
             val result = mutableListOf<String>().apply{ addAll(command) }
@@ -305,6 +305,7 @@ open class Executor {
 
     /**
      * Returns this process executor's operating system program and arguments.
+     *
      * The returned list is a copy.
      *
      * @return this process executor's program and its arguments (not `null`).
@@ -321,12 +322,8 @@ open class Executor {
      * @return This process executor.
      */
     fun command(command: Iterable<String>): Executor {
-        val list = mutableListOf<String>()
-        command.forEach {
-            list.add(it)
-        }
-
-        builder.command(fixArguments(list))
+        val list = command.map { it }
+        builder.command().addAll(fixArguments(list))
         return this
     }
 
@@ -338,7 +335,21 @@ open class Executor {
      * @return This process executor.
      */
     fun command(vararg command: String): Executor {
-        builder.command(fixArguments(listOf(*command)))
+        builder.command().addAll(fixArguments(listOf(*command)))
+        return this
+    }
+
+    /**
+     * Sets the program and its arguments which are being executed.
+     *
+     * @param command A file that is the executable
+     * @param args A string array containing the arguments.
+     *
+     * @return This process executor.
+     */
+    fun command(command: File, vararg args: String): Executor {
+        val combined = listOf(command.absolutePath, *args)
+        builder.command().addAll(fixArguments(combined))
         return this
     }
 
@@ -353,8 +364,40 @@ open class Executor {
      * @return This process executor.
      */
     fun commandSplit(commandWithArgs: String): Executor {
-        builder.command(*commandWithArgs.split(EXTRA_SPACE_REGEX).toTypedArray())
+        builder.command().addAll(commandWithArgs.split(EXTRA_SPACE_REGEX))
         return this
+    }
+
+    /**
+     * Sets the command which will be executed. This allows for the executable and arguments to be set separately.
+     *
+     * @return This process executor.
+     */
+    fun exectuable(exe: String): Executor  {
+        builder.command().add(0, exe)
+        return this
+    }
+
+    /**
+     * Sets the command which will be executed. This allows for the executable and arguments to be set separately.
+     *
+     * @return This process executor.
+     */
+    fun exectuable(exe: File): Executor {
+        builder.command().add(0, exe.absolutePath)
+        return this
+    }
+
+    /**
+     * @return The executable assigned to this command. If only arguments are set, this will return the first argument.
+     */
+    fun getExecutable(): String {
+        val command = builder.command()
+        if (command.isEmpty()) {
+            return ""
+        }
+
+        return command[0]
     }
 
     /**
