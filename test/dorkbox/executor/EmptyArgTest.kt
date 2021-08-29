@@ -24,7 +24,6 @@ import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
-import java.util.*
 
 /**
  * Tests passing empty arguments.
@@ -36,6 +35,14 @@ import java.util.*
 class EmptyArgTest {
     @Test
     @Throws(Exception::class)
+    fun testGetArgs() {
+        val output = argumentsAsList("arg1", "", "arg3", "")
+
+        Assert.assertEquals(output.getArgs().size, 5) // because the java file is also one of the args.
+    }
+
+    @Test
+    @Throws(Exception::class)
     fun testReadOutputAndError() {
         val output: String = runBlocking {
             argumentsAsList("arg1", "", "arg3", "").enableRead()
@@ -43,7 +50,7 @@ class EmptyArgTest {
         }
 
         Assert.assertEquals("[arg1, , arg3, ]", output)
-        println(output)
+//        println(output)
     }
 
     private fun argumentsAsList(vararg args: String): Executor {
