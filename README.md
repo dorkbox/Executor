@@ -309,7 +309,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>Executor</artifactId>
-      <version>3.3.2</version>
+      <version>3.4</version>
     </dependency>
 </dependencies>
 ```
@@ -319,7 +319,7 @@ Gradle Info
 ```
 dependencies {
     ...
-    implementation("com.dorkbox:Executor:3.3.2")
+    implementation("com.dorkbox:Executor:3.4")
 }
 ```
 
