@@ -476,6 +476,13 @@ class DeferredProcessResult internal constructor(private val process: Process,
     }
 
     /**
+     * Flushes the output stream to the process.
+     */
+    fun flush() {
+        process.outputStream.flush()
+    }
+
+    /**
      * Cancel waiting for this process to complete
      *
      * @throws IllegalStateException if this process as not be "started" via await()
