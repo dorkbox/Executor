@@ -22,6 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.PrintInputToOutput
 import dorkbox.executor.samples.TestSetup
 import dorkbox.executor.stream.PumpStreamHandler
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -66,5 +68,68 @@ class InputStreamPumperTest {
         }
 
         Assert.assertEquals(str, result)
+    }
+
+
+    @Test
+    fun testConstantReadOutput() {
+        val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
+            .enableRead()
+//            .highPerformanceIO()
+
+        val output = runBlocking {
+            val async = exec.startAsShellAsync()
+
+            launch {
+                (0..10).forEach {
+                    // our test uses a buffered input stream reader, so we have to write full lines for it to process.
+                    // this is an implementation quirk. This is only necessary in this specific example.
+                    async.writeLine("Testing: $it")
+                    delay(1000L)
+                }
+                async.write("\n\n\n")
+            }
+
+            println("Gathering the values")
+            while (async.output.isOpen) {
+                print(async.output.utf8())
+            }
+            println("Done")
+
+            async.await()
+            async.output.utf8()
+        }
+
+        Assert.assertEquals("", output)
+    }
+    @Test
+    fun testConstantReadOutputBuffered() {
+        val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
+            .enableRead()
+//            .highPerformanceIO()
+
+
+        val output = runBlocking {
+            val async = exec.startAsShellAsync()
+
+            launch {
+                (0..10).forEach {
+                    async.writeLine("Testing the next value: $it")
+                    delay(1000L)
+                }
+                async.write("\n\n\n")
+            }
+
+            println("Gathering the values")
+            while (async.output.isOpen) {
+                println(async.output.utf8Buffered())
+            }
+            println("xxx")
+
+            async.await()
+            async.output.utf8()
+        }
+
+        Assert.assertEquals("", output)
     }
 }
