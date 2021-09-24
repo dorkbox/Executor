@@ -30,8 +30,15 @@ class PrintInputToOutput {
         String line = null;
         int count = 0;
         while ((line = br.readLine()) != null) {
-            System.out.print(line);
-            count++;
+            System.out.println(line);
+
+            // only end this if we have 3 line breaks EXCLUSIVE (with no text following)
+            if (line.isEmpty()) {
+                count++;
+            } else {
+                count = 0;
+            }
+
             if (count == 3) {
                 break;
             }
