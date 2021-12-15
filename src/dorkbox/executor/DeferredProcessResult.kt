@@ -408,9 +408,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                     // if we called await(), then save up the extra data (since calls to await() can also return data)
 
                     while (!channel.isEmpty) {
-                        @Suppress("BlockingMethodInNonBlockingContext")
                         out.write(channel.receive().toInt())
-                        yield()
                     }
                 }
 
@@ -549,14 +547,13 @@ class DeferredProcessResult internal constructor(private val process: Process,
     }
 
     private fun getUnitsAsString(timeout: Long, timeUnit: TimeUnit): String {
-        var result = timeUnit.toString().lowercase()
-
-        if (timeout == 1L) {
+        val result = timeUnit.toChronoUnit().name
+        return if (timeout == 1L) {
             // fix plurality
-            result = result.substring(0, result.length - 1)
+            result.substring(0, result.length - 1)
+        } else {
+            result
         }
-
-        return result
     }
 
     private fun getExitCodeOrNull(process: Process?): Int? {
