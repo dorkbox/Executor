@@ -8,12 +8,12 @@ module dorkbox.executor {
     exports dorkbox.executor.stream.nopStreams;
     exports dorkbox.executor.stream.slf4j;
 
-    requires dorkbox.updates;
-    requires org.slf4j;
+    requires transitive dorkbox.updates;
+    requires transitive org.slf4j;
 
-    requires static sshj;
+    requires static com.hierynomus.sshj;
     requires static ch.qos.logback.classic;
 
-    requires kotlin.stdlib;
-    requires java.base;
+    requires transitive kotlin.stdlib;
+    requires kotlinx.coroutines.core.jvm;
 }

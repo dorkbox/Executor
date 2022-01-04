@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import dorkbox.gradle.kotlin
 import java.time.Instant
 
@@ -28,9 +27,9 @@ gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show th
 
 plugins {
     id("com.dorkbox.GradleUtils") version "2.14"
-    id("com.dorkbox.Licensing") version "2.9.2"
+    id("com.dorkbox.Licensing") version "2.10"
     id("com.dorkbox.VersionUpdate") version "2.4"
-    id("com.dorkbox.GradlePublish") version "1.11"
+    id("com.dorkbox.GradlePublish") version "1.12"
 
     kotlin("jvm") version "1.5.21"
 }
@@ -48,8 +47,8 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.4.3"
-    const val sshjVer = "0.31.0"
+    const val coroutineVer = "1.5.2"
+    const val sshjVer = "0.32.0"
 }
 
 ///////////////////////////////
@@ -114,11 +113,14 @@ tasks.jar.get().apply {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Extras.coroutineVer}")
+    // API is used here to allow these dependencies to be transitive, so projects that depend on Executor, do not
+    // have to EXPLICITLY add these as dependencies.
+    api("org.jetbrains.kotlin:kotlin-stdlib")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Extras.coroutineVer}")
 
-    implementation("com.dorkbox:Updates:1.1")
+    api("com.dorkbox:Updates:1.1")
 
-    implementation("org.slf4j:slf4j-api:1.8.0-beta4")
+    api("org.slf4j:slf4j-api:1.8.0-beta4")
 
     compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha4") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
