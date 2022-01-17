@@ -42,9 +42,8 @@ import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
+
 
 
 /**
@@ -1355,10 +1354,11 @@ open class Executor {
     private fun prepareProcess(asyncProcessStart: Boolean): DeferredProcessResult {
         // Invoke listeners - they can modify this executor
         listeners.beforeStart(this)
+        val command = builder.command()
 
         if (jvmExecOptions == null) {
-            // when running "normally", we must check if our commands has been set, otherwise... whoopse!
-            check(builder.command().isNotEmpty()) { "Command has not been set." }
+            // when running "normally", we must check if our commands has been set, otherwise... whoopsie!
+            check(command.isNotEmpty()) { "Command has not been set." }
         }
 
 
@@ -1372,10 +1372,44 @@ open class Executor {
         else if (executeAsShell) {
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
+            // if we are executing as a "shell", ALL OF THE PARAMETERS ARE A SINGLE PARAMETER!
+            // dump all of the parameters, and "start over" -- adding them as a single parameter.
+
+            val shellCommand = command.joinToString(separator = " ")
+            command.clear()
+
+
             if (IS_OS_WINDOWS) {
                 // add our commands to the internal command list BEFORE all other commands
-                builder.command().addAll(0, listOf("cmd", "/c"))
+                command.addAll(listOf("cmd", "/c"))
             } else {
+                // do a quick invocation of the "echo $SHELL" command, and save that for all future runs of the executor,
+                // to calculate what the shell is (and cache it)
+
+                // IF THIS DOES NOT WORK, then parse out the *potential* list of shells below.
+                if (DEFAULT_SHELL == null) {
+                    try {
+                        // we don't support java 6, so the proper method of scanner + auto-closable via java7 is appropriate.
+                        val result = Runtime.getRuntime().exec(arrayOf("sh", "-c", "echo \$SHELL")).inputStream.use { inputStream ->
+                            java.util.Scanner(inputStream).useDelimiter("\\A").use { s ->
+                                if (s.hasNext()) {
+                                    s.next().trim()
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+
+                        if (result != null) {
+                            if (result.isNotBlank() && File(result).canExecute()) {
+                                DEFAULT_SHELL = result
+                            }
+                        }
+                    } catch (ignored: IOException) {
+                    }
+                }
+
+                // fall-back
                 if (DEFAULT_SHELL == null) {
                     arrayOf("/bin/bash", "/usr/bin/bash",
                             "/bin/pfbash", "/usr/bin/pfbash",
@@ -1407,8 +1441,12 @@ open class Executor {
 
                 // *nix
                 // add our commands to the internal command list BEFORE all other commands
-                builder.command().addAll(0, listOf(DEFAULT_SHELL!!, "-c"))
+                command.addAll(listOf(DEFAULT_SHELL!!, "-c"))
             }
+
+            // now add our original command + parameters.
+            command.add(shellCommand)
+
 
             if (IS_OS_MAC && !environment.containsKey("SOFTWARE")) {
                 // Enable LANG overrides
@@ -1466,8 +1504,7 @@ open class Executor {
                     val correctedPath = when {
                         systemUsesAllCapsPath -> "PATH"
                         systemUsesMixCasePath -> "Path"
-                        systemUsesLowCasePath -> "path"
-                        else -> "PATH"
+                        else -> "path"
                     }
 
                     environment[correctedPath] = path
@@ -1488,7 +1525,6 @@ open class Executor {
         // we can read the output IN ADDITION TO having our own output stream for the process.
         if (!readOutput && executeAsShell && streams.out is NopOutputStream) {
             // NOTE: this ONLY works if we are running as a shell!
-            val command = builder.command()
 
             // should we redirect our output to null? we are not interested in the program output
             if (IS_OS_WINDOWS) {
