@@ -84,6 +84,20 @@ class ProcessExecutorMainTest {
     }
 
     @Test
+    fun testJavaVersionAsShellValueIsSomething() {
+        val exit: String = runBlocking {
+            Executor()
+                .command("java", "-version")
+                .enableRead()
+                .startAsShell()
+                .output
+                .string()
+        }
+
+        Assert.assertTrue(exit.isNotEmpty())
+    }
+
+    @Test
     fun testJavaVersion() {
         val exit: Int = runBlocking {
             Executor()
