@@ -33,88 +33,11 @@ class JvmExecOptions(private val executor: Executor) {
         private val log = LoggerFactory.getLogger(JvmExecOptions::class.java)
 
         private val SPACE_REGEX = " ".toRegex()
-
-        /**
-         * Checks whether a Java Virtual Machine can be located in the supplied path.
-         *
-         * @param jvmLocation the location of the JVM to check
-         *
-         * @return the absolute path to the java executable (based on the path) if it exists, or null
-         */
-        private fun getJvmExecutable(jvmLocation: String): File? {
-            // linux does this...
-            val jvmBase = File(jvmLocation).resolve("bin")
-
-            var jvmExecutable = jvmBase.resolve("java")
-            if (jvmExecutable.exists()) {
-                return jvmExecutable
-            }
-
-            if (Executor.IS_OS_WINDOWS) {
-                // windows does this
-                // open a console on windows (alternatively could open "javaw.exe", but we want the ability to redirect IO to the process.
-                jvmExecutable = jvmBase.resolve("java.exe")
-
-                if (jvmExecutable.exists()) {
-                    return  jvmExecutable
-                }
-            }
-
-            return null
-        }
-
-        /**
-         * Reconstructs the path to the JVM used to launch this process of java. It will always use the "console" version, even on windows.
-         */
-        fun getJvmPath(): File {
-            // use the VM in which we're already running
-            var jvmExecutable = getJvmExecutable(System.getProperty("java.home"))
-
-            // Oddly, the Mac OS X specific java flag -Xdock:name will only work if java is launched
-            // from /usr/bin/java, and not if launched by directly referring to <java.home>/bin/java,
-            // even though the former is a symlink to the latter! To work around this, see if the
-            // desired jvm is in fact pointed to by /usr/bin/java and, if so, use that instead.
-            if (Executor.IS_OS_MAC) {
-                try {
-                    val binDir = File("/usr/bin")
-
-                    val javaParentDir = jvmExecutable?.parentFile?.canonicalFile
-                    if (javaParentDir == binDir) {
-                        jvmExecutable = File("/usr/bin/java")
-                    }
-                } catch (ignored: IOException) {
-                }
-            }
-
-            if (jvmExecutable == null && Executor.IS_OS_WINDOWS) {
-                // maybe java.library.path System Property has it. We use the first one that matches.
-                System.getProperty("java.library.path").split(";").forEach {
-                    val path = File(it).resolve("java.exe")
-                    if (path.exists()) {
-                        jvmExecutable = path
-                        return@forEach
-                    }
-                }
-            }
-
-            // hope for the best, maybe it's on the path
-            if (jvmExecutable == null) {
-                jvmExecutable = if (Executor.IS_OS_WINDOWS) {
-                    File("java.exe")
-                } else {
-                    File("java")
-                }
-
-                log.error("Unable to find JVM executable [java.home=" + System.getProperty("java.home") + "]! Using '$jvmExecutable' as the default")
-            }
-
-            return jvmExecutable!!
-        }
     }
 
 
     // this is NOT related to JAVA_HOME, but is instead the location of the JRE that was used to launch java initially.
-    internal var javaLocation = getJvmPath()
+    internal var javaLocation = JvmHelper.getJvmPath()
     internal var mainClass: String? = null
 
     internal var initialHeapSizeInMegabytes = 0
@@ -129,7 +52,7 @@ class JvmExecOptions(private val executor: Executor) {
     internal var cloneClasspath: Boolean = false
 
     /**
-     * Get's the classpath for this JAVA process
+     * Get the classpath for this JAVA process
      */
     fun getClasspath(): String {
         val builder = StringBuilder()
@@ -199,6 +122,7 @@ class JvmExecOptions(private val executor: Executor) {
      * Set the main class to launch (optional, as a JAR can have this in the manifest)
      */
     fun setMainClass(mainClass: String): JvmExecOptions {
+        // we have to normalize the main class path.
         this.mainClass = mainClass
         return this
     }
@@ -368,7 +292,7 @@ class JvmExecOptions(private val executor: Executor) {
         // get the classpath, which is the same as using -cp
         val classpath: String = getClasspath()
 
-        // two versions. JAR vs CLASSES (raw)
+        // two versions. JAR vs CLASSES (classes are "raw", and read directly from disk)
         // JAR has precedence
         when {
             jarFile != null -> {
@@ -383,6 +307,10 @@ class JvmExecOptions(private val executor: Executor) {
                 }
             }
             mainClass != null -> {
+                if (!File(mainClass).canRead()) {
+                    throw IllegalArgumentException("The MainClass file must be readable. Cannot continue with $mainClass")
+                }
+
                 if (classpath.isNotEmpty()) {
                     newArgs.add("-classpath")
                     newArgs.add(classpath)
@@ -405,6 +333,6 @@ class JvmExecOptions(private val executor: Executor) {
         newArgs.addAll(commandLineArgs)
 
         // set the arguments
-        executor.builder.command(newArgs)
+        executor.builder.command(newArgs.joinToString())
     }
 }
