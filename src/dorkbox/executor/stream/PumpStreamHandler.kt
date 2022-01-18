@@ -246,8 +246,8 @@ class PumpStreamHandler(out: OutputStream = System.out,
                 // keep track if we read any data. We suspend for a short timeout if we haven't ready anything
                 readData = false
 
-                // pump input -> process-input
-                length = input.available()  // NOTE: These checks prevent blocking forever on stream.read(...)
+                // pump input -> process-input (NOTE: Can throw an exception if closed!)
+                length = try { input.available() } catch (e: Exception) { 0 }  // NOTE: These checks prevent blocking forever on stream.read(...)
                 if (length > 0) {
                     readData = true
 
@@ -257,16 +257,16 @@ class PumpStreamHandler(out: OutputStream = System.out,
                     processIn.flush()
                 }
 
-                // pump process-output -> out
-                length = processOut.available()
+                // pump process-output -> out (NOTE: Can throw an exception if closed!)
+                length = try { processOut.available() } catch (e: Exception) { 0 }
                 if (length > 0) {
                     readData = true
                     output.pump(length, processOut)
                 }
 
-                // pump process-error -> err
+                // pump process-error -> err  (NOTE: Can throw an exception if closed!)
                 if (processErr !== processOut) {
-                    length = processErr.available()
+                    length = try { processErr.available() } catch (e: Exception) { 0 }
                     if (length > 0) {
                         readData = true
                         error.pump(length, processErr)
@@ -331,8 +331,8 @@ class PumpStreamHandler(out: OutputStream = System.out,
                 // keep track if we read any data. We suspend for a short timeout if we haven't ready anything
                 readData = false
 
-                // pump input -> process-input
-                length = input.available()  // NOTE: These checks prevent blocking forever on stream.read(...)
+                // pump input -> process-input  (NOTE: Can throw an exception if closed!)
+                length = try { input.available() } catch (e: Exception) { 0 }  // NOTE: These checks prevent blocking forever on stream.read(...)
 
                 if (length > 0) {
                     readData = true
@@ -398,8 +398,8 @@ class PumpStreamHandler(out: OutputStream = System.out,
                 // keep track if we read any data. We suspend for a short timeout if we haven't ready anything
                 readData = false
 
-                // pump process-output -> out
-                length = processOut.available()
+                // pump process-output -> out  (NOTE: Can throw an exception if closed!)
+                length = try { processOut.available() } catch (e: Exception) { 0 }
                 if (length > 0) {
                     readData = true
                     output.pump(length, processOut)
@@ -461,8 +461,8 @@ class PumpStreamHandler(out: OutputStream = System.out,
                 // keep track if we read any data. We suspend for a short timeout if we haven't ready anything
                 readData = false
 
-                // pump process-error -> err
-                length = processErr.available()
+                // pump process-error -> err  (NOTE: Can throw an exception if closed!)
+                length = try { processErr.available() } catch (e: Exception) { 0 }
                 if (length > 0) {
                     readData = true
                     error.pump(length, processErr)
