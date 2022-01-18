@@ -333,6 +333,6 @@ class JvmExecOptions(private val executor: Executor) {
         newArgs.addAll(commandLineArgs)
 
         // set the arguments
-        executor.builder.command(newArgs.joinToString())
+        executor.builder.command(newArgs)
     }
 }
