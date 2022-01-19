@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.ArgumentsAsList
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 /**
  * Tests argument splitting.
@@ -40,7 +40,7 @@ class ArgsWithExtraSpaceTest {
             argumentsAsList("arg1 arg2  arg3").enableRead()
                 .start().output.utf8()
         }
-        Assert.assertEquals("[arg1, arg2, arg3]", output)
+        Assertions.assertEquals("[arg1, arg2, arg3]", output)
     }
 
     private fun argumentsAsList(args: String): Executor {

@@ -21,8 +21,8 @@ import dorkbox.executor.samples.PrintArguments
 import dorkbox.executor.samples.PrintInputToOutput
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.PipedInputStream
@@ -41,19 +41,19 @@ class InputStreamTest {
             val async = exec.startAsShellAsync()
 
             async.writeLine(str)
-            async.write("\n\n\n")
+            async.write("\n\n\n\n")
             async.await()
             async.output.utf8()
         }
 
-        Assert.assertEquals(str, output)
+        Assertions.assertEquals(str, output)
     }
 
     @Test
     @Throws(Exception::class)
     fun testWithInputAndRedirectOutput() {
         val str = "Tere Minu Uus vihik"
-        val bais = ByteArrayInputStream(str.toByteArray() + "\n\n\n".toByteArray()) // PrintInputToOutput processes at most 3 lines. triggers the java side to exit
+        val bais = ByteArrayInputStream(str.toByteArray() + "\n\n\n\n".toByteArray()) // PrintInputToOutput processes at most 3 lines. triggers the java side to exit
         val baos = ByteArrayOutputStream()
 
         val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
@@ -64,7 +64,7 @@ class InputStreamTest {
             exec.start()
         }
 
-        Assert.assertEquals(str, baos.toString())
+        Assertions.assertEquals(str, baos.toString())
     }
 
     @Test
@@ -101,11 +101,11 @@ class InputStreamTest {
         val startedProcess = exec.startAsync()
 
         pos.write(str.toByteArray())
-        pos.write("\n\n\n".toByteArray()) // PrintInputToOutput processes at most 3 lines. triggers the java side to exit
+        pos.write("\n\n\n\n".toByteArray()) // PrintInputToOutput processes at most 3 lines. triggers the java side to exit
 
         // Assert that we don't get a TimeoutException
         startedProcess.awaitBlocking(5, TimeUnit.SECONDS)
 
-        Assert.assertEquals(str, baos.toString())
+        Assertions.assertEquals(str, baos.toString())
     }
 }

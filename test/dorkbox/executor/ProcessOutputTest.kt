@@ -18,52 +18,52 @@
 package dorkbox.executor
 
 import dorkbox.executor.processResults.ProcessOutput
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class ProcessOutputTest {
     @Test
     fun testSimple() {
-        Assert.assertEquals(listOf("foo"), ProcessOutput.getLinesFrom("foo"))
+        Assertions.assertEquals(listOf("foo"), ProcessOutput.getLinesFrom("foo"))
     }
 
     @Test
     fun testNewLine() {
-        Assert.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\nbar"))
+        Assertions.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\nbar"))
     }
 
     @Test
     fun testNewLineWithMultipleLines() {
-        Assert.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\nbar1\nfoo2\nbar2"))
+        Assertions.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\nbar1\nfoo2\nbar2"))
     }
 
     @Test
     fun testCarriageReturn() {
-        Assert.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\rbar"))
+        Assertions.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\rbar"))
     }
 
     @Test
     fun testCarriageReturnWithMultipleLines() {
-        Assert.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\rbar1\rfoo2\rbar2"))
+        Assertions.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\rbar1\rfoo2\rbar2"))
     }
 
     @Test
     fun testCarriageReturnAndNewLine() {
-        Assert.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\r\nbar"))
+        Assertions.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\r\nbar"))
     }
 
     @Test
     fun testCarriageReturnAndNewLineWithMultipleLines() {
-        Assert.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\r\nbar1\r\nfoo2\r\nbar2"))
+        Assertions.assertEquals(listOf("foo1", "bar1", "foo2", "bar2"), ProcessOutput.getLinesFrom("foo1\r\nbar1\r\nfoo2\r\nbar2"))
     }
 
     @Test
     fun testTwoNewLines() {
-        Assert.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\n\nbar"))
+        Assertions.assertEquals(listOf("foo", "bar"), ProcessOutput.getLinesFrom("foo\n\nbar"))
     }
 
     @Test
     fun testNewLineAtTheEnd() {
-        Assert.assertEquals(listOf("foo"), ProcessOutput.getLinesFrom("foo\n"))
+        Assertions.assertEquals(listOf("foo"), ProcessOutput.getLinesFrom("foo\n"))
     }
 }

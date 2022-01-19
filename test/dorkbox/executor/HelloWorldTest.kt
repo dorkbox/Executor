@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.HelloWorld
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 
 /**
@@ -44,7 +44,7 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello world!", output)
+        Assertions.assertEquals("Hello world!", output)
     }
 
     @Test
@@ -56,7 +56,7 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello ", output)
+        Assertions.assertEquals("Hello ", output)
     }
 
     @Test
@@ -68,7 +68,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assert.assertEquals("Hello world!", String(out.toByteArray()))
+        Assertions.assertEquals("Hello world!", String(out.toByteArray()))
     }
 
     @Test
@@ -83,8 +83,8 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
-        Assert.assertEquals("world!", String(err.toByteArray()))
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -98,8 +98,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello world!", output)
-        Assert.assertEquals("Hello world!", String(out.toByteArray()))
+        Assertions.assertEquals("Hello world!", output)
+        Assertions.assertEquals("Hello world!", String(out.toByteArray()))
     }
 
     @Test
@@ -113,7 +113,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
     }
 
     @Test
@@ -128,8 +128,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello ", output)
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertEquals("Hello ", output)
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
     }
 
     @Test
@@ -143,7 +143,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assert.assertEquals("world!", String(err.toByteArray()))
+        Assertions.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -158,8 +158,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello ", output)
-        Assert.assertEquals("world!", String(err.toByteArray()))
+        Assertions.assertEquals("Hello ", output)
+        Assertions.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -175,8 +175,8 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
-        Assert.assertEquals("world!", String(err.toByteArray()))
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -193,9 +193,9 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("Hello ", output)
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
-        Assert.assertEquals("world!", String(err.toByteArray()))
+        Assertions.assertEquals("Hello ", output)
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertEquals("world!", String(err.toByteArray()))
     }
 
     private fun helloWorld(): Executor {

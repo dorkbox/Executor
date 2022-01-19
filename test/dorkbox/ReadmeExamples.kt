@@ -26,7 +26,7 @@ import dorkbox.executor.stream.LogOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jStream
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions
 import org.slf4j.LoggerFactory
 import java.io.OutputStream
 import java.util.concurrent.TimeUnit
@@ -134,8 +134,7 @@ internal class ReadmeExamples {
             runBlocking {
                 Executor()
                     .command("java", "-version")
-                    .timeout(60, TimeUnit.SECONDS)
-                    .start()
+                    .start(60, TimeUnit.SECONDS)
             }
         } catch (e: TimeoutException) {
             // process is automatically destroyed
@@ -183,7 +182,7 @@ internal class ReadmeExamples {
             }
 
             val outputString: String = fullOutput.joinToString()
-            Assert.assertFalse(outputString.isEmpty())
+            Assertions.assertFalse(outputString.isEmpty())
         }
     }
 

@@ -25,8 +25,8 @@ import dorkbox.executor.stream.PumpStreamHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
@@ -38,7 +38,7 @@ class InputStreamPumperTest {
     @Throws(Exception::class)
     fun testPumpFromInputToOutput() {
         val str = "Tere Minu Uus vihik"
-        val bais = ByteArrayInputStream((str + "\n\n\n").toByteArray()) // 3\n necessary to tell the java side to stop
+        val bais = ByteArrayInputStream((str + "\n\n\n\n").toByteArray()) // 3\n necessary to tell the java side to stop
         val baos = ByteArrayOutputStream()
         val handler = PumpStreamHandler(baos, System.err, bais)
 
@@ -50,14 +50,14 @@ class InputStreamPumperTest {
             exec.start().output.utf8()
         }
 
-        Assert.assertEquals(str, result)
+        Assertions.assertEquals(str, result)
     }
 
     @Test
     @Throws(Exception::class)
     fun testPumpFromInputToOutputWithInput() {
         val str = "Tere Minu Uus vihik"
-        val bais = ByteArrayInputStream((str + "\n\n\n").toByteArray()) // 3\n necessary to tell the java side to stop
+        val bais = ByteArrayInputStream((str + "\n\n\n\n").toByteArray()) // 3\n necessary to tell the java side to stop
 
         val exec = Executor("java", TestSetup.getFile(PrintInputToOutput::class.java))
             .enableRead()
@@ -67,7 +67,7 @@ class InputStreamPumperTest {
             exec.start().output.utf8()
         }
 
-        Assert.assertEquals(str, result)
+        Assertions.assertEquals(str, result)
     }
 
 
@@ -100,7 +100,7 @@ class InputStreamPumperTest {
             async.output.utf8()
         }
 
-        Assert.assertEquals("", output)
+        Assertions.assertEquals("", output)
     }
     @Test
     fun testConstantReadOutputBuffered() {
@@ -130,6 +130,6 @@ class InputStreamPumperTest {
             async.output.utf8()
         }
 
-        Assert.assertEquals("", output)
+        Assertions.assertEquals("", output)
     }
 }

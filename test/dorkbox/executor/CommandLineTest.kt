@@ -20,8 +20,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.PrintArguments
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.*
@@ -66,27 +66,32 @@ class CommandLineTest {
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class)
     private fun testArguments(vararg args: String) {
         val actual = runBlocking {
-            printArguments(*args).start().output.linesAsUtf8()
+            printArguments(*args)
         }
 
         val expected = listOf(*args)
-        Assert.assertEquals(expected, actual)
+        Assertions.assertEquals(expected, actual)
     }
 
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class)
     private fun testArguments(expected: List<String>, vararg args: String) {
         val actual = runBlocking {
-            printArguments(*args).start().output.linesAsUtf8()
+            printArguments(*args)
         }
 
-        Assert.assertEquals(expected, actual)
+        Assertions.assertEquals(expected, actual)
     }
 
-    private fun printArguments(vararg args: String): Executor {
+    private suspend fun printArguments(vararg args: String): List<String> {
         val command: MutableList<String> = ArrayList()
         command.addAll(listOf("java", TestSetup.getFile(PrintArguments::class.java)))
         command.addAll(listOf(*args))
+
+        // explicitly making this a direct invocation.
         return Executor(command)
             .enableRead()
+            .start()
+            .output
+            .linesAsUtf8()
     }
 }

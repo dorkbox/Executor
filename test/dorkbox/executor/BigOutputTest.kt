@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.BigOutput
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.*
 
@@ -49,7 +49,7 @@ class BigOutputTest {
     @Throws(Exception::class)
     fun testDevNull() {
         runBlocking {
-            bigOutput().start()
+            bigOutput().start(1, TimeUnit.MINUTES)
         }
     }
 
@@ -58,7 +58,7 @@ class BigOutputTest {
     fun testDevNullAsShell() {
         runBlocking {
             // this is faster, because when as a shell, the process is piped to null instead, so there is no output
-            bigOutput().startAsShell()
+            bigOutput().startAsShell(1, TimeUnit.MINUTES)
         }
     }
 
@@ -67,7 +67,7 @@ class BigOutputTest {
     fun testDevNullSeparate() {
         runBlocking {
             bigOutput().redirectErrorStream(false)
-                .start()
+                .start(1, TimeUnit.MINUTES)
         }
     }
 
@@ -77,10 +77,10 @@ class BigOutputTest {
         val output: String = bigOutput()
                                 .enableRead()
                                 .highPerformanceIO()
-                                .startBlocking()
+                                .startBlocking(1, TimeUnit.MINUTES)
                                 .output.utf8()
 
-        Assert.assertEquals(repeat("+-"), output)
+        Assertions.assertEquals(repeat("+-"), output)
     }
 
     @Test
@@ -89,10 +89,10 @@ class BigOutputTest {
         val output: String = bigOutput()
                                 .enableRead()
                                 .redirectErrorStream(false)
-                                .startBlocking()
+                                .startBlocking(1, TimeUnit.MINUTES)
                                 .output.utf8()
 
-        Assert.assertEquals(repeat("+"), output)
+        Assertions.assertEquals(repeat("+"), output)
     }
 
     @Test
@@ -102,9 +102,9 @@ class BigOutputTest {
 
         bigOutput().redirectOutput(out)
             .redirectErrorStream(false)
-            .startBlocking()
+            .startBlocking(1, TimeUnit.MINUTES)
 
-        Assert.assertEquals(repeat("+"), String(out.toByteArray()))
+        Assertions.assertEquals(repeat("+"), String(out.toByteArray()))
     }
 
     @Test
@@ -114,14 +114,13 @@ class BigOutputTest {
 
         bigOutput().redirectError(err)
             .redirectErrorStream(false)
-            .startBlocking()
+            .startBlocking(1, TimeUnit.MINUTES)
 
-        Assert.assertEquals(repeat("-"), String(err.toByteArray()))
+        Assertions.assertEquals(repeat("-"), String(err.toByteArray()))
     }
 
     private fun bigOutput(): Executor {
         // Use timeout in case we get stuck
         return Executor("java", TestSetup.getFile(BigOutput::class.java))
-            .timeout(1, TimeUnit.MINUTES)
     }
 }

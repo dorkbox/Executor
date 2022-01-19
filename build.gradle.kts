@@ -133,11 +133,17 @@ dependencies {
     // library to enable SSH support
     compileOnly("com.hierynomus:sshj:${Extras.sshjVer}")
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(kotlin("test"))
+
+//    testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
 
     // we want to test SSH functions. Comment this out to view the exception when sshj is not available
     testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 publishToSonatype {

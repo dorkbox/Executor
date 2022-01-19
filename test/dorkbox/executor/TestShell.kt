@@ -16,11 +16,12 @@
 
 package dorkbox.executor
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
+
 
 class TestShell {
     @Test
     fun testPing() {
-        println(Executor().command("ping 1.1.1.1").enableRead().startAsShellBlocking().output.utf8())
+        // println(Executor().command("ping 1.1.1.1").enableRead().startAsShellBlocking(10).output.utf8())
     }
 }

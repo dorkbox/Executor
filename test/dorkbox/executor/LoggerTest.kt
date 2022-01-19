@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.stream.LogOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jInfoOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jStream
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.io.OutputStream
 
@@ -55,7 +55,7 @@ class LoggerTest {
 
         val out: OutputStream = executor.streams().out
 
-        Assert.assertTrue("Slf4jInfoOutputStream expected", out is Slf4jInfoOutputStream)
-        Assert.assertEquals(fullName, (out as Slf4jInfoOutputStream).logger.name)
+        Assertions.assertTrue(out is Slf4jInfoOutputStream, "Slf4jInfoOutputStream expected")
+        Assertions.assertEquals(fullName, (out as Slf4jInfoOutputStream).logger.name)
     }
 }

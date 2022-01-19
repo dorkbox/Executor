@@ -23,7 +23,8 @@ import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.samples.ExitLikeABoss
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.util.concurrent.*
 
 class ExitValueTest {
@@ -33,26 +34,23 @@ class ExitValueTest {
         }
     }
 
-    @Test(expected = InvalidExitValueException::class)
+    @Test
     @Throws(Exception::class)
     fun testJavaVersionExitValueCheck() {
-        runBlocking {
-            Executor()
-                .command("java", "-version")
-                .exitValues(3)
-                .start()
+        Assertions.assertThrows(InvalidExitValueException::class.java) {
+            runBlocking {
+                Executor().command("java", "-version").exitValues(3).start()
+            }
         }
     }
 
-    @Test(expected = InvalidExitValueException::class)
+    @Test
     @Throws(Exception::class)
     fun testJavaVersionExitValueCheckTimeout() {
-        runBlocking {
-            Executor()
-                .command("java", "-version")
-                .exitValues(3)
-                .timeout(60, TimeUnit.SECONDS)
-                .start()
+        Assertions.assertThrows(InvalidExitValueException::class.java) {
+            runBlocking {
+                Executor().command("java", "-version").exitValues(3).start(60, TimeUnit.SECONDS)
+            }
         }
     }
 
@@ -75,13 +73,13 @@ class ExitValueTest {
         }
     }
 
-    @Test(expected = InvalidExitValueException::class)
+    @Test
     @Throws(Exception::class)
     fun testCustomExitValueInvalid() {
-        runBlocking {
-            Executor(exitLikeABoss(17))
-                .exitValues(15)
-                .start()
+        Assertions.assertThrows(InvalidExitValueException::class.java) {
+            runBlocking {
+                Executor(exitLikeABoss(17)).exitValues(15).start()
+            }
         }
     }
 }

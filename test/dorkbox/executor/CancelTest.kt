@@ -25,10 +25,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.util.*
 
 class CancelTest {
@@ -49,9 +47,9 @@ class CancelTest {
                 asyncProcess.cancel("took too long!")
             }
 
-            Assert.fail("TimeoutException expected.")
+            Assertions.fail("TimeoutException expected.")
         } catch (e: IllegalStateException) {
-            Assert.assertEquals(e.message, "Unable to cancel a process is not waiting.")
+            Assertions.assertEquals(e.message, "Unable to cancel a process is not waiting.")
         }
     }
 
@@ -70,9 +68,9 @@ class CancelTest {
                 // wait
                 try {
                     asyncProcess.await()
-                    Assert.fail("CancellationException expected.")
+                    Assertions.fail<Void>("CancellationException expected.")
                 } catch (e: CancellationException) {
-                    MatcherAssert.assertThat(e.message, CoreMatchers.containsString(exceptionMessage))
+                    Assertions.assertTrue(e.message?.contains(exceptionMessage) == true)
                 }
             }
 
@@ -112,9 +110,9 @@ class CancelTest {
                 // wait
                 try {
                     asyncProcess.await()
-                    Assert.fail("CancellationException expected.")
+                    Assertions.fail<Void>("CancellationException expected.")
                 } catch (e: CancellationException) {
-                    MatcherAssert.assertThat(e.message, CoreMatchers.containsString(exceptionMessage))
+                    Assertions.assertTrue(e.message?.contains(exceptionMessage) == true)
                 }
             }
 

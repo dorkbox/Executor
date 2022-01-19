@@ -18,8 +18,8 @@
 package dorkbox.executor
 
 import dorkbox.executor.stream.LogOutputStream
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.util.*
@@ -38,7 +38,7 @@ class LogOutputStreamTest {
             stream.write(multiLineString.toByteArray(charset("UTF-8")))
         }
 
-        Assert.assertEquals(listOf(*expectedLines), processedLines)
+        Assertions.assertEquals(listOf(*expectedLines), processedLines)
     }
 
     @Test

@@ -25,10 +25,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class CancelJavaTest {
     private val javaCommand: String by lazy {
@@ -45,7 +43,7 @@ class CancelJavaTest {
                 .start().output.utf8()
 
             println(asyncProcess)
-            Assert.assertEquals(asyncProcess, "Hello world!")
+            Assertions.assertEquals(asyncProcess, "Hello world!")
         }
     }
 
@@ -64,9 +62,9 @@ class CancelJavaTest {
                 // wait
                 try {
                     asyncProcess.await()
-                    Assert.fail("CancellationException expected.")
+                    Assertions.fail<Void>("CancellationException expected.")
                 } catch (e: CancellationException) {
-                    MatcherAssert.assertThat(e.message, CoreMatchers.containsString(exceptionMessage))
+                    Assertions.assertTrue(e.message?.contains(exceptionMessage) == true)
                 }
             }
 

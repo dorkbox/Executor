@@ -22,7 +22,7 @@ package dorkbox.executor
 import dorkbox.executor.samples.PrintArguments
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.File

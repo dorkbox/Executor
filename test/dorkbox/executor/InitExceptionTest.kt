@@ -19,21 +19,21 @@
 package dorkbox.executor
 
 import dorkbox.executor.exceptions.ProcessInitException
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.IOException
 
 class InitExceptionTest {
     @Test
     @Throws(Exception::class)
     fun testNull() {
-        Assert.assertNull(ProcessInitException.newInstance(null, IOException()))
+        Assertions.assertNull(ProcessInitException.newInstance(null, IOException()))
     }
 
     @Test
     @Throws(Exception::class)
     fun testEmpty() {
-        Assert.assertNull(ProcessInitException.newInstance(null, IOException("")))
+        Assertions.assertNull(ProcessInitException.newInstance(null, IOException("")))
     }
 
     @Test
@@ -43,9 +43,9 @@ class InitExceptionTest {
                                                  IOException("java.io.IOException: Cannot run program \"ls\": java.io.IOException: error=12, Cannot allocate memory"))
 
         e!!
-        Assert.assertNotNull(e)
-        Assert.assertEquals("Could not run test. Error=12, Cannot allocate memory", e.message)
-        Assert.assertEquals(12, e.errorCode)
+        Assertions.assertNotNull(e)
+        Assertions.assertEquals("Could not run test. Error=12, Cannot allocate memory", e.message)
+        Assertions.assertEquals(12, e.errorCode)
     }
 
     @Test
@@ -55,8 +55,8 @@ class InitExceptionTest {
                                                  IOException("java.io.IOException: Cannot run program \"sleep\": java.io.IOException: CreateProcess error=2, The system cannot find the file specified"))
 
         e!!
-        Assert.assertNotNull(e)
-        Assert.assertEquals("Could not run test. Error=2, The system cannot find the file specified", e.message)
-        Assert.assertEquals(2, e.errorCode)
+        Assertions.assertNotNull(e)
+        Assertions.assertEquals("Could not run test. Error=2, The system cannot find the file specified", e.message)
+        Assertions.assertEquals(2, e.errorCode)
     }
 }

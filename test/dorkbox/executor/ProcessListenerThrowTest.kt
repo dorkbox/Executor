@@ -22,31 +22,35 @@ import dorkbox.executor.exceptions.InvalidOutputException
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
 
 class ProcessListenerThrowTest {
 
-    @Test(expected = InvalidOutputException::class)
+    @Test
     @Throws(Exception::class)
     fun testJavaVersion() {
-        runBlocking {
-            Executor("java", "-version")
-                .enableRead()
-                .addListener(ProcessListenerThrowImpl())
-                .start()
+        Assertions.assertThrows(InvalidOutputException::class.java) {
+            runBlocking {
+                Executor("java", "-version")
+                    .enableRead()
+                    .addListener(ProcessListenerThrowImpl())
+                    .start()
+            }
         }
     }
 
-    @Test(expected = InvalidOutputException::class)
+    @Test
     @Throws(Exception::class)
     fun testJavaVersionWithTimeout() {
-        runBlocking {
-            Executor("java", "-version")
-                .enableRead()
-                .addListener(ProcessListenerThrowImpl())
-                .timeout(1, TimeUnit.MINUTES)
-                .start()
+        Assertions.assertThrows(InvalidOutputException::class.java) {
+            runBlocking {
+                Executor("java", "-version")
+                    .enableRead()
+                    .addListener(ProcessListenerThrowImpl())
+                    .start(1, TimeUnit.MINUTES)
+            }
         }
     }
 

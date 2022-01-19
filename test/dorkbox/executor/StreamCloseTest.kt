@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.HelloWorld
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 
 /**
@@ -48,8 +48,8 @@ class StreamCloseTest {
                 .start()
         }
 
-        Assert.assertEquals("Hello ", String(out.toByteArray()))
-        Assert.assertFalse(close.isClosed)
+        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assertions.assertFalse(close.isClosed)
     }
 
     @Test
@@ -63,8 +63,8 @@ class StreamCloseTest {
                 .start()
         }
 
-        Assert.assertEquals("world!", String(out.toByteArray()))
-        Assert.assertFalse(close.isClosed)
+        Assertions.assertEquals("world!", String(out.toByteArray()))
+        Assertions.assertFalse(close.isClosed)
     }
 
     private fun helloWorld(): Executor {

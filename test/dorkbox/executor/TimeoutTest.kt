@@ -22,10 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.Loop
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.util.*
 import java.util.concurrent.*
 
@@ -42,15 +40,15 @@ class TimeoutTest {
             runBlocking {
                 Executor()
                     .command(args)
-                    .timeout(1, TimeUnit.SECONDS)
-                    .start()
+                    .start(1, TimeUnit.SECONDS)
             }
 
-            Assert.fail("TimeoutException expected.")
+            Assertions.fail<Void>("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            MatcherAssert.assertThat(e.message, CoreMatchers.containsString("1 second"))
-            MatcherAssert.assertThat(e.message, CoreMatchers.containsString(TestSetup.getFile(
-                    Loop::class.java)))
+            val message = e.message
+
+            Assertions.assertTrue(message?.contains("1 SECOND") == true)
+            Assertions.assertTrue(message?.contains(TestSetup.getFile(Loop::class.java)) == true)
         }
     }
 
@@ -68,9 +66,9 @@ class TimeoutTest {
                 asyncProcess.await(1, TimeUnit.SECONDS)
             }
 
-            Assert.fail("TimeoutException expected.")
+            Assertions.fail<Void>("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            MatcherAssert.assertThat(e.message, CoreMatchers.containsString("1 second"))
+            Assertions.assertTrue(e.message?.contains("1 SECOND") == true)
         }
     }
 
@@ -96,13 +94,12 @@ class TimeoutTest {
             runBlocking {
                 Executor()
                     .command(commands)
-                    .timeout(1, TimeUnit.SECONDS)
-                    .start()
+                    .start(1, TimeUnit.SECONDS)
             }
 
-            Assert.fail("TimeoutException expected.")
+            Assertions.fail<Void>("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            MatcherAssert.assertThat(e.message, CoreMatchers.containsString("1 second"))
+            Assertions.assertTrue(e.message?.contains("1 SECOND") == true)
         }
     }
 
@@ -135,9 +132,9 @@ class TimeoutTest {
                 job.await(1, TimeUnit.SECONDS)
             }
 
-            Assert.fail("TimeoutException expected.")
+            Assertions.fail<Void>("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            MatcherAssert.assertThat(e.message, CoreMatchers.containsString("1 second"))
+            Assertions.assertTrue(e.message?.contains("1 SECOND") == true)
         }
     }
 }

@@ -22,8 +22,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.ArgumentsAsList
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 /**
  * Tests passing empty arguments.
@@ -38,7 +38,7 @@ class EmptyArgTest {
     fun testGetArgs() {
         val output = argumentsAsList("arg1", "", "arg3", "")
 
-        Assert.assertEquals(output.getArgs().size, 5) // because the java file is also one of the args.
+        Assertions.assertEquals(output.getArgs().size, 5) // because the java file is also one of the args.
     }
 
     @Test
@@ -49,7 +49,7 @@ class EmptyArgTest {
                 .start().output.utf8()
         }
 
-        Assert.assertEquals("[arg1, , arg3, ]", output)
+        Assertions.assertEquals("[arg1, , arg3, ]", output)
 //        println(output)
     }
 
