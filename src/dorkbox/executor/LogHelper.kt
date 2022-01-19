@@ -39,7 +39,7 @@ object LogHelper {
             }.forEach {
                 it.level = logLevel
             }
-        } catch (e: Exception) {
+        } catch (ignored: Exception) {
         }
     }
 
@@ -54,19 +54,19 @@ object LogHelper {
 
         when {
             log.isTraceEnabled -> {
-                log.trace(message, arguments)
+                log.trace(message, *arguments)
             }
             log.isDebugEnabled -> {
-                log.debug(message, arguments)
+                log.debug(message, *arguments)
             }
             log.isInfoEnabled -> {
-                log.info(message, arguments)
+                log.info(message, *arguments)
             }
             log.isWarnEnabled -> {
-                log.warn(message, arguments)
+                log.warn(message, *arguments)
             }
             log.isErrorEnabled -> {
-                log.error(message, arguments)
+                log.error(message, *arguments)
             }
         }
     }
