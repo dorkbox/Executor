@@ -455,7 +455,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
         val outputStream = process.outputStream
         outputStream.write(command.toByteArray(UTF_8))
         outputStream.write(EOL)
-        outputStream.flush()
+        try { outputStream.flush() } catch (ignored: Exception) {}
     }
 
     /**
@@ -470,14 +470,14 @@ class DeferredProcessResult internal constructor(private val process: Process,
      */
     fun write(bytes: ByteArray) {
         process.outputStream.write(bytes)
-        process.outputStream.flush()
+        flush()
     }
 
     /**
      * Flushes the output stream to the process.
      */
     fun flush() {
-        process.outputStream.flush()
+        try { process.outputStream.flush() } catch (ignored: Exception) {}
     }
 
     /**
