@@ -86,7 +86,11 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
             // classpath
             val additionalClasspath = System.getProperty("java.class.path")
             if (additionalClasspath.isNotEmpty()) {
-                builder.append(pathSeparator) // have to add a separator
+                if (count > 0) {
+                    // have to add a separator
+                    builder.append(pathSeparator)
+                }
+
                 builder.append(additionalClasspath)
             }
         }
