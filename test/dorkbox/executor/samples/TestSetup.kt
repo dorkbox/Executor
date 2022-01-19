@@ -16,16 +16,29 @@
 
 package dorkbox.executor.samples
 
+import dorkbox.executor.Executor
 import java.io.File
 
 object TestSetup {
     fun getFile(javaClass: Class<*>): String {
-        val file = File("test", javaClass.name.replace('.', '\\') + ".java").absoluteFile
-        return file.absolutePath
+        val properName = if (Executor.IS_OS_WINDOWS) {
+            javaClass.name.replace('.', '\\')
+        } else {
+            javaClass.name.replace('.', '/')
+        }
+
+        val file = File("test", "$properName.java").absoluteFile.canonicalFile
+        return file.path
     }
 
     fun getParentDir(javaClass: Class<*>): File {
-        val file = File("test", javaClass.name.replace('.', '\\') + ".java").absoluteFile
+        val properName = if (Executor.IS_OS_WINDOWS) {
+            javaClass.name.replace('.', '\\')
+        } else {
+            javaClass.name.replace('.', '/')
+        }
+
+        val file = File("test", "$properName.java").absoluteFile.canonicalFile
         return file.parentFile
     }
 }

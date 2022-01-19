@@ -18,6 +18,7 @@
 package dorkbox.executor.samples;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
 public
@@ -30,12 +31,15 @@ class PrintInputToOutput {
         String line = null;
         int count = 0;
         while ((line = br.readLine()) != null) {
-            System.out.println(line);
+
+            // trim is necessary because macos treats line endings DifFeREnTLy
+            line = line.trim();
 
             // only end this if we have 3 line breaks EXCLUSIVE (with no text following)
             if (line.isEmpty()) {
                 count++;
             } else {
+                System.out.print(line);
                 count = 0;
             }
 
