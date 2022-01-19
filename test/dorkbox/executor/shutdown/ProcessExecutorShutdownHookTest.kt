@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2022 dorkbox, llc
  * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
@@ -20,8 +20,9 @@
 package dorkbox.executor.shutdown
 
 import dorkbox.executor.Executor
-import org.junit.Assert
-import org.junit.Test
+import dorkbox.executor.samples.TestSetup
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
@@ -43,14 +44,18 @@ class ProcessExecutorShutdownHookTest {
     @Throws(Exception::class)
     private fun testDestroyOnExit(loopStarterClassFile: Class<*>, fileIsAlwaysCreated: Boolean) {
         val file = WriterLoop.getFile()
-        println(file)
+        println("Data loop file: $file")
+
         if (file.exists()) file.delete()
 
         Executor()
             .redirectOutputAsInfo()
+            .redirectErrorAsInfo()
+            .enableRead()
+            .defaultLogger()
             .asJvmProcess()
             .cloneClasspath()
-            .setMainClass(loopStarterClassFile.name)
+            .setMainClass(TestSetup.getFile(loopStarterClassFile))
             .startBlocking()
 
         // After WriterLoopStarter has finished we expect that WriterLoop is also finished - no-one is updating the file
@@ -61,15 +66,15 @@ class ProcessExecutorShutdownHookTest {
     }
 
     companion object {
-        private const val SLEEP_FOR_RECHECKING_FILE: Long = 4000
+        private const val SLEEP_FOR_RECHECKING_FILE: Long = 4000L
 
         @Throws(InterruptedException::class)
         private fun checkFileStaysTheSame(file: File) {
-            Assert.assertTrue(file.exists())
+            Assertions.assertTrue(file.exists())
             val length = file.length()
 
             Thread.sleep(SLEEP_FOR_RECHECKING_FILE)
-            Assert.assertEquals("File '$file' was still updated.", length, file.length())
+            Assertions.assertEquals(length, file.length(), "File '$file' was still updated.",)
         }
     }
 }

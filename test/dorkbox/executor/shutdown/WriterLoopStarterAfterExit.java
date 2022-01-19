@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2022 dorkbox, llc
  * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
@@ -17,37 +17,40 @@
  * limitations under the License.
  */
 
-package dorkbox.executor.shutdown
+package dorkbox.executor.shutdown;
 
-import dorkbox.executor.Executor
-import dorkbox.executor.samples.TestSetup
-import kotlin.system.exitProcess
-
+import dorkbox.executor.Executor;
+import dorkbox.executor.samples.TestSetup;
 
 /**
  * Starts [WriterLoop] inside shutdown hook and destroys it.
  */
-class WriterLoopStarterAfterExit : Runnable {
-    companion object {
-        private const val SLEEP_AFTER_START: Long = 2000
+public
+class WriterLoopStarterAfterExit implements Runnable {
+    private static Long SLEEP_AFTER_START = 2000L;
 
-        @Throws(Exception::class)
-        @JvmStatic
-        fun main(args: Array<String>) {
-            Runtime.getRuntime().addShutdownHook(Thread(WriterLoopStarterAfterExit()))
 
-            // Launch the process and also destroy it
-            exitProcess(0)
-        }
+    public static
+    void main(String[] args) {
+        System.out.println("Starting output: " + WriterLoop.getFile());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new WriterLoopStarterAfterExit()));
+
+        // Launch the process and also destroy it
+        System.exit(0);
     }
 
-    override fun run() {
+    @Override
+    public
+    void run() {
         try {
-            Executor("java", TestSetup.getFile(WriterLoop::class.java))
-                .destroyOnExit().startBlocking()
-            Thread.sleep(SLEEP_AFTER_START)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            new Executor("java", TestSetup.INSTANCE.getFile(WriterLoop.class))
+                .destroyOnExit()
+                .startBlocking();
+
+            Thread.sleep(SLEEP_AFTER_START);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
