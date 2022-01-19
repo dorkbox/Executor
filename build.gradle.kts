@@ -26,12 +26,12 @@ import java.time.Instant
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.14"
-    id("com.dorkbox.Licensing") version "2.10"
+    id("com.dorkbox.GradleUtils") version "2.16"
+    id("com.dorkbox.Licensing") version "2.11"
     id("com.dorkbox.VersionUpdate") version "2.4"
     id("com.dorkbox.GradlePublish") version "1.12"
 
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.6.10"
 }
 
 object Extras {
@@ -47,7 +47,7 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.5.2"
+    const val coroutineVer = "1.6.0"
     const val sshjVer = "0.32.0"
 }
 
@@ -65,7 +65,7 @@ GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
             "-Xopt-in=kotlin.RequiresOptIn"
     )
 }
-GradleUtils.jpms(JavaVersion.VERSION_1_9)
+//GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
     license(License.APACHE_2) {
@@ -86,14 +86,24 @@ licensing {
     }
 }
 
+
+sourceSets {
+    java {
+        test {
+            java {
+                // we have some java we depend on for unit tests
+                include("**/*.java")
+            }
+        }
+    }
+}
+
 kotlin {
     sourceSets {
-         test {
-             kotlin {
-                 // we have some java we depend on for unit tests
-                 include("**/*.java", "**/*.kt")
-             }
-         }
+        test {
+            // we have some java we depend on
+            kotlin.include("**/*.java", "**/*.kt")
+        }
     }
 }
 
