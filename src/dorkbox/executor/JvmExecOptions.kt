@@ -22,12 +22,12 @@ import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
 /**
  * Options for configuring a process to run using the same JVM as the currently launched jvm
  */
-class JvmExecOptions(private val executor: Executor) {
+class JvmExecOptions(private val executor: Executor, private val javaExecutable: String? = null) {
 
     companion object {
         private val log = LoggerFactory.getLogger(JvmExecOptions::class.java)
@@ -86,7 +86,7 @@ class JvmExecOptions(private val executor: Executor) {
             // classpath
             val additionalClasspath = System.getProperty("java.class.path")
             if (additionalClasspath.isNotEmpty()) {
-                builder.append(pathSeparator) // have to add a seperator
+                builder.append(pathSeparator) // have to add a separator
                 builder.append(additionalClasspath)
             }
         }
@@ -185,7 +185,8 @@ class JvmExecOptions(private val executor: Executor) {
      * @return This process executor.
      */
     fun addArg(vararg arguments: String): JvmExecOptions {
-        executor.addArg(*arguments)
+        val fixed = Executor.fixArguments(listOf(*arguments))
+        mainClassArguments.addAll(fixed)
         return this
     }
 
@@ -199,7 +200,8 @@ class JvmExecOptions(private val executor: Executor) {
      * @return This process executor.
      */
     fun addArg(arguments: Iterable<String>): JvmExecOptions {
-        executor.addArg(arguments)
+        val fixed = Executor.fixArguments(arguments)
+        mainClassArguments.addAll(fixed)
         return this
     }
 
@@ -210,6 +212,9 @@ class JvmExecOptions(private val executor: Executor) {
      *
      * In the latter cases the process gets destroyed as well.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return exit code of the finished process.
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -217,9 +222,10 @@ class JvmExecOptions(private val executor: Executor) {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    suspend fun start(): SyncProcessResult {
-        return executor.start()
+    suspend fun start(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
+        return executor.start(timeout, timeoutUnit)
     }
 
     /**
@@ -231,13 +237,17 @@ class JvmExecOptions(private val executor: Executor) {
      *
      * Invoke [DeferredProcessResult.cancel] to destroy the process.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return [DeferredProcessResult] representing the process results (value/completed outputstreams/etc) of the finished process.
      *
      * @throws IOException an error occurred when process was started.
      */
+    @JvmOverloads
     @Throws(IOException::class)
-    fun startAsync(): DeferredProcessResult {
-        return executor.startAsync()
+    fun startAsync(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): DeferredProcessResult {
+        return executor.startAsync(timeout, timeoutUnit)
     }
 
     /**
@@ -249,6 +259,9 @@ class JvmExecOptions(private val executor: Executor) {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -256,10 +269,11 @@ class JvmExecOptions(private val executor: Executor) {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    fun startBlocking(): SyncProcessResult {
+    fun startBlocking(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         return runBlocking {
-            start()
+            start(timeout, timeoutUnit)
         }
     }
 
@@ -268,8 +282,11 @@ class JvmExecOptions(private val executor: Executor) {
         val commandLineArgs = executor.builder.command()
         val newArgs = mutableListOf<String>()
 
-        newArgs.add(javaLocation.absolutePath)
-
+        if (javaExecutable != null) {
+            newArgs.add(javaExecutable)
+        } else {
+            newArgs.add(javaLocation.canonicalFile.path)
+        }
 
         // setup heap information
         if (initialHeapSizeInMegabytes != 0) {
@@ -288,6 +305,10 @@ class JvmExecOptions(private val executor: Executor) {
         if (jvmOptions.isNotEmpty()) {
             newArgs.addAll(Executor.fixArguments(jvmOptions))
         }
+
+        // now add the original arguments
+        newArgs.addAll(commandLineArgs)
+
 
         // get the classpath, which is the same as using -cp
         val classpath: String = getClasspath()
@@ -328,9 +349,6 @@ class JvmExecOptions(private val executor: Executor) {
         if (mainClassArguments.isNotEmpty()) {
             newArgs.addAll(Executor.fixArguments(mainClassArguments))
         }
-
-        // now add the original arguments
-        newArgs.addAll(commandLineArgs)
 
         // set the arguments
         executor.builder.command(newArgs)

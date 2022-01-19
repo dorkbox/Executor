@@ -214,12 +214,6 @@ open class Executor {
     private var allowedExitValues: Set<Int>? = null
 
     /**
-     * Timeout for running a process. If the process is running too long a [TimeoutException] is thrown and the process is destroyed.
-     */
-    private var timeout: Long = 0
-    private var timeoutUnit: TimeUnit = TimeUnit.SECONDS
-
-    /**
      * Helper for stopping the process in case of timeout or cancellation.
      */
     private var stopper: ProcessStopper = NopProcessStopper.INSTANCE
@@ -279,14 +273,14 @@ open class Executor {
 
     private val executingMessageParams: String
         get() {
-            var result = "" + builder.command()
+            var result = builder.command().joinToString(separator = " ")
             if (builder.directory() != null) {
                 result += " in " + builder.directory()
             }
             if (environment.isNotEmpty()) {
                 result += " with environment $environment"
             }
-            result += "."
+
             return result
         }
 
@@ -630,21 +624,6 @@ open class Executor {
     }
 
     /**
-     * Sets a timeout for the process being executed. When this timeout is reached a [TimeoutException] is thrown and the process is destroyed.
-     * This only applies to `execute` methods not `start` methods.
-     *
-     * @param timeout timeout for running a process.
-     * @param unit the time unit of the timeout, default is [TimeUnit.SECONDS]
-     *
-     * @return This process executor.
-     */
-    fun timeout(timeout: Long, unit: TimeUnit = TimeUnit.SECONDS): Executor {
-        this.timeout = timeout
-        this.timeoutUnit = unit
-        return this
-    }
-
-    /**
      * Sets the helper for stopping the process in case of timeout or cancellation.
      *
      * By default [DestroyProcessStopper] is used which just invokes [Process.destroy].
@@ -762,6 +741,7 @@ open class Executor {
      *
      * @return This process executor.
      */
+    @JvmOverloads
     fun redirectOutput(output: OutputStream? = null): Executor {
         var outputStream = output
         if (outputStream == null) {
@@ -1142,22 +1122,6 @@ open class Executor {
     }
 
     /**
-     * Changes how most common messages about starting and waiting for processes are actually logged.
-     * By default **NO OUTPUT** is used.
-     *
-     * see http://logback.qos.ch/manual/architecture.html for more info
-     *  logger order goes (from lowest to highest) TRACE->DEBUG->INFO->WARN->ERROR->OFF
-     *
-     * @param logger logger instance to use. Will log at whatever the highest level possible for that logger
-     *
-     * @return This process executor.
-     */
-    fun setLogger(logger: Logger?): Executor {
-        this.logger = logger
-        return this
-    }
-
-    /**
      * Check the exit value of given process result. This can be used by unit tests.
      *
      * @param result process result which maybe constructed by a unit test.
@@ -1167,6 +1131,22 @@ open class Executor {
     @Throws(InvalidExitValueException::class)
     fun checkExitValue(result: ProcessResult) {
         DeferredProcessResult.checkExit(attributes, result)
+    }
+
+    /**
+     * Changes how most common messages about starting and waiting for processes are actually logged.
+     * This is configures the Executor **execution logs** to use the Executor log (instead of no logger)
+     *
+     * This will use the log at whatever the highest level possible for that logger
+     *
+     * see http://logback.qos.ch/manual/architecture.html for more info
+     *  logger order goes (from lowest to highest) TRACE->DEBUG->INFO->WARN->ERROR->OFF
+     *
+     * @return This process executor.
+     */
+    fun defaultLogger(): Executor {
+        this.logger = log
+        return this
     }
 
     /**
@@ -1185,10 +1165,38 @@ open class Executor {
     /**
      * Execute this command as JAVA, using the same JVM as the currently running JVM, as a forked process.
      *
+     * Be aware that on MACOS there are two quirks that can both occur!
+     *  - this *must* use the same java installation as pointed to by JAVA_HOME
+     *  - if the macos specific java flag `-Xdock:name` was/is used -- then it *must* be `/usr/bin/java`, even if it's
+     *    a symlink to the same location as JAVA_HOME!
+     *
+     * Because of these quirks, on MACOS, if the javaExecutable is not specified, then `/usr/bin/java` will always be used.
+     *
      * This should be used last, as the only thing possible from here is [start] and [startAsync] variants
      */
-    fun asJvmProcess(): JvmExecOptions {
-        jvmExecOptions = JvmExecOptions(this)
+    @JvmOverloads
+    fun asJvmProcess(javaExecutable: String? = null): JvmExecOptions {
+        jvmExecOptions = JvmExecOptions(this, javaExecutable)
+        return jvmExecOptions!!
+    }
+
+    /**
+     * Execute this command as JAVA, using the same JVM as the currently running JVM, as a forked process.
+     *
+     * Be aware that on MACOS there are two quirks that can both occur!
+     *  - this *must* use the same java installation as pointed to by JAVA_HOME
+     *  - if the macos specific java flag `-Xdock:name` was/is used -- then it *must* be `/usr/bin/java`, even if it's
+     *    a symlink to the same location as JAVA_HOME!
+     *
+     * Because of these quirks, on MACOS, if the javaExecutable is not specified, then `/usr/bin/java` will always be used.
+     *
+     * This should be used last, as the only thing possible from here is [start] and [startAsync] variants
+     */
+    fun asJvmProcess(javaExecutable: File): JvmExecOptions {
+        if (!javaExecutable.canExecute()) {
+            throw IllegalArgumentException("The java executable if specified, must be exist and be executable. Error with: $javaExecutable")
+        }
+        jvmExecOptions = JvmExecOptions(this, javaExecutable.canonicalFile.path)
         return jvmExecOptions!!
     }
 
@@ -1215,10 +1223,11 @@ open class Executor {
      *
      * @throws IOException an error occurred when process was started.
      */
+    @JvmOverloads
     @Throws(IOException::class)
-    fun startAsShellAsync(): DeferredProcessResult {
+    fun startAsShellAsync(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): DeferredProcessResult {
         executeAsShell = true
-        return startAsync()
+        return startAsync(timeout, timeoutUnit)
     }
 
     /**
@@ -1230,13 +1239,17 @@ open class Executor {
      *
      * Invoke [DeferredProcessResult.cancel] to destroy the process.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return [DeferredProcessResult] representing the process results (value/completed output-streams/etc) of the finished process.
      *
      * @throws IOException an error occurred when process was started.
      */
+    @JvmOverloads
     @Throws(IOException::class)
-    fun startAsync(): DeferredProcessResult {
-        return prepareProcess(true)
+    fun startAsync(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): DeferredProcessResult {
+        return prepareProcess(timeout, timeoutUnit, true)
     }
 
     /**
@@ -1250,6 +1263,9 @@ open class Executor {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -1257,12 +1273,13 @@ open class Executor {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    suspend fun startAsShell(): SyncProcessResult {
+    suspend fun startAsShell(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         executeAsShell = true
 
         @Suppress("BlockingMethodInNonBlockingContext")
-        return start()
+        return start(timeout, timeoutUnit)
     }
 
     /**
@@ -1276,6 +1293,9 @@ open class Executor {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -1283,10 +1303,11 @@ open class Executor {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    fun startAsShellBlocking(): SyncProcessResult {
+    fun startAsShellBlocking(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         return runBlocking {
-            startAsShell()
+            startAsShell(timeout, timeoutUnit)
         }
     }
 
@@ -1302,6 +1323,9 @@ open class Executor {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -1309,14 +1333,15 @@ open class Executor {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    suspend fun start(): SyncProcessResult {
+    suspend fun start(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         // we ALWAYS want to block/suspend the current running thread!
         // This is because we want the same blocking behavior if we have NO timeout or WITH timeout.
 
         // Always wait for it to finish. We cannot interrupt this (because we are blocking).
         // Use startAsync() to interrupt or wait without blocking
-        return prepareProcess(false).await(timeout, timeoutUnit)
+        return prepareProcess(timeout, timeoutUnit, false).await(timeout, timeoutUnit)
     }
 
     /**
@@ -1328,6 +1353,9 @@ open class Executor {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -1335,23 +1363,26 @@ open class Executor {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    fun startBlocking(): SyncProcessResult {
+    fun startBlocking(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         return runBlocking {
-            start()
+            start(timeout, timeoutUnit)
         }
     }
-
 
     /**
      * Start the process and its stream handlers.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return process the started process.
      *
-     * @throws IOException the process or its stream handlers couldn't start (in the latter case we also destroy the process).
+     *  @throws IOException the process or its stream handlers couldn't start (in the latter case we also destroy the process).
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun prepareProcess(asyncProcessStart: Boolean): DeferredProcessResult {
+    private fun prepareProcess(timeout: Long, timeoutUnit: TimeUnit, asyncProcessStart: Boolean): DeferredProcessResult {
         // Invoke listeners - they can modify this executor
         listeners.beforeStart(this)
         val command = builder.command()

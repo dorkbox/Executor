@@ -40,26 +40,19 @@ object JvmHelper {
      * Reconstructs the path to the JVM used to launch this process of java. It will always use the "console" version, even on windows.
      */
     fun getJvmPath(): File {
-        // use the VM in which we're already running --- MAYBE
+        // use the VM in which we're already running --- MAYBE.
         // THIS DOES NOT ALWAYS WORK CORRECTLY, especially if the JVM launched is NOT the JVM for which the path is set!
-        var jvmExecutable = getJvmExecutable(System.getProperty("java.home"))
 
-        // Oddly, the Mac OS X specific java flag -Xdock:name will only work if java is launched
-        // from /usr/bin/java, and not if launched by directly referring to <java.home>/bin/java,
-        // even though the former is a symlink to the latter! To work around this, see if the
-        // desired jvm is in fact pointed to by /usr/bin/java and, if so, use that instead.
+        // Additionally, dynamic java execution at **runtime** on MACOS does not work anymore.
+        // You **must** run via java or /usr/bin/java (which use the JAVA_HOME location).
+        // You **can** directly run via the full executable if it is the location installed in the JAVA_HOME env var
+        //    UNLESS, the macos specific java flag `-Xdock:name` was/is used -- then it must be `/usr/bin/java`, even if it's
+        //    a symlink to the same location as JAVA_HOME!
         if (Executor.IS_OS_MAC) {
-            try {
-                val binDir = File("/usr/bin")
-
-                val javaParentDir = jvmExecutable?.parentFile?.canonicalFile
-                if (javaParentDir == binDir) {
-                    jvmExecutable = File("/usr/bin/java")
-                }
-            } catch (ignored: IOException) {
-            }
+            return File("/usr/bin/java")
         }
 
+        var jvmExecutable = getJvmExecutable(System.getProperty("java.home"))
         if (jvmExecutable == null && Executor.IS_OS_WINDOWS) {
             // maybe java.library.path System Property has it. We use the first one that matches.
             System.getProperty("java.library.path").split(";").forEach {

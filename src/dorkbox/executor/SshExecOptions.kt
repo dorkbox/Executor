@@ -250,6 +250,9 @@ class SshExecOptions(val executor: Executor) {
      *
      * In the latter cases the process gets destroyed as well.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return exit code of the finished process.
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -257,8 +260,9 @@ class SshExecOptions(val executor: Executor) {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
-    suspend fun start(): SyncProcessResult {
-        return executor.start()
+    @JvmOverloads
+    suspend fun start(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
+        return executor.start(timeout, timeoutUnit)
     }
 
     /**
@@ -270,13 +274,17 @@ class SshExecOptions(val executor: Executor) {
      *
      * Invoke [DeferredProcessResult.cancel] to destroy the process.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return [DeferredProcessResult] representing the process results (value/completed output-streams/etc) of the finished process.
      *
      * @throws IOException an error occurred when process was started.
      */
+    @JvmOverloads
     @Throws(IOException::class)
-    fun startAsync(): DeferredProcessResult {
-        return executor.startAsync()
+    fun startAsync(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): DeferredProcessResult {
+        return executor.startAsync(timeout, timeoutUnit)
     }
 
     /**
@@ -288,6 +296,9 @@ class SshExecOptions(val executor: Executor) {
      *
      * Calling [SyncProcessResult.output] will result in a non-blocking read of process output.
      *
+     * @param timeout If specified (non-zero), then if the process is running longer than this
+     *                  specified interval, a [TimeoutException] is thrown and the process is destroyed.
+     *
      * @return results of the finished process (exit code and output, if any)
      *
      * @throws IOException an error occurred when process was started or stopped.
@@ -295,10 +306,11 @@ class SshExecOptions(val executor: Executor) {
      * @throws TimeoutException timeout set by [.timeout] was reached.
      * @throws InvalidExitValueException if invalid exit value was returned (@see [.exitValues]).
      */
+    @JvmOverloads
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class, InvalidExitValueException::class)
-    fun startBlocking(): SyncProcessResult {
+    fun startBlocking(timeout: Long = 0, timeoutUnit: TimeUnit = TimeUnit.SECONDS): SyncProcessResult {
         return runBlocking {
-            start()
+            start(timeout, timeoutUnit)
         }
     }
 }
