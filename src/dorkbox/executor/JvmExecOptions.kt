@@ -26,6 +26,20 @@ import java.util.concurrent.*
 
 /**
  * Options for configuring a process to run using the same JVM as the currently launched jvm
+ *
+ *
+ * NOTE: If you are launching using the same classpath as before, and you set the main-classpath to be executed as a
+ * "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
+ *
+ * "error: class found on application class path .... "
+ *
+ * What this REALLY means is:
+ *
+ * "error: A compiled class <fully qualified class name> already exists on
+ * the application classpath and as a result the same class cannot be used
+ * as a source for launching single-file source code program".
+ *
+ * https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
  */
 class JvmExecOptions(private val executor: Executor, private val javaExecutable: String? = null) {
 
@@ -115,7 +129,21 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
     }
 
     /**
-     * Copies the original JVM classpath in this newly created JVM
+     * Copies the original JVM classpath in this newly created JVM.
+     *
+     *
+     * NOTE: If you are launching using the same classpath as before, and you set the main-classpath to be executed as a
+     * "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
+     *
+     * "error: class found on application class path .... "
+     *
+     * What this REALLY means is:
+     *
+     * "error: A compiled class <fully qualified class name> already exists on
+     * the application classpath and as a result the same class cannot be used
+     * as a source for launching single-file source code program".
+     *
+     * https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
      */
     fun cloneClasspath(): JvmExecOptions {
         this.cloneClasspath = true
@@ -123,8 +151,22 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
     }
 
     /**
-     * Set the main class to launch (optional, as a JAR can have this in the manifest)
-     */
+     * Set the main class to launch (optional, as a JAR can have this in the manifest).
+     *
+     *
+     * NOTE: If you are launching using the same classpath as before, and you set the main-classpath to be executed as a
+     * "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
+     *
+     * "error: class found on application class path .... "
+     *
+     * What this REALLY means is:
+     *
+     * "error: A compiled class <fully qualified class name> already exists on
+     * the application classpath and as a result the same class cannot be used
+     * as a source for launching single-file source code program".
+     *
+     * https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
+    */
     fun setMainClass(mainClass: String): JvmExecOptions {
         // we have to normalize the main class path.
         this.mainClass = mainClass

@@ -25,6 +25,21 @@ This project is powerful but still simple to use. By using a single class **Exec
 the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/), along with the ability to fork the currently running JVM process and remotely execute commands via SSH. 
 
 
+NOTE: If you are launching a JVM process (or running java manually setting options), and using the java11+ feature of executing as a "single file 
+source code", and you ALSO have that class file on the classpath, you **WILL** get the following error:
+
+ ```error: class found on application class path ....```
+
+ What this *REALLY* means is:
+
+ ```
+ "error: A compiled class <fully qualified class name> already exists on
+ the application classpath and as a result the same class cannot be used
+ as a source for launching single-file source code program".
+```
+ https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
+
+
 &nbsp; 
 &nbsp; 
 

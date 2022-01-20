@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2022 dorkbox, llc
  * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
 
  * Contains fragments of code from Apache Commons Exec, rights owned
@@ -64,15 +64,28 @@ import java.util.concurrent.*
  *
  * The default configuration for executing a process is following:
  *
- *
  *  * Process is not automatically destroyed on VM exit.
  *  * Error stream is redirected to its output stream. Use [.redirectErrorStream] to override it.
- *  * Output stream is pumped to a [NopOutputStream], Use [.streams], [.redirectOutput],
- * or any of the `redirectOutputAs*` methods.to override it.
+ *  * Output stream is pumped to a [NopOutputStream], Use [.streams], [.redirectOutput], or any of the `redirectOutputAs*` methods.to override it.
  *  * Any exit code is allowed. Use [.exitValues] to override it.
  *  * In case of timeout or cancellation [Process.destroy] is invoked.
  *
- * @author Rein Raudjärv
+ *
+ * NOTE: If you are launching using the same classpath as before, and you set the main-classpath to be executed as a
+ * "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
+ *
+ * "error: class found on application class path .... "
+ *
+ * What this REALLY means is:
+ *
+ * "error: A compiled class <fully qualified class name> already exists on
+ * the application classpath and as a result the same class cannot be used
+ * as a source for launching single-file source code program".
+ *
+ * https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
+ *
+ *
+ * @author Rein Raudjärv, Nathan Robinson
  * @see ProcessResult
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
