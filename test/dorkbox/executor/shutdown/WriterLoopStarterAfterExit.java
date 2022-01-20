@@ -19,6 +19,9 @@
 
 package dorkbox.executor.shutdown;
 
+import java.io.File;
+import java.io.IOException;
+
 import dorkbox.executor.Executor;
 import dorkbox.executor.samples.TestSetup;
 
@@ -44,13 +47,39 @@ class WriterLoopStarterAfterExit implements Runnable {
     public
     void run() {
         try {
-            new Executor("java", TestSetup.INSTANCE.getFile(WriterLoop.class))
-                .destroyOnExit()
-                .startBlocking();
+            // silly workarounds, because executing java files from CLI, require SINGLE-FILE access!
+            String path = getFile(WriterLoopStarterBeforeExit.class)
+                    .replace(WriterLoopStarterBeforeExit.class.getSimpleName(), "WriterLoop");
+
+            System.out.println("Starting output: " + path);
+
+            new Executor()
+                    .redirectOutputAsInfo()
+                    .redirectErrorAsInfo()
+                    .asJvmProcess()
+                    .addArg("-add-opens java.base/java.lang=ALL-UNNAMED")
+                    .cloneClasspath()
+                    .setMainClass(path)
+                    .startBlocking();
+
 
             Thread.sleep(SLEEP_AFTER_START);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private static String getFile(Class javaClass) throws IOException {
+        String properName;
+
+        if (Executor.Companion.getIS_OS_WINDOWS()) {
+            properName = javaClass.getName().replace('.', '\\');
+        } else {
+            properName = javaClass.getName().replace('.', '/');
+        }
+
+        File file = new File("test", properName + ".java").getAbsoluteFile().getCanonicalFile();
+        return file.getPath();
     }
 }

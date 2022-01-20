@@ -44,6 +44,7 @@ class WriterLoopStarterBeforeExit {
                     .redirectOutputAsInfo()
                     .redirectErrorAsInfo()
                     .asJvmProcess()
+                    .addArg("-add-opens java.base/java.lang=ALL-UNNAMED")
                     .cloneClasspath()
                     .setMainClass(path)
                     .startBlocking();

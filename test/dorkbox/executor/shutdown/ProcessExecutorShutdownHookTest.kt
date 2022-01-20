@@ -54,6 +54,7 @@ class ProcessExecutorShutdownHookTest {
             .enableRead()
             .defaultLogger()
             .asJvmProcess()
+            .addArg("-add-opens java.base/java.lang=ALL-UNNAMED")
             .cloneClasspath()
             .setMainClass(TestSetup.getFile(loopStarterClassFile))
             .startBlocking()
