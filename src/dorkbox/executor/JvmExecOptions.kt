@@ -302,9 +302,6 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
             newArgs.add("${maximumHeapSizeInMegabytes}M")
         }
 
-        // always run the server version
-        newArgs.add("-server")
-
         // add the JVM options if specified
         if (jvmOptions.isNotEmpty()) {
             newArgs.addAll(Executor.fixArguments(jvmOptions))
@@ -337,7 +334,7 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
                 }
 
                 if (classpath.isNotEmpty()) {
-                    newArgs.add("-classpath")
+                    newArgs.add("--class-path")
                     newArgs.add(classpath)
                 }
 
