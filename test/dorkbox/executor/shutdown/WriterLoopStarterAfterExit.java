@@ -35,8 +35,6 @@ class WriterLoopStarterAfterExit implements Runnable {
 
     public static
     void main(String[] args) {
-        System.out.println("Starting output: " + WriterLoop.getFile());
-
         Runtime.getRuntime().addShutdownHook(new Thread(new WriterLoopStarterAfterExit()));
 
         // Launch the process and also destroy it
@@ -57,7 +55,6 @@ class WriterLoopStarterAfterExit implements Runnable {
                     .redirectOutputAsInfo()
                     .redirectErrorAsInfo()
                     .asJvmProcess()
-                    .addArg("-add-opens java.base/java.lang=ALL-UNNAMED")
                     .cloneClasspath()
                     .setMainClass(path)
                     .startBlocking();
