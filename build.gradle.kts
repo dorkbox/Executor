@@ -65,7 +65,7 @@ GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
             "-Xopt-in=kotlin.RequiresOptIn"
     )
 }
-//GradleUtils.jpms(JavaVersion.VERSION_1_9)
+GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
     license(License.APACHE_2) {
