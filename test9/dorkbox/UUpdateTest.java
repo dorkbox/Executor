@@ -18,7 +18,8 @@ package dorkbox;
 
 import java.util.UUID;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import dorkbox.executor.listener.ShutdownHookProcessDestroyer;
 

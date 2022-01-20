@@ -17,7 +17,7 @@
 package dorkbox
 
 import dorkbox.executor.listener.ShutdownHookProcessDestroyer
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.*
 
 class UpdateTest {

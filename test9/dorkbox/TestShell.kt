@@ -17,7 +17,7 @@
 package dorkbox
 
 import dorkbox.executor.Executor
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestShell {
     @Test
