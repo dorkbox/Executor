@@ -37,7 +37,7 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
 
 
     // this is NOT related to JAVA_HOME, but is instead the location of the JRE that was used to launch java initially.
-    internal var javaLocation = JvmHelper.getJvmPath()
+    internal var javaLocation = JvmHelper.getJvmPath(Executor.IS_OS_MAC, Executor.IS_OS_WINDOWS)
     internal var mainClass: String? = null
 
     internal var initialHeapSizeInMegabytes = 0

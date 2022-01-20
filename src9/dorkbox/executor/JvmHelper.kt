@@ -14,7 +14,7 @@ object JvmHelper {
      *
      * @return the absolute path to the java executable (based on the path) if it exists, or null
      */
-    private fun getJvmExecutable(jvmLocation: String): File? {
+    private fun getJvmExecutable(jvmLocation: String, isWindows: Boolean): File? {
         // linux does this...
         val jvmBase = File(jvmLocation).resolve("bin")
 
@@ -23,7 +23,7 @@ object JvmHelper {
             return jvmExecutable
         }
 
-        if (Executor.IS_OS_WINDOWS) {
+        if (isWindows) {
             // windows does this
             // open a console on windows (alternatively could open "javaw.exe", but we want the ability to redirect IO to the process.
             jvmExecutable = jvmBase.resolve("java.exe")
@@ -39,21 +39,21 @@ object JvmHelper {
     /**
      * Reconstructs the path to the JVM used to launch this process of java. It will always use the "console" version, even on windows.
      */
-    fun getJvmPath(): File {
+    fun getJvmPath(isMacOS: Boolean, isWindows: Boolean): File {
         // java 9 path, via getting the executable handle.
-        val jvmExecutable = try {
-            ProcessHandle.current().info().command().orElseThrow()
+        var jvmExecutable = try {
+            File(ProcessHandle.current().info().command().orElseThrow())
         } catch (e: Exception) {
             // use the VM in which we're already running --- MAYBE
             // THIS DOES NOT ALWAYS WORK CORRECTLY, especially if the JVM launched is NOT the JVM for which the path is set!
-            getJvmExecutable(System.getProperty("java.home"))
+            getJvmExecutable(System.getProperty("java.home"), isWindows)
         }
 
         // Oddly, the Mac OS X specific java flag -Xdock:name will only work if java is launched
         // from /usr/bin/java, and not if launched by directly referring to <java.home>/bin/java,
         // even though the former is a symlink to the latter! To work around this, see if the
         // desired jvm is in fact pointed to by /usr/bin/java and, if so, use that instead.
-        if (Executor.IS_OS_MAC) {
+        if (isMacOS) {
             try {
                 val binDir = File("/usr/bin")
 
@@ -65,7 +65,7 @@ object JvmHelper {
             }
         }
 
-        if (jvmExecutable == null && Executor.IS_OS_WINDOWS) {
+        if (jvmExecutable == null && isWindows) {
             // maybe java.library.path System Property has it. We use the first one that matches.
             System.getProperty("java.library.path").split(";").forEach {
                 val path = File(it).resolve("java.exe")
@@ -78,7 +78,7 @@ object JvmHelper {
 
         // hope for the best, maybe it's on the path
         if (jvmExecutable == null) {
-            jvmExecutable = if (Executor.IS_OS_WINDOWS) {
+            jvmExecutable = if (isWindows) {
                 File("java.exe")
             } else {
                 File("java")
