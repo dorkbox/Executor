@@ -322,8 +322,8 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
                 newArgs.add(jarFile!!)
 
 
-                // interesting note. You CANNOT have a classpath specified on the commandline
-                // when using JARs!! It must be set in the jar's MANIFEST.
+                // You CANNOT have a classpath specified on the commandline when using JARs!!
+                // It must be set in the jar's MANIFEST.
                 require(classpath.isEmpty()) {
                     "WHOOPS.  You CANNOT have a classpath specified on the commandline when using JARs, it must be set in the JARs MANIFEST instead."
                 }
@@ -351,7 +351,7 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
             newArgs.addAll(Executor.fixArguments(mainClassArguments))
         }
 
-        // set the arguments
+        // set the arguments (this overwrites whatever is already there)
         executor.builder.command(newArgs)
     }
 }
