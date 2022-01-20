@@ -45,10 +45,7 @@ class WriterLoopStarterAfterExit implements Runnable {
     public
     void run() {
         try {
-            // silly workarounds, because executing java files from CLI, require SINGLE-FILE access!
-            String path = getFile(WriterLoopStarterBeforeExit.class)
-                    .replace(WriterLoopStarterBeforeExit.class.getSimpleName(), "WriterLoop");
-
+            String path = WriterLoop.class.getName();
             System.out.println("Starting output: " + path);
 
             new Executor()
@@ -64,19 +61,5 @@ class WriterLoopStarterAfterExit implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-
-    private static String getFile(Class javaClass) throws IOException {
-        String properName;
-
-        if (Executor.Companion.getIS_OS_WINDOWS()) {
-            properName = javaClass.getName().replace('.', '\\');
-        } else {
-            properName = javaClass.getName().replace('.', '/');
-        }
-
-        File file = new File("test", properName + ".java").getAbsoluteFile().getCanonicalFile();
-        return file.getPath();
     }
 }

@@ -20,7 +20,6 @@
 package dorkbox.executor.shutdown
 
 import dorkbox.executor.Executor
-import dorkbox.executor.samples.TestSetup
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -55,7 +54,7 @@ class ProcessExecutorShutdownHookTest {
             .defaultLogger()
             .asJvmProcess()
             .cloneClasspath()
-            .setMainClass(TestSetup.getFile(loopStarterClassFile))
+            .setMainClass(loopStarterClassFile.name)
             .startBlocking()
 
         // After WriterLoopStarter has finished we expect that WriterLoop is also finished - no-one is updating the file
@@ -74,7 +73,7 @@ class ProcessExecutorShutdownHookTest {
             val length = file.length()
 
             Thread.sleep(SLEEP_FOR_RECHECKING_FILE)
-            Assertions.assertEquals(length, file.length(), "File '$file' was still updated.",)
+            Assertions.assertEquals(length, file.length(), "File '$file' was still updated.")
         }
     }
 }
