@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2022 dorkbox, llc
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,10 +329,6 @@ class JvmExecOptions(private val executor: Executor, private val javaExecutable:
                 }
             }
             mainClass != null -> {
-                if (!File(mainClass).canRead()) {
-                    throw IllegalArgumentException("The MainClass file must be readable. Cannot continue with $mainClass")
-                }
-
                 if (classpath.isNotEmpty()) {
                     newArgs.add("--class-path")
                     newArgs.add(classpath)
