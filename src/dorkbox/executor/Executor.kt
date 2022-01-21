@@ -1405,6 +1405,63 @@ open class Executor {
             check(command.isNotEmpty()) { "Command has not been set." }
         }
 
+        // configure the environment
+        var environmentPath: String? = null
+        if (environment.isNotEmpty()) {
+            // Take care of Windows environments that may contain "Path" OR "PATH" or "path" - both possibly existing, but not necessarily
+            val systemEnv = System.getenv()
+            val systemUsesAllCapsPath = systemEnv["PATH"] != null
+            val systemUsesMixCasePath = systemEnv["Path"] != null
+            val systemUsesLowCasePath = systemEnv["path"] != null
+
+            if (systemUsesAllCapsPath || systemUsesMixCasePath || systemUsesLowCasePath) {
+                // we have to make sure we use the same for our locally set env vars!
+                val localEnvUsesAllCapsPath = environment.remove("PATH") ?: ""
+                val localEnvUsesMixCasePath = environment.remove("Path") ?: ""
+                val localEnvUsesLowCasePath = environment.remove("path") ?: ""
+
+                if (localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesLowCasePath.isNotEmpty()) {
+                    // we jam these all together, if possible
+                    var path = ""
+                    if (localEnvUsesAllCapsPath.isNotEmpty()) {
+                        path += localEnvUsesAllCapsPath
+                    }
+
+                    if (localEnvUsesMixCasePath.isNotEmpty()) {
+                        if (path.isNotEmpty()) {
+                            path += File.pathSeparator
+                        }
+                        path += localEnvUsesAllCapsPath
+                    }
+
+                    if (localEnvUsesLowCasePath.isNotEmpty()) {
+                        if (path.isNotEmpty()) {
+                            path += File.pathSeparator
+                        }
+                        path += localEnvUsesLowCasePath
+                    }
+
+                    val correctedPath = when {
+                        systemUsesAllCapsPath -> "PATH"
+                        systemUsesMixCasePath -> "Path"
+                        else -> "path"
+                    }
+
+                    environmentPath = path
+                    environment[correctedPath] = path
+                }
+            }
+
+            val env = builder.environment()
+            environment.forEach { (key, value) ->
+                if (value == null) {
+                    env.remove(key)
+                } else {
+                    env[key] = value
+                }
+            }
+        }
+
 
         if (jvmExecOptions != null) {
             val jvm = jvmExecOptions!!
@@ -1416,19 +1473,37 @@ open class Executor {
         else if (executeAsShell) {
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
-            // if we are executing as a "shell", ALL OF THE PARAMETERS ARE A SINGLE PARAMETER!
-            // dump all of the parameters, and "start over" -- adding them as a single parameter.
+            // if we are executing as a "shell", ALL THE PARAMETERS ARE A SINGLE PARAMETER!
+            // dump all the parameters, and "start over" -- adding them as a single parameter.
 
             val shellCommand = command.joinToString(separator = " ")
             command.clear()
 
 
             if (IS_OS_WINDOWS) {
-                // add our commands to the internal command list BEFORE all other commands
+                // add our commands to the internal command list
                 command.addAll(listOf("cmd", "/c"))
+
+                // since we are running as a shell process, we should ALSO export the path (always do this), because the child process
+                // does not always pick up the path
+                if (!environmentPath.isNullOrEmpty()) {
+                    val pathExport = "set PATH=$environmentPath"
+                    command.add(pathExport)
+
+                    // make sure we run this in a way that lets us ALSO run the following shell command (with path exported first)
+                    command.add("&&")
+                }
             } else {
                 // do a quick invocation of the "echo $SHELL" command, and save that for all future runs of the executor,
                 // to calculate what the shell is (and cache it)
+
+                // it might be in the ENV var, for example: SHELL=/bin/zsh
+                if (DEFAULT_SHELL == null) {
+                    val shell = System.getenv()["SHELL"]
+                    if (shell != null && File(shell).canExecute()) {
+                        DEFAULT_SHELL = shell
+                    }
+                }
 
                 // IF THIS DOES NOT WORK, then parse out the *potential* list of shells below.
                 if (DEFAULT_SHELL == null) {
@@ -1484,8 +1559,19 @@ open class Executor {
                 }
 
                 // *nix
-                // add our commands to the internal command list BEFORE all other commands
+                // add our commands to the internal command list
                 command.addAll(listOf(DEFAULT_SHELL!!, "-c"))
+
+
+                // since we are running as a shell process, we should ALSO export the path (always do this), because the child process
+                // does not pick up the path if it has been modified
+                if (!environmentPath.isNullOrEmpty()) {
+                    val pathExport = "export PATH=$environmentPath"
+                    command.add(pathExport)
+
+                    // make sure we run this in a way that lets us ALSO run the following shell command (with path exported first)
+                    command.add("&&")
+                }
             }
 
             // now add our original command + parameters.
@@ -1497,7 +1583,7 @@ open class Executor {
                 environment["SOFTWARE"] = ""
             }
 
-            // Make sure all shell calls are LANG=en_US.UTF-8    THIS CAN BE OVERRIDDEN
+            // Make sure all shell calls are the machine language default (UTF8)  THIS CAN BE OVERRIDDEN
             if (!environment.containsKey("LANG")) {
                 // "export LANG=en_US.UTF-8"
                 // the value of "C" makes this the machine language default
@@ -1509,61 +1595,6 @@ open class Executor {
         val attributes = attributes // this makes a copy of the attributes!
         val newListeners = listeners.clone()
 
-
-        // configure the environment
-        if (environment.isNotEmpty()) {
-            // Take care of Windows environments that may contain "Path" OR "PATH" or "path" - both possibly existing, but not necessarily
-            val systemEnv = System.getenv()
-            val systemUsesAllCapsPath = systemEnv["PATH"] != null
-            val systemUsesMixCasePath = systemEnv["Path"] != null
-            val systemUsesLowCasePath = systemEnv["path"] != null
-
-            if (systemUsesAllCapsPath || systemUsesMixCasePath || systemUsesLowCasePath) {
-                // we have to make sure we use the same for our locally set env vars!
-                val localEnvUsesAllCapsPath = environment.remove("PATH") ?: ""
-                val localEnvUsesMixCasePath = environment.remove("Path") ?: ""
-                val localEnvUsesLowCasePath = environment.remove("path") ?: ""
-
-                if (localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesLowCasePath.isNotEmpty()) {
-                    // we jam these all together, if possible
-                    var path = ""
-                    if (localEnvUsesAllCapsPath.isNotEmpty()) {
-                        path += localEnvUsesAllCapsPath
-                    }
-
-                    if (localEnvUsesMixCasePath.isNotEmpty()) {
-                        if (path.isNotEmpty()) {
-                            path += File.pathSeparator
-                        }
-                        path += localEnvUsesAllCapsPath
-                    }
-
-                    if (localEnvUsesLowCasePath.isNotEmpty()) {
-                        if (path.isNotEmpty()) {
-                            path += File.pathSeparator
-                        }
-                        path += localEnvUsesLowCasePath
-                    }
-
-                    val correctedPath = when {
-                        systemUsesAllCapsPath -> "PATH"
-                        systemUsesMixCasePath -> "Path"
-                        else -> "path"
-                    }
-
-                    environment[correctedPath] = path
-                }
-            }
-
-            val env = builder.environment()
-            environment.forEach { (key, value) ->
-                if (value == null) {
-                    env.remove(key)
-                } else {
-                    env[key] = value
-                }
-            }
-        }
 
         // are we interested in process output?? THIS MUST BE THE VERY LAST THING!
         // we can read the output IN ADDITION TO having our own output stream for the process.
@@ -1586,11 +1617,23 @@ open class Executor {
 
 
         val nativeProcess = try {
+            val timeoutInfo = if (timeout > 0L) {
+                "(timeout: $timeout $timeoutUnit) "
+            } else {
+                ""
+            }
+
+            val executeText = if (executeAsShell) {
+                "Executing as shell $timeoutInfo"
+            } else {
+                "Executing $timeoutInfo"
+            }
+
             if (sshExecOptions != null) {
-                LogHelper.logAtLowestLevel(logger, "Executing on ${sshExecOptions!!.info()} $executingMessageParams")
+                LogHelper.logAtLowestLevel(logger, "$executeText on ${sshExecOptions!!.info()} $executingMessageParams")
                 sshExecOptions!!.startProcess(timeout, timeoutUnit, logger)
             } else {
-                LogHelper.logAtLowestLevel(logger, "Executing $executingMessageParams")
+                LogHelper.logAtLowestLevel(logger, "$executeText $executingMessageParams")
                 builder.start()
             }
         } catch (e: Exception) {
