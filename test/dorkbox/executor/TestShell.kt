@@ -25,7 +25,7 @@ class TestShell {
     fun testPing() {
         val output = try {
             if (Executor.IS_OS_WINDOWS) {
-                Executor().command("ping -n 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(10).output.utf8()
+                Executor().command("ping -n 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(20).output.utf8()
             } else {
                 Executor().command("ping -c 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(10).output.utf8()
             }
