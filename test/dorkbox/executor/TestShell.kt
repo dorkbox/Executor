@@ -16,12 +16,24 @@
 
 package dorkbox.executor
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 
 class TestShell {
     @Test
     fun testPing() {
-        // println(Executor().command("ping 1.1.1.1").enableRead().startAsShellBlocking(10).output.utf8())
+        val output = try {
+            if (Executor.IS_OS_WINDOWS) {
+                Executor().command("ping -n 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(10).output.utf8()
+            } else {
+                Executor().command("ping -c 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(10).output.utf8()
+            }
+        } catch (ignored: Exception) {
+            ""
+        }
+
+        Assertions.assertTrue(output.isNotEmpty())
+//        println()
     }
 }
