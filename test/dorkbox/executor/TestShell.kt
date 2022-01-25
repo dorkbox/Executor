@@ -24,16 +24,17 @@ class TestShell {
     @Test
     fun testPing() {
         val output = try {
-            if (Executor.IS_OS_WINDOWS) {
-                Executor().command("ping -n 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(20).output.utf8()
+            val executor: Executor = if (Executor.IS_OS_WINDOWS) {
+                Executor().command("ping -n 10 1.1.1.1")
             } else {
-                Executor().command("ping -c 10 1.1.1.1").defaultLogger().enableRead().startAsShellBlocking(10).output.utf8()
+                Executor().command("ping -c 10 1.1.1.1")
             }
+
+            executor.defaultLogger().enableRead().startAsShellBlocking(20).output.utf8()
         } catch (ignored: Exception) {
             ""
         }
 
         Assertions.assertTrue(output.isNotEmpty())
-//        println()
     }
 }
