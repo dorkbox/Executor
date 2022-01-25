@@ -72,17 +72,17 @@ import java.util.concurrent.*
  *
  *
  * NOTE: If you are launching using the same classpath as before, and you set the main-classpath to be executed as a
- * "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
+ *     "single file source code" file via java11+, YOU CAN GET THE FOLLOWING ERROR.
  *
- * "error: class found on application class path .... "
+ *     "error: class found on application class path .... "
  *
- * What this REALLY means is:
+ *     What this REALLY means is:
  *
- * "error: A compiled class <fully qualified class name> already exists on
- * the application classpath and as a result the same class cannot be used
- * as a source for launching single-file source code program".
+ *     "error: A compiled class <fully qualified class name> already exists on
+ *     the application classpath and as a result the same class cannot be used
+ *     as a source for launching single-file source code program".
  *
- * https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
+ *     https://mail.openjdk.java.net/pipermail/jdk-dev/2018-June/001438.html
  *
  *
  * @author Rein Raudjärv, Nathan Robinson
@@ -96,7 +96,7 @@ open class Executor {
          */
         const val version = "3.6"
 
-        val log = LoggerFactory.getLogger(Executor::class.java)
+        val log = LoggerFactory.getLogger(Executor::class.java)!!
         val IS_OS_WINDOWS: Boolean
         val IS_OS_MAC: Boolean
 
@@ -220,6 +220,15 @@ open class Executor {
      * Execute this command a shell command (bash/cmd/etc), instead of directly invoking the command as a forked process.
      */
     private var executeAsShell: Boolean = false
+
+    /**
+     * Locations to be added to the path when running this executable.
+     *
+     * When paths are added to the path, [executeAsShell] will be set to true
+     *
+     * It is important to note, that only setting the path system environment variable WILL NOT affect the path of the running executable!
+     */
+    private var pathsToPrepend: MutableList<String> = mutableListOf()
 
     /**
      * Set of accepted exit codes or `null` if all exit codes are allowed.
@@ -563,11 +572,29 @@ open class Executor {
     }
 
     /**
+     * Adds the specified path (or paths) to the command getting executed. This will ALSO enable [executeAsShell], as the only way
+     * to add a directory to a path for the executed process, is to run TWO commands:
+     *
+     * One to add the path followed by one to run the executable
+     *
+     * It is important to note, that only setting the path system environment variable WILL NOT affect the path of the running executable!
+     */
+    fun addToPath(vararg pathsToAdd: String): Executor {
+        pathsToPrepend.addAll(pathsToAdd)
+        executeAsShell = true
+        return this
+    }
+
+
+    /**
      * It is possible, however unlikely (and never casually noticed), that the
      * PATH environment variable can be "PATH", "Path", or "path" -- all depending
      * on what is set.
      *
      * This will search for all three cases in the following precedence: PATH -> Path -> path
+     *
+     * It is important to note, that only setting the path system environment variable WILL NOT affect the path of the running executable!
+     * Please see [addToPath] to understand the complexity of wanting to do so.
      *
      * @return the system path environment variable
      */
@@ -1407,12 +1434,18 @@ open class Executor {
 
         // configure the environment
         var environmentPath: String? = null
-        if (environment.isNotEmpty()) {
+        if (environment.isNotEmpty() || pathsToPrepend.isNotEmpty()) {
             // Take care of Windows environments that may contain "Path" OR "PATH" or "path" - both possibly existing, but not necessarily
             val systemEnv = System.getenv()
             val systemUsesAllCapsPath = systemEnv["PATH"] != null
             val systemUsesMixCasePath = systemEnv["Path"] != null
             val systemUsesLowCasePath = systemEnv["path"] != null
+
+            val correctPathName = when {
+                systemUsesAllCapsPath -> "PATH"
+                systemUsesMixCasePath -> "Path"
+                else -> "path"
+            }
 
             if (systemUsesAllCapsPath || systemUsesMixCasePath || systemUsesLowCasePath) {
                 // we have to make sure we use the same for our locally set env vars!
@@ -1441,15 +1474,17 @@ open class Executor {
                         path += localEnvUsesLowCasePath
                     }
 
-                    val correctedPath = when {
-                        systemUsesAllCapsPath -> "PATH"
-                        systemUsesMixCasePath -> "Path"
-                        else -> "path"
-                    }
+                    // we have to prepend our own paths to the environment variables.
+                    path = pathsToPrepend.joinToString(separator = File.pathSeparator) + File.pathSeparator + path
 
                     environmentPath = path
-                    environment[correctedPath] = path
+                    environment[correctPathName] = path
                 }
+            } else if (pathsToPrepend.isNotEmpty()) {
+                // who knows WHAT is going on. Just slap on the path we want to add
+
+                environmentPath = pathsToPrepend.joinToString(separator = File.pathSeparator)
+                environment[correctPathName] = pathsToPrepend.joinToString(separator = File.pathSeparator)
             }
 
             val env = builder.environment()
@@ -1470,7 +1505,9 @@ open class Executor {
             // the builder commands are seen as options to the JAVA process.
             jvm.configure()
         }
-        else if (executeAsShell) {
+
+
+        if (executeAsShell) {
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
             // if we are executing as a "shell", ALL THE PARAMETERS ARE A SINGLE PARAMETER!
