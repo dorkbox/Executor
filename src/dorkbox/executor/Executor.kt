@@ -1434,7 +1434,10 @@ open class Executor {
 
         // configure the environment
         var environmentPath: String? = null
-        if (environment.isNotEmpty() || pathsToPrepend.isNotEmpty()) {
+        val hasPathToPrepend = pathsToPrepend.isNotEmpty()
+        val prependPaths = if (hasPathToPrepend) pathsToPrepend.joinToString(separator = File.pathSeparator) else ""
+
+        if (environment.isNotEmpty() || hasPathToPrepend) {
             // Take care of Windows environments that may contain "Path" OR "PATH" or "path" - both possibly existing, but not necessarily
             val systemEnv = System.getenv()
             val systemUsesAllCapsPath = systemEnv["PATH"] != null
@@ -1475,16 +1478,17 @@ open class Executor {
                     }
 
                     // we have to prepend our own paths to the environment variables.
-                    path = pathsToPrepend.joinToString(separator = File.pathSeparator) + File.pathSeparator + path
+                    if (hasPathToPrepend) {
+                        path = prependPaths + File.pathSeparator + path
+                    }
 
                     environmentPath = path
                     environment[correctPathName] = path
                 }
-            } else if (pathsToPrepend.isNotEmpty()) {
+            } else if (hasPathToPrepend) {
                 // who knows WHAT is going on. Just slap on the path we want to add
-
-                environmentPath = pathsToPrepend.joinToString(separator = File.pathSeparator)
-                environment[correctPathName] = pathsToPrepend.joinToString(separator = File.pathSeparator)
+                environmentPath = prependPaths
+                environment[correctPathName] = prependPaths
             }
 
             val env = builder.environment()
