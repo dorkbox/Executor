@@ -94,7 +94,7 @@ open class Executor {
         /**
          * Gets the version number.
          */
-        const val version = "3.6"
+        const val version = "3.7"
 
         val log = LoggerFactory.getLogger(Executor::class.java)!!
         val IS_OS_WINDOWS: Boolean
