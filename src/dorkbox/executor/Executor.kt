@@ -1511,7 +1511,7 @@ open class Executor {
         }
 
 
-        if (executeAsShell) {
+        if (executeAsShell || hasPathToPrepend) {
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
             // if we are executing as a "shell", ALL THE PARAMETERS ARE A SINGLE PARAMETER!
