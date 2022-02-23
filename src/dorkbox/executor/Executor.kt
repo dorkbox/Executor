@@ -572,14 +572,10 @@ open class Executor {
     }
 
     /**
-     * Adds the specified path (or paths) to the command getting executed. This will ALSO enable [executeAsShell], as the only way
-     * to add a directory to a path for the executed process, is to run TWO commands:
-     *
-     * One to add the path followed by one to run the executable
-     *
-     * It is important to note, that only setting the path system environment variable WILL NOT affect the path of the running executable!
+     * Adds the specified path (or paths) to the command getting executed.  This will ALSO enable [executeAsShell], as the only way
+     * to add a path for the executed process, is to run as a subshell/fork.
      */
-    fun addToPath(vararg pathsToAdd: String): Executor {
+    fun addPath(vararg pathsToAdd: String): Executor {
         pathsToPrepend.addAll(pathsToAdd)
         executeAsShell = true
         return this
@@ -592,9 +588,6 @@ open class Executor {
      * on what is set.
      *
      * This will search for all three cases in the following precedence: PATH -> Path -> path
-     *
-     * It is important to note, that only setting the path system environment variable WILL NOT affect the path of the running executable!
-     * Please see [addToPath] to understand the complexity of wanting to do so.
      *
      * @return the system path environment variable
      */
@@ -1433,7 +1426,6 @@ open class Executor {
         }
 
         // configure the environment
-        var environmentPath: String? = null
         val hasPathToPrepend = pathsToPrepend.isNotEmpty()
         val prependPaths = if (hasPathToPrepend) pathsToPrepend.joinToString(separator = File.pathSeparator) else ""
 
@@ -1456,7 +1448,7 @@ open class Executor {
                 val localEnvUsesMixCasePath = environment.remove("Path") ?: ""
                 val localEnvUsesLowCasePath = environment.remove("path") ?: ""
 
-                if (localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesLowCasePath.isNotEmpty()) {
+                if (localEnvUsesAllCapsPath.isNotEmpty() || localEnvUsesMixCasePath.isNotEmpty() || localEnvUsesLowCasePath.isNotEmpty()) {
                     // we jam these all together, if possible
                     var path = ""
                     if (localEnvUsesAllCapsPath.isNotEmpty()) {
@@ -1467,7 +1459,7 @@ open class Executor {
                         if (path.isNotEmpty()) {
                             path += File.pathSeparator
                         }
-                        path += localEnvUsesAllCapsPath
+                        path += localEnvUsesMixCasePath
                     }
 
                     if (localEnvUsesLowCasePath.isNotEmpty()) {
@@ -1482,12 +1474,13 @@ open class Executor {
                         path = prependPaths + File.pathSeparator + path
                     }
 
-                    environmentPath = path
                     environment[correctPathName] = path
+                } else {
+                    // who knows WHAT is going on. Just slap on the path we want to add
+                    environment[correctPathName] = prependPaths
                 }
             } else if (hasPathToPrepend) {
                 // who knows WHAT is going on. Just slap on the path we want to add
-                environmentPath = prependPaths
                 environment[correctPathName] = prependPaths
             }
 
@@ -1511,7 +1504,8 @@ open class Executor {
         }
 
 
-        if (executeAsShell || hasPathToPrepend) {
+        if (executeAsShell) {
+            // NOTE: Also run when we prepend paths to the executable, as this is the only way for it to work.
             // should we execute the command as a "shell command", or should we fork the process and run it directly?
 
             // if we are executing as a "shell", ALL THE PARAMETERS ARE A SINGLE PARAMETER!
@@ -1524,16 +1518,6 @@ open class Executor {
             if (IS_OS_WINDOWS) {
                 // add our commands to the internal command list
                 command.addAll(listOf("cmd", "/c"))
-
-                // since we are running as a shell process, we should ALSO export the path (always do this), because the child process
-                // does not always pick up the path
-                if (!environmentPath.isNullOrEmpty()) {
-                    val pathExport = "set PATH=$environmentPath"
-                    command.add(pathExport)
-
-                    // make sure we run this in a way that lets us ALSO run the following shell command (with path exported first)
-                    command.add("&&")
-                }
             } else {
                 // do a quick invocation of the "echo $SHELL" command, and save that for all future runs of the executor,
                 // to calculate what the shell is (and cache it)
@@ -1602,17 +1586,6 @@ open class Executor {
                 // *nix
                 // add our commands to the internal command list
                 command.addAll(listOf(DEFAULT_SHELL!!, "-c"))
-
-
-                // since we are running as a shell process, we should ALSO export the path (always do this), because the child process
-                // does not pick up the path if it has been modified
-                if (!environmentPath.isNullOrEmpty()) {
-                    val pathExport = "export PATH=$environmentPath"
-                    command.add(pathExport)
-
-                    // make sure we run this in a way that lets us ALSO run the following shell command (with path exported first)
-                    command.add("&&")
-                }
             }
 
             // now add our original command + parameters.
