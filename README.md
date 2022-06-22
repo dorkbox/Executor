@@ -324,7 +324,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>Executor</artifactId>
-      <version>3.7</version>
+      <version>3.9</version>
     </dependency>
 </dependencies>
 ```
@@ -334,7 +334,7 @@ Gradle Info
 ```
 dependencies {
     ...
-    implementation("com.dorkbox:Executor:3.7")
+    implementation("com.dorkbox:Executor:3.9")
 }
 ```
 
@@ -345,4 +345,3 @@ This project is © 2021 dorkbox llc, with modifications from software copyright 
  Foundation. 
 
 This project is distributed under the terms of the Apache v2.0 License. See file "LICENSE" for further references.
-
