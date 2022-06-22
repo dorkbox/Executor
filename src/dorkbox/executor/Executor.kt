@@ -22,7 +22,11 @@ package dorkbox.executor
 
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.exceptions.ProcessInitException
-import dorkbox.executor.listener.*
+import dorkbox.executor.listener.CompositeProcessListener
+import dorkbox.executor.listener.DestroyerListenerAdapter
+import dorkbox.executor.listener.ProcessDestroyer
+import dorkbox.executor.listener.ProcessListener
+import dorkbox.executor.listener.ShutdownHookProcessDestroyer
 import dorkbox.executor.processResults.NopProcessResult
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult
@@ -41,7 +45,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.concurrent.*
 
 
@@ -255,6 +263,11 @@ open class Executor {
      * `true` if the process output should be read to a buffer and returned by [SyncProcessResult] or [DeferredProcessResult]
      */
     private var readOutput = false
+
+    /**
+     * Sets the new process to inherit the current Java process source and destination I/O stream
+     */
+    private var inheritIO = false
 
     /**
      * By default, there is only 1 thread for pumping I/O (as necessary) between processes. This setting enables
@@ -737,6 +750,14 @@ open class Executor {
      */
     fun enableRead(): Executor {
         this.readOutput = true
+        return this
+    }
+
+    /**
+     * Sets the new process to inherit the current Java process source and destination I/O stream
+     */
+    fun inheritIO(): Executor {
+        this.inheritIO = true
         return this
     }
 
@@ -1416,6 +1437,11 @@ open class Executor {
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun prepareProcess(timeout: Long, timeoutUnit: TimeUnit, asyncProcessStart: Boolean): DeferredProcessResult {
+        // establish incompatible options
+        check(inheritIO && highPerformanceIO) { "inheritIO & highPerformanceIO cannot be both set at the same time, they cancel each-other out" }
+
+
+
         // Invoke listeners - they can modify this executor
         listeners.beforeStart(this)
         val command = builder.command()
@@ -1502,7 +1528,6 @@ open class Executor {
             // the builder commands are seen as options to the JAVA process.
             jvm.configure()
         }
-
 
         if (executeAsShell) {
             // NOTE: Also run when we prepend paths to the executable, as this is the only way for it to work.
@@ -1603,6 +1628,11 @@ open class Executor {
                 // the value of "C" makes this the machine language default
                 environment["LANG"] = "C"
             }
+        }
+
+        if (inheritIO) {
+            // Sets the child process to inherit the current Java process source and destination I/O stream
+            builder.inheritIO()
         }
 
 
