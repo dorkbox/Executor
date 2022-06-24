@@ -1438,7 +1438,7 @@ open class Executor {
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun prepareProcess(timeout: Long, timeoutUnit: TimeUnit, asyncProcessStart: Boolean): DeferredProcessResult {
         // establish incompatible options
-        check(inheritIO && highPerformanceIO) { "inheritIO & highPerformanceIO cannot be both set at the same time, they cancel each-other out" }
+        check(!(inheritIO && highPerformanceIO)) { "inheritIO & highPerformanceIO cannot be both set at the same time, they cancel each-other out" }
 
 
 
