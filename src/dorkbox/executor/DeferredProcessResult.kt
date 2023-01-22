@@ -1,6 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
-
+ * Copyright 2023 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 import kotlin.text.Charsets.UTF_8
+
+
 
 internal data class Params(
         /**
@@ -212,7 +212,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
                 try {
                     // always do this
                     waiter.doNotify()
-                } catch (ignored: CancellationException) {
+                } catch (ignored: Exception) {
                     // we want to ignore any cancellation exceptions
                 }
             }
@@ -287,7 +287,7 @@ class DeferredProcessResult internal constructor(private val process: Process,
         withTimeoutOrNull(timeoutUnit.toMillis(timeout)) {
             try {
                 waiter.doWait()
-            } catch (ignored: CancellationException) {
+            } catch (ignored: Exception) {
                 // we want to ignore any cancellation exceptions
             }
         }
@@ -547,10 +547,18 @@ class DeferredProcessResult internal constructor(private val process: Process,
     }
 
     private fun getUnitsAsString(timeout: Long, timeUnit: TimeUnit): String {
-        val result = timeUnit.toChronoUnit().name
-        return if (timeout == 1L) {
+        val result = when (timeUnit) {
+            TimeUnit.NANOSECONDS -> "nano"
+            TimeUnit.MICROSECONDS -> "micro"
+            TimeUnit.MILLISECONDS -> "milli"
+            TimeUnit.SECONDS -> "second"
+            TimeUnit.MINUTES -> "minute"
+            TimeUnit.HOURS -> "hour"
+            TimeUnit.DAYS -> "day"
+        }
+        return if (timeout > 1L) {
             // fix plurality
-            result.substring(0, result.length - 1)
+            result + "s"
         } else {
             result
         }
