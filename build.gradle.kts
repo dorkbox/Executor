@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dorkbox, llc
+ * Copyright 2023 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ import java.time.Instant
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.16"
-    id("com.dorkbox.Licensing") version "2.11"
-    id("com.dorkbox.VersionUpdate") version "2.4"
-    id("com.dorkbox.GradlePublish") version "1.12"
+    id("com.dorkbox.GradleUtils") version "3.9"
+    id("com.dorkbox.Licensing") version "2.19.1"
+    id("com.dorkbox.VersionUpdate") version "2.5"
+    id("com.dorkbox.GradlePublish") version "1.17"
 
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.8.0"
 }
 
 object Extras {
@@ -46,8 +46,8 @@ object Extras {
 
     val buildDate = Instant.now().toString()
 
-    const val coroutineVer = "1.6.0"
-    const val sshjVer = "0.32.0"
+    const val coroutineVer = "1.6.4"
+    const val sshjVer = "0.34.0"
 }
 
 ///////////////////////////////
@@ -81,18 +81,6 @@ licensing {
             url("https://commons.apache.org/proper/commons-exec/")
             copyright(2014)
             author("The Apache Software Foundation")
-        }
-    }
-}
-
-
-sourceSets {
-    java {
-        test {
-            java {
-                // we have some java we depend on for unit tests
-                include("**/*.java")
-            }
         }
     }
 }

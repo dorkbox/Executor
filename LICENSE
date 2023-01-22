@@ -1,7 +1,7 @@
  - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+
    [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/Executor
-   Copyright 2022
+   Copyright 2023
      Dorkbox LLC
 
    Extra license information
@@ -28,25 +28,25 @@
      - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
        [The Apache Software License, Version 2.0]
        https://github.com/Kotlin/kotlinx.coroutines
-       Copyright 2022
+       Copyright 2023
          JetBrains s.r.o.
 
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
        http://www.slf4j.org
-       Copyright 2022
+       Copyright 2023
          QOS.ch
 
      - Logback - Logback is a logging framework for Java applications
        [The Apache Software License, Version 2.0]
        http://logback.qos.ch
-       Copyright 2022
+       Copyright 2023
          QOS.ch
 
      - SSHJ - SSHv2 library for Java
        [The Apache Software License, Version 2.0]
        https://github.com/hierynomus/sshj
-       Copyright 2022
+       Copyright 2023
          Jeroen van Erp
          SSHJ Contributors
 
