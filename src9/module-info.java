@@ -15,5 +15,5 @@ module dorkbox.executor {
     requires static ch.qos.logback.classic;
 
     requires transitive kotlin.stdlib;
-    requires kotlinx.coroutines.core.jvm;
+    requires transitive kotlinx.coroutines.core.jvm;
 }
