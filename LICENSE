@@ -33,13 +33,13 @@
 
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
-       http://www.slf4j.org
+       https://www.slf4j.org
        Copyright 2023
          QOS.ch
 
      - Logback - Logback is a logging framework for Java applications
        [The Apache Software License, Version 2.0]
-       http://logback.qos.ch
+       https://logback.qos.ch
        Copyright 2023
          QOS.ch
 
@@ -63,13 +63,13 @@
 
          - JZlib - 
            [The Apache Software License, Version 2.0]
-           http://www.jcraft.com/jzlib
+           https://github.com/ymnk/jzlib
              Atsuhiko Yamanaka
              JCraft, Inc.
 
          - Bouncy Castle Crypto - 
            [The Apache Software License, Version 2.0]
-           http://www.bouncycastle.org
+           https://www.bouncycastle.org
              The Legion of the Bouncy Castle Inc
 
          - ed25519-java - 

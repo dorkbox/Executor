@@ -14,6 +14,6 @@ module dorkbox.executor {
     requires static com.hierynomus.sshj;
     requires static ch.qos.logback.classic;
 
+    requires transitive kotlinx.coroutines.core;
     requires transitive kotlin.stdlib;
-    requires transitive kotlinx.coroutines.core.jvm;
 }
