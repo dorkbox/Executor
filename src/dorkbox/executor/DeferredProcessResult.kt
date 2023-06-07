@@ -169,15 +169,6 @@ class DeferredProcessResult internal constructor(private val process: Process,
     @Volatile
     var processResult: SyncProcessResult? = null
 
-    // Make sure that our process is destroyed if the JVM is shutdown while it is still running.
-    private val shutdownHook: Thread
-
-    init {
-        shutdownHook = Thread({ process.destroyForcibly() })
-
-        Runtime.getRuntime().addShutdownHook(shutdownHook)
-    }
-
     /**
      * Starts the process. this is always called.
      */
@@ -432,7 +423,6 @@ class DeferredProcessResult internal constructor(private val process: Process,
             params.listener.afterFinish(process, result)
             result
         } finally {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook)
             // Invoke listeners - regardless process finished or got cancelled
             params.listener.afterStop(process)
         }
