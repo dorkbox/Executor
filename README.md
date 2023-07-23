@@ -149,8 +149,7 @@ try {
     runBlocking {
         Executor()
             .command("java", "-version")
-            .timeout(60, TimeUnit.SECONDS)
-            .start()
+            .start(60, TimeUnit.SECONDS)
     }
 } catch (e: TimeoutException) {
     // process is automatically destroyed
