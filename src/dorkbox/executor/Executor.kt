@@ -1,7 +1,21 @@
 /*
- * Copyright 2022 dorkbox, llc
+ * Copyright 2023 dorkbox, llc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/*
  * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ *
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
  *
@@ -22,11 +36,7 @@ package dorkbox.executor
 
 import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.exceptions.ProcessInitException
-import dorkbox.executor.listener.CompositeProcessListener
-import dorkbox.executor.listener.DestroyerListenerAdapter
-import dorkbox.executor.listener.ProcessDestroyer
-import dorkbox.executor.listener.ProcessListener
-import dorkbox.executor.listener.ShutdownHookProcessDestroyer
+import dorkbox.executor.listener.*
 import dorkbox.executor.processResults.NopProcessResult
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult
@@ -45,11 +55,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.util.concurrent.*
 
 
@@ -104,11 +110,10 @@ open class Executor {
          */
         const val version = "3.13"
 
-        val log = LoggerFactory.getLogger(Executor::class.java)!!
+        private val log = LoggerFactory.getLogger(Executor::class.java)!!
         val IS_OS_WINDOWS: Boolean
         val IS_OS_MAC: Boolean
 
-        val DEFAULT_EXIT_VALUES: Array<Int>? = null
         private const val NORMAL_EXIT_VALUE = 0
 
         const val DEFAULT_REDIRECT_ERROR_STREAM = true
