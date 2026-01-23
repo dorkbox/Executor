@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +17,14 @@
 package dorkbox.executor.processResults
 
 import dorkbox.executor.stream.PumpStreamHandler
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.yield
 import java.io.ByteArrayOutputStream
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.*
 
 /**
  * Standard output of a finished process.
@@ -40,7 +37,7 @@ open class AsyncProcessOutput(private val channel: Channel<Byte>, private val pr
         private val NEW_LINE_NIX = "\n".toCharArray().first().code
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class)
     val isOpen: Boolean
     get() {
         return !channel.isClosedForReceive
