@@ -23,12 +23,12 @@
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "3.18"
-    id("com.dorkbox.Licensing") version "2.22"
-    id("com.dorkbox.VersionUpdate") version "2.8"
-    id("com.dorkbox.GradlePublish") version "1.22"
+    id("com.dorkbox.GradleUtils") version "4.5"
+    id("com.dorkbox.Licensing") version "3.1"
+    id("com.dorkbox.VersionUpdate") version "3.1"
+    id("com.dorkbox.GradlePublish") version "2.0"
 
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "2.3.0"
 }
 
 object Extras {
@@ -42,8 +42,10 @@ object Extras {
     const val vendorUrl = "https://dorkbox.com"
     const val url = "https://git.dorkbox.com/dorkbox/Executor"
 
-    const val coroutineVer = "1.7.1"
-    const val sshjVer = "0.35.0"
+    const val logbackVer = "1.5.26"
+    const val slf4jVer = "2.0.17"
+    const val coroutineVer = "1.10.2"
+    const val sshjVer = "0.40.0"
 }
 
 ///////////////////////////////
@@ -51,7 +53,7 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
+GradleUtils.compileConfiguration(JavaVersion.VERSION_25) {
     // see: https://kotlinlang.org/docs/reference/using-gradle.html
     freeCompilerArgs = listOf(
             // enable the use of inline classes. see https://kotlinlang.org/docs/reference/inline-classes.html
@@ -60,7 +62,6 @@ GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
             "-Xopt-in=kotlin.RequiresOptIn"
     )
 }
-GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
     license(License.APACHE_2) {
@@ -81,14 +82,6 @@ licensing {
     }
 }
 
-kotlin {
-    sourceSets {
-        test {
-            // we have some java we depend on
-            kotlin.include("**/*.java", "**/*.kt")
-        }
-    }
-}
 
 tasks.jar.get().apply {
     manifest {
@@ -111,11 +104,13 @@ dependencies {
     api("org.jetbrains.kotlin:kotlin-stdlib")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Extras.coroutineVer}")
 
-    api("com.dorkbox:Updates:1.1")
+    api("com.dorkbox:Updates:1.3")
 
-    api("org.slf4j:slf4j-api:2.0.7")
 
-    compileOnly("ch.qos.logback:logback-classic:1.3.0-alpha4") // ONLY used to fixup the SSHJ logger (in LogHelper)
+    api("org.slf4j:slf4j-api:${Extras.slf4jVer}")
+
+
+    compileOnly("ch.qos.logback:logback-classic:${Extras.logbackVer}") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubuntu 18.04 instance
@@ -136,7 +131,7 @@ dependencies {
     testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
 }
 
-publishToSonatype {
+mavenCentral {
     groupId = Extras.group
     artifactId = Extras.id
     version = Extras.version
