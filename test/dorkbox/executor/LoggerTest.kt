@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +19,8 @@ package dorkbox.executor
 import dorkbox.executor.stream.LogOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jInfoOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jStream
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.OutputStream
 
@@ -55,7 +52,7 @@ class LoggerTest {
 
         val out: OutputStream = executor.streams().out
 
-        Assertions.assertTrue(out is Slf4jInfoOutputStream, "Slf4jInfoOutputStream expected")
-        Assertions.assertEquals(fullName, (out as Slf4jInfoOutputStream).logger.name)
+        Assert.assertTrue("Slf4jInfoOutputStream expected", out is Slf4jInfoOutputStream)
+        Assert.assertEquals(fullName, (out as Slf4jInfoOutputStream).logger.name)
     }
 }

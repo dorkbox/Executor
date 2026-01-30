@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +19,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.HelloWorld
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayOutputStream
 
 /**
@@ -44,7 +41,7 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello world!", output)
+        Assert.assertEquals("Hello world!", output)
     }
 
     @Test
@@ -56,7 +53,7 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello ", output)
+        Assert.assertEquals("Hello ", output)
     }
 
     @Test
@@ -68,7 +65,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello world!", String(out.toByteArray()))
+        Assert.assertEquals("Hello world!", String(out.toByteArray()))
     }
 
     @Test
@@ -83,8 +80,8 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
-        Assertions.assertEquals("world!", String(err.toByteArray()))
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -98,8 +95,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello world!", output)
-        Assertions.assertEquals("Hello world!", String(out.toByteArray()))
+        Assert.assertEquals("Hello world!", output)
+        Assert.assertEquals("Hello world!", String(out.toByteArray()))
     }
 
     @Test
@@ -113,7 +110,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
     }
 
     @Test
@@ -128,8 +125,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello ", output)
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertEquals("Hello ", output)
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
     }
 
     @Test
@@ -143,7 +140,7 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assertions.assertEquals("world!", String(err.toByteArray()))
+        Assert.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -158,8 +155,8 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello ", output)
-        Assertions.assertEquals("world!", String(err.toByteArray()))
+        Assert.assertEquals("Hello ", output)
+        Assert.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -175,8 +172,8 @@ class HelloWorldTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
-        Assertions.assertEquals("world!", String(err.toByteArray()))
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertEquals("world!", String(err.toByteArray()))
     }
 
     @Test
@@ -193,9 +190,9 @@ class HelloWorldTest {
                 .start().output.utf8()
         }
 
-        Assertions.assertEquals("Hello ", output)
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
-        Assertions.assertEquals("world!", String(err.toByteArray()))
+        Assert.assertEquals("Hello ", output)
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertEquals("world!", String(err.toByteArray()))
     }
 
     private fun helloWorld(): Executor {

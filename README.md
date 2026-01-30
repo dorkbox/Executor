@@ -203,7 +203,7 @@ runBlocking {
     }
 
     val outputString: String = fullOutput.joinToString()
-    Assertions.assertFalse(outputString.isEmpty())
+    Assert.assertFalse(outputString.isEmpty())
 }
 ```
 

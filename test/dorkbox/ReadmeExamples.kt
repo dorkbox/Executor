@@ -1,7 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ * Copyright 2026 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,11 +25,10 @@ import dorkbox.executor.stream.LogOutputStream
 import dorkbox.executor.stream.slf4j.Slf4jStream
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
+import org.junit.Assert
 import org.slf4j.LoggerFactory
 import java.io.OutputStream
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 
 /**
  * Examples of the readme.
@@ -182,7 +180,7 @@ internal class ReadmeExamples {
             }
 
             val outputString: String = fullOutput.joinToString()
-            Assertions.assertFalse(outputString.isEmpty())
+            Assert.assertFalse(outputString.isEmpty())
         }
     }
 

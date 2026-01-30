@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +22,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 
 class CancelJavaTest {
     private val javaCommand: String by lazy {
@@ -43,7 +40,7 @@ class CancelJavaTest {
                 .start().output.utf8()
 
             println(asyncProcess)
-            Assertions.assertEquals(asyncProcess, "Hello world!")
+            Assert.assertEquals(asyncProcess, "Hello world!")
         }
     }
 
@@ -62,9 +59,9 @@ class CancelJavaTest {
                 // wait
                 try {
                     asyncProcess.await()
-                    Assertions.fail<Void>("CancellationException expected.")
+                    Assert.fail("CancellationException expected.")
                 } catch (e: CancellationException) {
-                    Assertions.assertTrue(e.message?.contains(exceptionMessage) == true)
+                    Assert.assertTrue(e.message?.contains(exceptionMessage) == true)
                 }
             }
 

@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +16,14 @@
 
 package dorkbox.executor
 
-import dorkbox.executor.exceptions.InvalidOutputException
 import dorkbox.executor.listener.ProcessDestroyer
 import dorkbox.executor.samples.HelloWorld
 import dorkbox.executor.samples.TestSetup
 import dorkbox.executor.stream.IOStreamHandler
 import dorkbox.executor.stream.slf4j.Slf4jStream
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.IOException
 import java.util.*
 
@@ -56,7 +52,7 @@ class MockProcessDestroyer : ProcessDestroyer {
 class ProcessExecutorMainTest {
     @Test
     fun testNoCommand() {
-        Assertions.assertThrows(IllegalStateException::class.java) {
+        Assert.assertThrows(IllegalStateException::class.java) {
             runBlocking {
                 Executor().start()
             }
@@ -65,7 +61,7 @@ class ProcessExecutorMainTest {
 
     @Test
     fun testNoSuchFile() {
-        Assertions.assertThrows(IOException::class.java) {
+        Assert.assertThrows(IOException::class.java) {
             runBlocking {
                 Executor().command("unknown command").start()
             }
@@ -81,7 +77,7 @@ class ProcessExecutorMainTest {
                 .exitValue
         }
 
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -95,7 +91,7 @@ class ProcessExecutorMainTest {
                 .string()
         }
 
-        Assertions.assertTrue(exit.isNotEmpty())
+        Assert.assertTrue(exit.isNotEmpty())
     }
 
     @Test
@@ -107,7 +103,7 @@ class ProcessExecutorMainTest {
                 .exitValue
         }
 
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -119,7 +115,7 @@ class ProcessExecutorMainTest {
                 .exitValue
         }
 
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -132,7 +128,7 @@ class ProcessExecutorMainTest {
                 .exitValue
         }
 
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -142,7 +138,7 @@ class ProcessExecutorMainTest {
             .startAsync()
             .awaitBlocking()
             .exitValue
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -152,7 +148,7 @@ class ProcessExecutorMainTest {
             .startAsync()
             .awaitBlocking(1000)
             .exitValue
-        Assertions.assertEquals(0, exit.toLong())
+        Assert.assertEquals(0, exit.toLong())
     }
 
     @Test
@@ -165,7 +161,7 @@ class ProcessExecutorMainTest {
         }
 
         val str: String = result.output.utf8()
-        Assertions.assertFalse(str.isEmpty())
+        Assert.assertFalse(str.isEmpty())
     }
 
     @Test
@@ -179,13 +175,13 @@ class ProcessExecutorMainTest {
         }
 
         val str: String = result.output.utf8()
-        Assertions.assertFalse(str.isEmpty())
+        Assert.assertFalse(str.isEmpty())
 
         val utf8 = runBlocking {
             executor.start().output.utf8()
         }
 
-        Assertions.assertEquals(str, utf8)
+        Assert.assertEquals(str, utf8)
     }
 
     @Test
@@ -197,7 +193,7 @@ class ProcessExecutorMainTest {
             .awaitBlocking()
 
         val str: String = result.output.utf8()
-        Assertions.assertFalse(str.isEmpty())
+        Assert.assertFalse(str.isEmpty())
     }
 
     @Test
@@ -224,7 +220,7 @@ class ProcessExecutorMainTest {
         }
 
         val str: String = result.output.utf8()
-        Assertions.assertFalse(str.isEmpty())
+        Assert.assertFalse(str.isEmpty())
     }
 
     @Test
@@ -238,7 +234,7 @@ class ProcessExecutorMainTest {
             .awaitBlocking()
 
         val str: String = result.output.utf8()
-        Assertions.assertFalse(str.isEmpty())
+        Assert.assertFalse(str.isEmpty())
     }
 
     @Test
@@ -258,7 +254,7 @@ class ProcessExecutorMainTest {
             }
 
             val str: String = fullOutput.joinToString()
-            Assertions.assertFalse(str.isEmpty())
+            Assert.assertFalse(str.isEmpty())
         }
     }
 
@@ -282,8 +278,8 @@ class ProcessExecutorMainTest {
                 .start()
         }
 
-        Assertions.assertNotNull(mock.added)
-        Assertions.assertEquals(mock.added, mock.removed)
+        Assert.assertNotNull(mock.added)
+        Assert.assertEquals(mock.added, mock.removed)
     }
 
     @Test
@@ -304,13 +300,13 @@ class ProcessExecutorMainTest {
                     .start()
             }
 
-            Assertions.fail("IOException expected")
+            Assert.fail("IOException expected")
         } catch (e: IOException) {
             // Good
         }
 
-        Assertions.assertNull(mock.added)
-        Assertions.assertNull(mock.removed)
+        Assert.assertNull(mock.added)
+        Assert.assertNull(mock.removed)
     }
 
     @Test
@@ -325,7 +321,7 @@ class ProcessExecutorMainTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello world!", result.output.utf8())
+        Assert.assertEquals("Hello world!", result.output.utf8())
     }
 
 
@@ -342,7 +338,7 @@ class ProcessExecutorMainTest {
             exec.enableRead()
                 .start()
         }
-        Assertions.assertEquals("Hello world!", result.output.utf8())
+        Assert.assertEquals("Hello world!", result.output.utf8())
     }
 
     @Test
@@ -359,7 +355,7 @@ class ProcessExecutorMainTest {
                 .start()
         }
         println("PID: ${result.pid}")
-        Assertions.assertEquals("Hello world!", result.output.utf8())
+        Assert.assertEquals("Hello world!", result.output.utf8())
     }
 
     @Test
@@ -377,7 +373,7 @@ class ProcessExecutorMainTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello world!", result.output.utf8())
+        Assert.assertEquals("Hello world!", result.output.utf8())
     }
 
     @Test

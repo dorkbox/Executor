@@ -1,7 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ * Copyright 2026 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,16 +21,16 @@ import dorkbox.executor.exceptions.InvalidOutputException
 import dorkbox.executor.processResults.ProcessResult
 import dorkbox.executor.processResults.SyncProcessResult
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-import java.util.concurrent.TimeUnit
+import org.junit.Assert
+import org.junit.Test
+import java.util.concurrent.*
 
 class ProcessListenerThrowTest {
 
     @Test
     @Throws(Exception::class)
     fun testJavaVersion() {
-        Assertions.assertThrows(InvalidOutputException::class.java) {
+        Assert.assertThrows(InvalidOutputException::class.java) {
             runBlocking {
                 Executor("java", "-version")
                     .enableRead()
@@ -44,7 +43,7 @@ class ProcessListenerThrowTest {
     @Test
     @Throws(Exception::class)
     fun testJavaVersionWithTimeout() {
-        Assertions.assertThrows(InvalidOutputException::class.java) {
+        Assert.assertThrows(InvalidOutputException::class.java) {
             runBlocking {
                 Executor("java", "-version")
                     .enableRead()

@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 dorkbox, llc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
@@ -20,10 +36,9 @@ package dorkbox.executor
 import dorkbox.executor.samples.PrintArguments
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.*
 
 /**
@@ -70,7 +85,7 @@ class CommandLineTest {
         }
 
         val expected = listOf(*args)
-        Assertions.assertEquals(expected, actual)
+        Assert.assertEquals(expected, actual)
     }
 
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class)
@@ -79,7 +94,7 @@ class CommandLineTest {
             printArguments(*args)
         }
 
-        Assertions.assertEquals(expected, actual)
+        Assert.assertEquals(expected, actual)
     }
 
     private suspend fun printArguments(vararg args: String): List<String> {

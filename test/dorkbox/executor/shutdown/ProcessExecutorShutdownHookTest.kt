@@ -1,8 +1,5 @@
 /*
- * Copyright 2022 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +17,8 @@
 package dorkbox.executor.shutdown
 
 import dorkbox.executor.Executor
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.File
 
 /**
@@ -69,11 +66,11 @@ class ProcessExecutorShutdownHookTest {
 
         @Throws(InterruptedException::class)
         private fun checkFileStaysTheSame(file: File) {
-            Assertions.assertTrue(file.exists())
+            Assert.assertTrue(file.exists())
             val length = file.length()
 
             Thread.sleep(SLEEP_FOR_RECHECKING_FILE)
-            Assertions.assertEquals(length, file.length(), "File '$file' was still updated.")
+            Assert.assertEquals("File '$file' was still updated.", length, file.length())
         }
     }
 }

@@ -1,7 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ * Copyright 2026 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,13 +20,13 @@ import dorkbox.executor.samples.PrintArguments
 import dorkbox.executor.samples.PrintInputToOutput
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class InputStreamTest {
     @Test
@@ -46,7 +45,7 @@ class InputStreamTest {
             async.output.utf8()
         }
 
-        Assertions.assertEquals(str, output)
+        Assert.assertEquals(str, output)
     }
 
     @Test
@@ -64,7 +63,7 @@ class InputStreamTest {
             exec.start()
         }
 
-        Assertions.assertEquals(str, baos.toString())
+        Assert.assertEquals(str, baos.toString())
     }
 
     @Test
@@ -106,6 +105,6 @@ class InputStreamTest {
         // Assert that we don't get a TimeoutException
         startedProcess.awaitBlocking(5, TimeUnit.SECONDS)
 
-        Assertions.assertEquals(str, baos.toString())
+        Assert.assertEquals(str, baos.toString())
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package dorkbox
 
 import dorkbox.executor.listener.ShutdownHookProcessDestroyer
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import java.util.*
 
 class UpdateTest {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,20 +126,14 @@ dependencies {
     // library to enable SSH support
     compileOnly("com.hierynomus:sshj:${Extras.sshjVer}")
 
-    testImplementation(kotlin("test"))
 
-//    testImplementation("junit:junit:4.13.2")
-    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("com.dorkbox:OS:2.0")
+
+    testImplementation("ch.qos.logback:logback-classic:${Extras.logbackVer}")
 
     // we want to test SSH functions. Comment this out to view the exception when sshj is not available
     testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 publishToSonatype {

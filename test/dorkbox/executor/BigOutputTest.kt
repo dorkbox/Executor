@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +19,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.BigOutput
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.*
 
@@ -80,7 +77,7 @@ class BigOutputTest {
                                 .startBlocking(1, TimeUnit.MINUTES)
                                 .output.utf8()
 
-        Assertions.assertEquals(repeat("+-"), output)
+        Assert.assertEquals(repeat("+-"), output)
     }
 
     @Test
@@ -92,7 +89,7 @@ class BigOutputTest {
                                 .startBlocking(1, TimeUnit.MINUTES)
                                 .output.utf8()
 
-        Assertions.assertEquals(repeat("+"), output)
+        Assert.assertEquals(repeat("+"), output)
     }
 
     @Test
@@ -104,7 +101,7 @@ class BigOutputTest {
             .redirectErrorStream(false)
             .startBlocking(1, TimeUnit.MINUTES)
 
-        Assertions.assertEquals(repeat("+"), String(out.toByteArray()))
+        Assert.assertEquals(repeat("+"), String(out.toByteArray()))
     }
 
     @Test
@@ -116,7 +113,7 @@ class BigOutputTest {
             .redirectErrorStream(false)
             .startBlocking(1, TimeUnit.MINUTES)
 
-        Assertions.assertEquals(repeat("-"), String(err.toByteArray()))
+        Assert.assertEquals(repeat("-"), String(err.toByteArray()))
     }
 
     private fun bigOutput(): Executor {

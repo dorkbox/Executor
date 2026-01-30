@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +20,8 @@ import dorkbox.executor.exceptions.InvalidExitValueException
 import dorkbox.executor.samples.ExitLikeABoss
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.util.concurrent.*
 
 class ExitValueTest {
@@ -37,7 +34,7 @@ class ExitValueTest {
     @Test
     @Throws(Exception::class)
     fun testJavaVersionExitValueCheck() {
-        Assertions.assertThrows(InvalidExitValueException::class.java) {
+        Assert.assertThrows(InvalidExitValueException::class.java) {
             runBlocking {
                 Executor().command("java", "-version").exitValues(3).start()
             }
@@ -47,7 +44,7 @@ class ExitValueTest {
     @Test
     @Throws(Exception::class)
     fun testJavaVersionExitValueCheckTimeout() {
-        Assertions.assertThrows(InvalidExitValueException::class.java) {
+        Assert.assertThrows(InvalidExitValueException::class.java) {
             runBlocking {
                 Executor().command("java", "-version").exitValues(3).start(60, TimeUnit.SECONDS)
             }
@@ -76,7 +73,7 @@ class ExitValueTest {
     @Test
     @Throws(Exception::class)
     fun testCustomExitValueInvalid() {
-        Assertions.assertThrows(InvalidExitValueException::class.java) {
+        Assert.assertThrows(InvalidExitValueException::class.java) {
             runBlocking {
                 Executor(exitLikeABoss(17)).exitValues(15).start()
             }

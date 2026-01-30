@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +19,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.HelloWorld
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayOutputStream
 
 /**
@@ -48,8 +45,8 @@ class StreamCloseTest {
                 .start()
         }
 
-        Assertions.assertEquals("Hello ", String(out.toByteArray()))
-        Assertions.assertFalse(close.isClosed)
+        Assert.assertEquals("Hello ", String(out.toByteArray()))
+        Assert.assertFalse(close.isClosed)
     }
 
     @Test
@@ -63,8 +60,8 @@ class StreamCloseTest {
                 .start()
         }
 
-        Assertions.assertEquals("world!", String(out.toByteArray()))
-        Assertions.assertFalse(close.isClosed)
+        Assert.assertEquals("world!", String(out.toByteArray()))
+        Assert.assertFalse(close.isClosed)
     }
 
     private fun helloWorld(): Executor {

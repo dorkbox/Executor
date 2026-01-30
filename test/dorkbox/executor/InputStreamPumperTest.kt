@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +22,8 @@ import dorkbox.executor.stream.PumpStreamHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
@@ -50,7 +47,7 @@ class InputStreamPumperTest {
             exec.start().output.utf8()
         }
 
-        Assertions.assertEquals(str, result)
+        Assert.assertEquals(str, result)
     }
 
     @Test
@@ -67,7 +64,7 @@ class InputStreamPumperTest {
             exec.start().output.utf8()
         }
 
-        Assertions.assertEquals(str, result)
+        Assert.assertEquals(str, result)
     }
 
 
@@ -100,7 +97,7 @@ class InputStreamPumperTest {
             async.output.utf8()
         }
 
-        Assertions.assertEquals("", output)
+        Assert.assertEquals("", output)
     }
     @Test
     fun testConstantReadOutputBuffered() {
@@ -130,6 +127,6 @@ class InputStreamPumperTest {
             async.output.utf8()
         }
 
-        Assertions.assertEquals("", output)
+        Assert.assertEquals("", output)
     }
 }

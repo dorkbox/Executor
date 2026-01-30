@@ -1,6 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2019 Ketan Padegaonkar <ketanpadegaonkar@gmail.com>
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +17,8 @@ package dorkbox.executor.stream
 
 import dorkbox.executor.RememberCloseOutputStream
 import dorkbox.executor.stream.nopStreams.NopOutputStream
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -42,8 +41,8 @@ class TeeOutputStreamTest {
         teeOutputStream.write(10)
         teeOutputStream.write(byteArrayOf(1, 2, 3))
         teeOutputStream.write(byteArrayOf(10, 11, 12, 13, 14, 15, 15, 16), 2, 3)
-        Assertions.assertArrayEquals(byteArrayOf(10, 1, 2, 3, 12, 13, 14), left.toByteArray())
-        Assertions.assertArrayEquals(byteArrayOf(10, 1, 2, 3, 12, 13, 14), right.toByteArray())
+        Assert.assertArrayEquals(byteArrayOf(10, 1, 2, 3, 12, 13, 14), left.toByteArray())
+        Assert.assertArrayEquals(byteArrayOf(10, 1, 2, 3, 12, 13, 14), right.toByteArray())
     }
 
     @Test
@@ -53,8 +52,8 @@ class TeeOutputStreamTest {
         val right = RememberCloseOutputStream(NopOutputStream.OUTPUT_STREAM)
         val teeOutputStream = TeeOutputStream(left, right)
         teeOutputStream.close()
-        Assertions.assertTrue(left.isClosed)
-        Assertions.assertTrue(right.isClosed)
+        Assert.assertTrue(left.isClosed)
+        Assert.assertTrue(right.isClosed)
     }
 
     @Test
@@ -64,10 +63,10 @@ class TeeOutputStreamTest {
         val teeOutputStream = TeeOutputStream(left, right)
         try {
             teeOutputStream.close()
-            Assertions.fail("Was expecting an exception!")
+            Assert.fail("Was expecting an exception!")
         } catch (expected: IOException) {
         }
-        Assertions.assertTrue(left.isClosed)
-        Assertions.assertTrue(right.isClosed)
+        Assert.assertTrue(left.isClosed)
+        Assert.assertTrue(right.isClosed)
     }
 }

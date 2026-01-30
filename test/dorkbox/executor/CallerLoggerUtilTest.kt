@@ -1,8 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
- * Contains fragments of code from Apache Commons Exec, rights owned
- * by Apache Software Foundation (ASF).
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +17,15 @@
 package dorkbox.executor
 
 import dorkbox.executor.stream.CallerLoggerUtil
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 
 class CallerLoggerUtilTest {
     @Test
     @Throws(Exception::class)
     fun testFullName() {
         val fullName = "my.full.Logger"
-        Assertions.assertEquals(fullName, CallerLoggerUtil.getName(fullName))
+        Assert.assertEquals(fullName, CallerLoggerUtil.getName(fullName))
     }
 
     @Test
@@ -36,13 +33,13 @@ class CallerLoggerUtilTest {
     fun testShortName() {
         val shortName = "MyLogger"
         val fullName = CallerLoggerUtilTest::class.java.name + "." + shortName
-        Assertions.assertEquals(fullName, CallerLoggerUtil.getName(shortName))
+        Assert.assertEquals(fullName, CallerLoggerUtil.getName(shortName))
     }
 
     @Test
     @Throws(Exception::class)
     fun testMyClassName() {
         val fullName = CallerLoggerUtilTest::class.java.name
-        Assertions.assertEquals(fullName, CallerLoggerUtil.getName(null))
+        Assert.assertEquals(fullName, CallerLoggerUtil.getName(null))
     }
 }

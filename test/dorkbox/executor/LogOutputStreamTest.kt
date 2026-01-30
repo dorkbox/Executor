@@ -1,7 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ * Copyright 2026 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +17,10 @@
 package dorkbox.executor
 
 import dorkbox.executor.stream.LogOutputStream
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.IOException
 import java.io.UnsupportedEncodingException
-import java.util.*
 
 class LogOutputStreamTest {
     @Throws(UnsupportedEncodingException::class, IOException::class)
@@ -38,7 +36,7 @@ class LogOutputStreamTest {
             stream.write(multiLineString.toByteArray(charset("UTF-8")))
         }
 
-        Assertions.assertEquals(listOf(*expectedLines), processedLines)
+        Assert.assertEquals(listOf(*expectedLines), processedLines)
     }
 
     @Test

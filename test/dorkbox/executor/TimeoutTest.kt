@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package dorkbox.executor
 import dorkbox.executor.samples.Loop
 import dorkbox.executor.samples.TestSetup
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-import java.util.*
+import org.junit.Assert
+import org.junit.Test
 import java.util.concurrent.*
 
 class TimeoutTest {
@@ -40,12 +39,12 @@ class TimeoutTest {
                     .start(1, TimeUnit.SECONDS)
             }
 
-            Assertions.fail<Void>("TimeoutException expected.")
+            Assert.fail("TimeoutException expected.")
         } catch (e: TimeoutException) {
             val message = e.message
 
-            Assertions.assertTrue(message?.lowercase()?.contains("1 second") == true)
-            Assertions.assertTrue(message?.contains(TestSetup.getFile(Loop::class.java)) == true)
+            Assert.assertTrue(message?.lowercase()?.contains("1 second") == true)
+            Assert.assertTrue(message?.contains(TestSetup.getFile(Loop::class.java)) == true)
         }
     }
 
@@ -63,9 +62,9 @@ class TimeoutTest {
                 asyncProcess.await(1, TimeUnit.SECONDS)
             }
 
-            Assertions.fail<Void>("TimeoutException expected.")
+            Assert.fail("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            Assertions.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
+            Assert.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
         }
     }
 
@@ -94,9 +93,9 @@ class TimeoutTest {
                     .start(1, TimeUnit.SECONDS)
             }
 
-            Assertions.fail<Void>("TimeoutException expected.")
+            Assert.fail("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            Assertions.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
+            Assert.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
         }
     }
 
@@ -129,9 +128,9 @@ class TimeoutTest {
                 job.await(1, TimeUnit.SECONDS)
             }
 
-            Assertions.fail<Void>("TimeoutException expected.")
+            Assert.fail("TimeoutException expected.")
         } catch (e: TimeoutException) {
-            Assertions.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
+            Assert.assertTrue(e.message?.lowercase()?.contains("1 second") == true)
         }
     }
 }

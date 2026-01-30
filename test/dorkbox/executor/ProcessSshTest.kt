@@ -1,7 +1,6 @@
 /*
- * Copyright 2020 dorkbox, llc
- * Copyright (C) 2014 ZeroTurnaround <support@zeroturnaround.com>
-
+ * Copyright 2026 dorkbox, llc
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +17,6 @@
 package dorkbox.executor
 
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
 class ProcessSshTest {
