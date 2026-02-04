@@ -105,7 +105,7 @@ dependencies {
     api("org.slf4j:slf4j-api:${slf4jVer}")
 
 
-    compileOnly("ch.qos.logback:logback-classic:${Extr.logbackVer}") // ONLY used to fixup the SSHJ logger (in LogHelper)
+    compileOnly("ch.qos.logback:logback-classic:${logbackVer}") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubuntu 18.04 instance
