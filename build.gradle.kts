@@ -23,35 +23,39 @@
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "4.6"
+    id("com.dorkbox.GradleUtils") version "4.8"
     id("com.dorkbox.Licensing") version "3.1"
-    id("com.dorkbox.VersionUpdate") version "3.1"
-    id("com.dorkbox.GradlePublish") version "2.0"
+    id("com.dorkbox.VersionUpdate") version "3.2"
+    id("com.dorkbox.GradlePublish") version "2.2"
 
     kotlin("jvm") version "2.3.0"
 }
 
-object Extras {
-    const val name = "Executor"
-    const val description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+"
-    const val group = "com.dorkbox"
-    const val id = "Executor"
-    const val version = "4.0"
 
-    const val vendor = "Dorkbox LLC"
-    const val vendorUrl = "https://dorkbox.com"
-    const val url = "https://git.dorkbox.com/dorkbox/Executor"
+GradleUtils.load {
+    group = "com.dorkbox"
+    id = "Executor"
 
-    const val logbackVer = "1.5.26"
-    const val slf4jVer = "2.0.17"
-    const val coroutineVer = "1.10.2"
-    const val sshjVer = "0.40.0"
+    description = "Shell, JVM, and SSH command execution on Linux, MacOS, or Windows"
+    name = "Executor"
+    version = "4.0"
+
+    vendor = "Dorkbox LLC"
+    vendorUrl = "https://dorkbox.com"
+
+    url = "https://git.dorkbox.com/dorkbox/Executor"
+
+    issueManagement {
+        url = "${url}/issues"
+        nickname = "Gitea Issues"
+    }
+
+    developer {
+        id = "dorkbox"
+        name = vendor
+        email = "email@dorkbox.com"
+    }
 }
-
-///////////////////////////////
-/////  assign 'Extras'
-///////////////////////////////
-GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_25) {
     // see: https://kotlinlang.org/docs/reference/using-gradle.html
@@ -62,6 +66,7 @@ GradleUtils.compileConfiguration(JavaVersion.VERSION_25) {
             "-Xopt-in=kotlin.RequiresOptIn"
     )
 }
+
 
 licensing {
     license(License.APACHE_2) {
@@ -83,34 +88,24 @@ licensing {
 }
 
 
-tasks.jar.get().apply {
-    manifest {
-        // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
-        attributes["Name"] = Extras.name
-
-        attributes["Specification-Title"] = Extras.name
-        attributes["Specification-Version"] = Extras.version
-        attributes["Specification-Vendor"] = Extras.vendor
-
-        attributes["Implementation-Title"] = "${Extras.group}.${Extras.id}"
-        attributes["Implementation-Version"] = GradleUtils.now()
-        attributes["Implementation-Vendor"] = Extras.vendor
-    }
-}
-
 dependencies {
+    val logbackVer = "1.5.26"
+    val slf4jVer = "2.0.17"
+    val coroutineVer = "1.10.2"
+    val sshjVer = "0.40.0"
+
     // API is used here to allow these dependencies to be transitive, so projects that depend on Executor, do not
     // have to EXPLICITLY add these as dependencies.
     api("org.jetbrains.kotlin:kotlin-stdlib")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Extras.coroutineVer}")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutineVer}")
 
     api("com.dorkbox:Updates:1.3")
 
 
-    api("org.slf4j:slf4j-api:${Extras.slf4jVer}")
+    api("org.slf4j:slf4j-api:${slf4jVer}")
 
 
-    compileOnly("ch.qos.logback:logback-classic:${Extras.logbackVer}") // ONLY used to fixup the SSHJ logger (in LogHelper)
+    compileOnly("ch.qos.logback:logback-classic:${Extr.logbackVer}") // ONLY used to fixup the SSHJ logger (in LogHelper)
 
     // NOTE: JSCH is no longer maintained.
     //  The fork from https://github.com/mwiede/jsch fixes many issues, but STILL cannot connect to an ubuntu 18.04 instance
@@ -119,38 +114,14 @@ dependencies {
     // https://github.com/hierynomus/sshj
     // This is *compileOnly* because SSH command execution is not common, and the developer that needs it can just add the appropriate
     // library to enable SSH support
-    compileOnly("com.hierynomus:sshj:${Extras.sshjVer}")
+    compileOnly("com.hierynomus:sshj:${sshjVer}")
 
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.dorkbox:OS:2.0")
 
-    testImplementation("ch.qos.logback:logback-classic:${Extras.logbackVer}")
+    testImplementation("ch.qos.logback:logback-classic:${logbackVer}")
 
     // we want to test SSH functions. Comment this out to view the exception when sshj is not available
-    testImplementation("com.hierynomus:sshj:${Extras.sshjVer}")
-}
-
-mavenCentral {
-    groupId = Extras.group
-    artifactId = Extras.id
-    version = Extras.version
-
-    name = Extras.name
-    description = Extras.description
-    url = Extras.url
-
-    vendor = Extras.vendor
-    vendorUrl = Extras.vendorUrl
-
-    issueManagement {
-        url = "${Extras.url}/issues"
-        nickname = "Gitea Issues"
-    }
-
-    developer {
-        id = "dorkbox"
-        name = Extras.vendor
-        email = "email@dorkbox.com"
-    }
+    testImplementation("com.hierynomus:sshj:${sshjVer}")
 }
